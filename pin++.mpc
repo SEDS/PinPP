@@ -21,6 +21,7 @@ project (pin++) : requires_pin, oasis_lib {
     Insert_T.h
     Lock.h
     Mutex.h
+    RWMutex.h
     Prototype.h
     Replacement_Routine.h
     Routine.h
@@ -53,6 +54,7 @@ project (pin++) : requires_pin, oasis_lib {
     Ins.inl
     Lock.inl
     Mutex.inl
+    RWMutex.inl
     Prototype.inl
     Replacement_Routine.inl
     Routine.inl
