@@ -22,7 +22,7 @@ Mutex::Mutex (void)
 inline
 Mutex::~Mutex (void)
 {
-  PIN_MutexFini (&this->mutex);
+  PIN_MutexFini (&this->mutex_);
 }
 
 //
@@ -39,9 +39,10 @@ void Mutex::acquire (void)
 // try_lock
 //
 inline
-void Mutex::try_acquire (void)
+bool Mutex::try_acquire (void)
 {
   this->locked_ = PIN_MutexTryLock (&this->mutex_);
+  return this->locked_;
 }
 
 

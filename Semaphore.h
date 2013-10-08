@@ -35,8 +35,11 @@ public:
   /// Destructor.
   ~Semaphore (void);
 
-  /// Signal the lock
+  /// Block until the semaphore is set 
   void acquire (void);
+
+  /// Try to acquire the lock (non-blocking)
+  bool try_acquire (void);
 
   /// Test if the semaphore is set
   bool locked (void);
@@ -44,8 +47,9 @@ public:
   /// Clear the lock
   void release (void);
 
-  /// Block until the semaphore is set
-  void wait (void);
+  /// Set the semaphore, signaling blocking acquistions
+  /// to complete
+  void set (void);
 
   /*
    * Block until the semaphore is set or timeout is reached

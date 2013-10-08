@@ -34,10 +34,10 @@ bool Semaphore::locked (void)
 }
 
 //
-// acquire
+// set
 //
 inline
-void Semaphore::acquire (void)
+void Semaphore::set (void)
 {
   PIN_SemaphoreSet (&this->semaphore_);
 }
@@ -52,12 +52,23 @@ void Semaphore::release (void)
 }
 
 //
-// wait
+// acquire 
 //
 inline
-void Semaphore::wait (void)
+void Semaphore::acquire (void)
 {
   PIN_SemaphoreWait (&this->semaphore_);
+}
+
+//
+// try_acquire
+//
+inline
+bool Semaphore::try_acquire (void)
+{
+  // Semantically, this would be a wait with timeout
+  // of 0, so just return the locked status.
+  return this->locked ();
 }
 
 //
