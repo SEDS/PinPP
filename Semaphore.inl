@@ -25,28 +25,28 @@ Semaphore::~Semaphore (void)
 }
 
 //
-// is_set
+// locked
 //
 inline
-bool Semaphore::is_set (void)
+bool Semaphore::locked (void)
 {
   return PIN_SemaphoreIsSet (&this->semaphore_);
 }
 
 //
-// set
+// acquire
 //
 inline
-void Semaphore::set (void)
+void Semaphore::acquire (void)
 {
   PIN_SemaphoreSet (&this->semaphore_);
 }
 
 //
-// clear
+// release
 //
 inline
-void Semaphore::clear (void)
+void Semaphore::release (void)
 {
   PIN_SemaphoreClear (&this->semaphore_);
 }

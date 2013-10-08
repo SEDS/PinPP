@@ -9,20 +9,76 @@ namespace Pin
 //
 // Guard
 //
+template <typename T>
 inline
-Guard::Guard (Lock & lock, int owner)
+Guard <T>::Guard (T & lock)
 : lock_ (lock)
 {
-  this->lock_.acquire (owner);
+
+}
+
+//
+// Guard
+//
+template <typename T>
+inline
+Guard <T>::Guard (T & lock, bool block)
+: lock_ (lock)
+{
+  if (block)
+    this->acquire ();
+  else
+    this->try_acquire ();
 }
 
 //
 // ~Guard
 //
+template <typename T>
 inline
-Guard::~Guard (void)
+Guard <T>::~Guard (void)
 {
   this->lock_.release ();
+}
+
+//
+// acquire
+//
+template <typename T>
+inline
+void Guard <T>::acquire(void)
+{
+  this->lock_.acquire ();
+}
+
+//
+// release
+//
+template <typename T>
+inline
+void Guard <T>::release(void)
+{
+  this->lock_.release ();
+}
+
+//
+// locked
+//
+template <typename T>
+inline
+bool Guard <T>::locked (void)
+{
+  return this->lock_.locked ();
+}
+
+//
+// try_acquire
+//
+template <typename T>
+inline
+bool Guard <T>::try_acquire (void)
+{
+  return this->lock_.try_acquire ();
 }
 
 } // namespace OASIS

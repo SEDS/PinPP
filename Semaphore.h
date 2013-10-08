@@ -35,14 +35,14 @@ public:
   /// Destructor.
   ~Semaphore (void);
 
-  /// Set the semaphore
-  void set (void);
+  /// Signal the lock
+  void acquire (void);
 
   /// Test if the semaphore is set
-  bool is_set (void);
+  bool locked (void);
 
-  /// Clear the semaphore
-  void clear (void);
+  /// Clear the lock
+  void release (void);
 
   /// Block until the semaphore is set
   void wait (void);

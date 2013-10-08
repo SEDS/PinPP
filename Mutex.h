@@ -36,15 +36,19 @@ public:
   ~Mutex (void);
 
   /// Lock the mutex (blocking).
-  void lock (void);
+  void acquire (void);
 
   /// Lock the mutex (non-blocking).
-  bool try_lock (void);
+  bool try_acquire (void);
 
   /// Unlock the mutex.
-  void unlock (void);
+  void release (void);
+
+  /// Check if it is locked
+  bool locked (void); 
 
 private:
+  bool locked_;
   PIN_MUTEX mutex_;
 };
 

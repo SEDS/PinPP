@@ -13,8 +13,6 @@
 #ifndef _OASIS_PIN_GUARD_H_
 #define _OASIS_PIN_GUARD_H_
 
-#include "Lock.h"
-
 namespace OASIS
 {
 namespace Pin
@@ -25,17 +23,37 @@ namespace Pin
  *
  * Guard for restricting lock ownership to a scope.
  */
+template <typename T>
 class Guard
 {
 public:
-  /// Default constructor.
-  Guard (Lock & lock, int owner);
+  /// Default constructor, do not acquire the lock.
+  Guard (T & lock);
+
+  /*
+   * Locking constructor
+   *
+   * @param[in]     block     Block when acquiring the lock
+   */
+  Guard (T & lock, bool block);
 
   /// Destructor.
   ~Guard (void);
 
+  /// Acquire the lock (blocking)
+  void acquire (void);
+
+  /// Try to acquire the lock (non-blocking)
+  bool try_acquire (void);
+
+  /// Release the lock
+  void release (void);
+
+  /// Test if it is locked
+  bool locked (void);
+
 private:
-  Lock & lock_;
+  T & lock_;
 };
 
 } // namespace OASIS
