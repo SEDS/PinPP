@@ -69,12 +69,6 @@ const std::string & Routine::name (void) const
 }
 
 inline
-SYM Routine::symbol (void) const
-{
-  return RTN_Sym (this->rtn_);
-}
-
-inline
 INT32 Routine::id (void) const
 {
   return RTN_Id (this->rtn_);
@@ -120,6 +114,12 @@ inline
 void Routine::close (void)
 {
   RTN_Close (this->rtn_);
+}
+
+inline
+Symbol Routine::symbol (void) const
+{
+  return RTN_Sym (this->rtn_);
 }
 
 inline

@@ -14,6 +14,7 @@
 #define _OASIS_PIN_ROUTINE_H_
 
 #include "Ins.h"
+#include "Symbol.h"
 
 namespace OASIS
 {
@@ -66,9 +67,6 @@ public:
   /// Get the name of the routine.
   const std::string & name (void) const;
 
-  /// Get the symbol representation of the routine.
-  SYM symbol (void) const;
-
   /// Get the routine's id.
   INT32 id (void) const;
 
@@ -95,6 +93,9 @@ public:
 
   /// Close the current routine.
   void close (void);
+
+  /// Get symbol representation of the routine.
+  Symbol symbol (void) const;
 
   /// @{ Instruction Methods
   Ins::iterator_type instruction_head (void) const;

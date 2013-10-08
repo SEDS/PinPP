@@ -172,5 +172,11 @@ Image::iterator_type Image::make_iter (void) const
   return iterator_type (this->img_);
 }
 
+inline
+Symbol::iterator_type Image::regular_symbol_head (void) const
+{
+  return IMG_RegsymHead (this->img_);
+}
+
 } // namespace OASIS
 } // namespace Pin

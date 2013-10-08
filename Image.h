@@ -14,7 +14,7 @@
 #define _OASIS_PIN_IMAGE_H_
 
 #include "Section.h"
-#include "Iterator.h"
+#include "Symbol.h"
 
 namespace OASIS
 {
@@ -63,6 +63,9 @@ public:
 
   bool valid (void) const;
   iterator_type make_iter (void) const;
+
+  /// Get an iterator to the head of the regular symbols.
+  Symbol::iterator_type regular_symbol_head (void) const;
 
   /// @{ Section Methods
   Section::iterator_type section_head (void) const;
