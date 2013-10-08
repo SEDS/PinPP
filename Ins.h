@@ -277,10 +277,6 @@ public:
 
 private:
   INS & ins_;
-
-  // prevent the following
-  Ins (const Ins &);
-  const Ins & operator = (const Ins &);
 };
 
 } // namespace Pin
