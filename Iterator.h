@@ -6,7 +6,7 @@
  *
  *  $Id: generate_cpp_class.py 3685 2012-09-26 14:45:04Z dfeiock $
  *
- *  @author      INSERT NAME HERE
+ *  @author      James H. Hill
  */
 //==============================================================================
 
@@ -20,6 +20,8 @@ namespace Pin
 
 /**
  * @class Iterator
+ *
+ * STL-like iterator used by all objects that support iteration.
  */
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 class Iterator
