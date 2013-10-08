@@ -14,23 +14,37 @@
 #define _OASIS_PIN_INS_H_
 
 #include "pin.H"
+#include "Iterator.h"
+
+#include "Pin_export.h"
 
 namespace OASIS
 {
 namespace Pin
 {
+// Forward decl.
+class Routine;
+
 /**
- * @class Ins_Base
+ * @class Ins
  *
- * Base class for the INS object types. This class is responsible for
- * implementing the non-mutable methods for INS.
+ * Wrapper class for the INS type. This class take a reference to the
+ * contained INS object since an INS cannot be created. Instead, it is
+ * always passed to the instrumentation object. By using a reference,
+ * we are reducing the number of copies.
  */
-template <typename INS_TYPE>
-class Ins_Base
+class OASIS_PIN_Export Ins
 {
 public:
+  /// Type definition for Iterator support.
+  typedef INS pin_type;
+
+  /// Type definition of the iterator type.
+  typedef Iterator <Ins, &INS_Prev, &INS_Next> iterator_type;
+
   /// Invalid instruction.
   static const INS invalid;
+
   static std::string opcode_string_short (UINT32 opcode);
   static std::string category_string_short (UINT32 num);
   static std::string extension_string_short (UINT32 num);
@@ -40,20 +54,30 @@ public:
    *
    * @param[in]       ins       Instruction
    */
-  Ins_Base (const INS & ins);
+  Ins (INS & ins);
 
   /// Type conversion operator
   operator INS () const;
 
+  /// Make an iterator to the current instruction.
+  iterator_type make_iter (void) const;
+
   /// {@ Inspection Methods
 
+  /// Get the instructions' category.
   INT32 category (void) const;
+
   INT32 extension (void) const;
   UINT32 effective_address_width (void) const;
   USIZE memory_write_size (void) const;
   USIZE memory_read_size (void) const;
+
+  /// Get the address of the instruction.
   ADDRINT address (void) const;
+
+  /// Get the size of the instruction
   USIZE size (void) const;
+
   SYSCALL_STANDARD syscall_std (void) const;
 
   /**
@@ -65,6 +89,7 @@ public:
   BOOL is_memory_operand_read (UINT32 mem_op) const;
   BOOL is_memory_operand_written (UINT32 mem_op) const;
 
+  /// Get the mnemonic for the instruction.
   std::string mnemonic (void) const;
 
   BOOL is_valid (void) const;
@@ -91,7 +116,6 @@ public:
   BOOL is_atomic_update (void) const;
   BOOL is_indirect_branch_or_call (void) const;
   BOOL is_direct_branch_or_call (void) const;
-  BOOL is_rewritable_mem_op_base (MEMORY_TYPE mtype, REG &base) const;
   BOOL is_stack_read (void) const;
   BOOL is_stack_write (void) const;
   BOOL is_ip_relative_read (void) const;
@@ -114,9 +138,15 @@ public:
   BOOL is_predicated (void) const;
 
   BOOL is_original (void) const;
+
+  /// Test if the current instruction is valid.
   BOOL valid (void) const;
 
+  /// Remove the current instruction from the execution.
   void remove (void) const;
+
+  /// Get the parent routine.
+  Routine routine (void) const;
 
   /// @{ Operand Methods
   UINT32 operand_count (void) const;
@@ -245,63 +275,12 @@ public:
   void insert_then_predicated_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
   /// @}
 
-protected:
-  INS_TYPE ins_;
-};
-
-/**
- * @class Ins_Ref
- *
- * Reference implementation of the Ins_Base class. This class is mainly
- * used in upcalls to wrap the INS without copying it.
- */
-class Ins_Ref : public Ins_Base <const INS &>
-{
-public:
-  /**
-   * Initializing constructor
-   *
-   * @param[in]       ins       Instruction
-   */
-  Ins_Ref (const INS & ins);
-
 private:
-  // prevent the following operations
-  Ins_Ref (const Ins_Ref &);
-  const Ins_Ref & operator = (const Ins_Ref &);
-};
+  INS & ins_;
 
-/**
- * @class Ins_Ref
- *
- * Reference implementation of the Ins_Base class. This class is mainly
- * used in upcalls to wrap the INS without copying it.
- */
-class Ins : public Ins_Base <INS>
-{
-public:
-  /**
-   * Initializing constructor.
-   *
-   * @param[in]       ins         Instruction
-   */
-  Ins (const INS & ins);
-
-  /**
-   * Copy constructor
-   *
-   * @param[in]       ins         Instruction object
-   */
-  Ins (const Ins & ins);
-
-  /// Assignment operator
-  const Ins & operator = (const Ins & ins);
-
-  /// Move to the next instruction.
-  Ins & next (void);
-
-  /// Move to the previous instruction.
-  Ins & prev (void);
+  // prevent the following
+  Ins (const Ins &);
+  const Ins & operator = (const Ins &);
 };
 
 } // namespace Pin

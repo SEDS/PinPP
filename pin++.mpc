@@ -16,14 +16,11 @@ project (pin++) : requires_pin, oasis_lib {
     Context.h
     Exception.h
     Guard.h
-    Image.h
-    Ins.h
     Insert_T.h
     Lock.h
     Prototype.h
     Replacement_Routine.h
     Routine.h
-    Section.h
     Switch.h
     TLS.h
     Trace.h
@@ -31,12 +28,16 @@ project (pin++) : requires_pin, oasis_lib {
   }
 
   Source_Files {
+    Bbl.cpp
+    Image.cpp
+    Ins.cpp
+    Routine.cpp
+    Section.cpp
     Static_Pintool.cpp
     Tool.cpp
   }
 
   Header_Files {
-    Bbl.h
     Context.h
     If.h
     Switch.h
@@ -44,26 +45,23 @@ project (pin++) : requires_pin, oasis_lib {
 
   Inline_Files {
     Exception.inl
-    Bbl.inl
     Callback.inl
     Context.inl
     Guard.inl
-    Image.inl
-    Ins.inl
     Lock.inl
     Prototype.inl
     Replacement_Routine.inl
     Routine.inl
-    Section.inl
     TLS.inl
     Trace.inl
   }
 
   Template_Files {
     Image_Tool.cpp
+    Iterator.cpp
     Instruction_Tool.cpp
     Pintool.cpp
-    Routine.cpp
+    Routine_T.cpp
     Routine_Tool.cpp
     Trace_Tool.cpp
     Try_Block.cpp

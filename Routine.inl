@@ -63,24 +63,6 @@ bool Routine::valid (void)
 }
 
 inline
-void Routine::prev (void)
-{
-  this->rtn_ = RTN_Prev (this->rtn_);
-}
-
-inline
-void Routine::next (void)
-{
-  this->rtn_ = RTN_Next (this->rtn_);
-}
-
-inline
-SEC Routine::section (void) const
-{
-  return RTN_Sec (this->rtn_);
-}
-
-inline
 const std::string & Routine::name (void) const
 {
   return RTN_Name (this->rtn_);
@@ -111,13 +93,13 @@ USIZE Routine::size (void) const
 }
 
 inline
-string Routine::find_name_by_address (ADDRINT addr)
+string Routine::find_name (ADDRINT addr)
 {
   return RTN_FindNameByAddress (addr);
 }
 
 inline
-Routine Routine::find_by_address (ADDRINT addr)
+Routine Routine::find (ADDRINT addr)
 {
   return RTN_FindByAddress (addr);
 }
@@ -129,7 +111,7 @@ void Routine::open (void)
 }
 
 inline
-Routine Routine::create_at (ADDRINT addr, string name)
+Routine Routine::create (ADDRINT addr, string name)
 {
   return RTN_CreateAt (addr, name);
 }
@@ -141,19 +123,19 @@ void Routine::close (void)
 }
 
 inline
-Ins Routine::instruction_head (void) const
+Ins::iterator_type Routine::instruction_head (void) const
 {
   return RTN_InsHead (this->rtn_);
 }
 
 inline
-Ins Routine::instruction_head_only (void) const
+Ins::iterator_type Routine::instruction_head_only (void) const
 {
   return RTN_InsHeadOnly (this->rtn_);
 }
 
 inline
-Ins Routine::instruction_tail (void) const
+Ins::iterator_type Routine::instruction_tail (void) const
 {
   return RTN_InsTail (this->rtn_);
 }

@@ -19,51 +19,87 @@ namespace OASIS
 {
 namespace Pin
 {
+// Forward decl.
+class Section;
 
 /**
  * @class Routine
  *
- * Wrapper class for the RTN object in Pin.
+ * Wrapper class for the RTN object in Pin. Unlike the other wrapper classes,
+ * this class does not store a reference to the object. This is because routine's
+ * can be created, and passed around. It is thereforehard (or incorr ect) to
+ * store a reference since the original RTN object is not dynamically allocated.
  */
 class Routine
 {
 public:
+  /// Type definition of the Pin type.
+  typedef RTN pin_type;
+
+  /// Type definition of the iterator type.
+  typedef Iterator <Routine, &RTN_Prev, &RTN_Next> iterator_type;
+
+  /// Initializing constructor.
   Routine (RTN rtn);
 
+  /// Copy constructor.
   Routine (const Routine & rtn);
 
   /// Destructor.
   ~Routine (void);
 
+  /// Invalid type.
+  static const RTN invalid;
+
+  /// Assignment operator.
   const Routine & operator = (const Routine & rtn);
 
+  /// Conversion operator.
   operator RTN () const;
 
+  /// Test if the routine is valid.
   bool valid (void);
 
-  /// {@ Iterator Methods
-  void prev (void);
-  void next (void);
-  /// @}
+  /// Get the parent section.
+  Section section (void) const;
 
-  SEC section (void) const;
+  /// Get the name of the routine.
   const std::string & name (void) const;
+
+  /// Get the symbol representation of the routine.
   SYM symbol (void) const;
+
+  /// Get the routine's id.
   INT32 id (void) const;
+
+  /// Get the function pointer for the routine. This is useful for
+  /// invoking the routine from the tool.
   AFUNPTR function_ptr (void) const;
+
+  /// Get the routine's size.
   USIZE size (void) const;
 
-  static string find_name_by_address (ADDRINT addr);
-  static Routine find_by_address (ADDRINT addr);
-  static Routine create_at (ADDRINT address, string name);
+  /// @{ Search Methods
+  static std::string find_name (ADDRINT addr);
+  static Routine find (ADDRINT addr);
+  /// @}
 
+  /// Create iterator starting at the current routine.
+  iterator_type make_iterator (void) const;
+
+  /// Create a new routine.
+  static Routine create (ADDRINT address, string name);
+
+  /// Open a routine for usage.
   void open (void);
+
+  /// Close the current routine.
   void close (void);
 
   /// @{ Instruction Methods
-  Ins instruction_head (void) const;
-  Ins instruction_head_only (void) const;
-  Ins instruction_tail (void) const;
+  Ins::iterator_type instruction_head (void) const;
+  Ins::iterator_type instruction_head_only (void) const;
+  Ins::iterator_type instruction_tail (void) const;
   UINT32 instruction_count (void) const;
   /// @}
 
@@ -157,6 +193,6 @@ private:
 } // namespace Pin
 
 #include "Routine.inl"
-#include "Routine.cpp"
+#include "Routine_T.cpp"
 
 #endif  // _OASIS_PIN_Ins_H_

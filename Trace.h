@@ -36,12 +36,14 @@ public:
 
   operator TRACE () const;
 
+  /// @{ Bbl Methods
+  UINT32 num_ins (void) const;
+  UINT32 num_bbl (void) const;
+  Bbl::iterator_type bbl_head (void) const;
+  Bbl::iterator_type bbl_tail (void) const;
+  /// @}
+
   /// {@ Inspection Methods
-
-  Bbl bbl_head (void) const;
-
-  Bbl bbl_tail (void) const;
-
   bool original (void) const;
 
   ADDRINT address (void) const;
@@ -51,11 +53,6 @@ public:
   // RTN rtn (void) const;
 
   bool has_fall_through (void) const;
-
-  UINT32 num_bbl (void) const;
-
-  UINT32 num_ins (void) const;
-
   USIZE stub_size (void) const;
 
   /// @}

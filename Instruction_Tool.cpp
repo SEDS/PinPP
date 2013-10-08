@@ -11,7 +11,7 @@ namespace Pin
 template <typename T>
 VOID Instruction_Tool <T>::__instrument (INS ins, VOID * v)
 {
-  reinterpret_cast <T *> (v)->handle_instrument (Ins_Ref (ins));
+  reinterpret_cast <T *> (v)->handle_instrument (Ins (ins));
 }
 
 } // namespace OASIS

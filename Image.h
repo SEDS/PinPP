@@ -14,6 +14,7 @@
 #define _OASIS_PIN_IMAGE_H_
 
 #include "Section.h"
+#include "Iterator.h"
 
 namespace OASIS
 {
@@ -25,37 +26,43 @@ namespace Pin
  *
  * Wrapper class for the IMG object in Pin.
  */
-class Image
+class OASIS_PIN_Export Image
 {
 public:
+  /// Type definition of the Pin type need for the iterator.
+  typedef IMG pin_type;
+
+  /// Type definition of the iterator type.
+  typedef Iterator <Image, &IMG_Prev, &IMG_Next> iterator_type;
+
   /// Initializing constructor.
-  Image (IMG img);
+  Image (IMG & img);
 
   /// Destructor.
   ~Image (void);
+
+  /// Invalid identifier for an image.
+  static const IMG invalid;
 
   /**
    * Convert the object to an INS value.
    */
   operator IMG () const;
 
-  /// @{ Factory Methods
+  /// @{ Search Methods
   static Image find_by_id (UINT32 id);
   static Image find_by_address (ADDRINT addr);
-  static Image open (const std::string & filename);
   /// @}
 
-  /// @{ Iterator Methods
+  /// Open image based on a filename.
+  static Image open (const std::string & filename);
+
   bool valid (void) const;
-  void next (void);
-  void prev (void);
-  /// @}
+  iterator_type make_iter (void) const;
 
   /// @{ Section Methods
-
-  Section section_head (void) const;
-  Section section_tail (void) const;
-
+  Section::iterator_type section_head (void) const;
+  Section::iterator_type section_tail (void) const;
   /// @}
 
   ADDRINT entry (void) const;
@@ -78,7 +85,7 @@ public:
 
 private:
   /// Reference to target image object.
-  IMG img_;
+  IMG & img_;
 };
 
 } // namespace OASIS

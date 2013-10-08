@@ -19,45 +19,59 @@ namespace OASIS
 {
 namespace Pin
 {
+// Forward decl.
+class Image;
 
 /**
  * @class Section
  *
  * Wrapper class for the INS object in Pin.
  */
-class Section
+class OASIS_PIN_Export Section
 {
 public:
+  /// Type definition of the Pin type need for the iterator.
+  typedef SEC pin_type;
+
+  /// Type definition of the iterator type.
+  typedef Iterator <Section, &SEC_Prev, &SEC_Next> iterator_type;
+
   Section (SEC sec);
   Section (const Section & sec);
 
   /// Destructor.
   ~Section (void);
 
+  /// Assignment operator.
+  const Section & operator = (const Section & sec);
+
+  static const SEC invalid;
+
+  /// Make an iterator from this section.
+  iterator_type make_iter (void) const;
+
   /// Convert the object to a SEC type.
   operator SEC () const;
 
-  IMG image (void) const;
+  /// Get the parent image.
+  Image image (void) const;
 
-  /// {@ Iterator Methods
-  void next (void);
-  void prev (void);
-  bool valid (void) const;
-  /// @}
+  /// Test if the section if valid.
+  BOOL valid (void) const;
 
-  /// @{ Routine Methods
-  Routine routine_head (void) const;
-  Routine routine_tail (void) const;
+  /// @{ Iterator Methods
+  Routine::iterator_type routine_head (void) const;
+  Routine::iterator_type routine_tail (void) const;
   /// @}
 
   const string & name (void) const;
   SEC_TYPE type (void) const;
-  bool mapped (void) const;
+  BOOL mapped (void) const;
   const VOID * data (void) const;
   ADDRINT address (void) const;
-  bool is_readable (void) const;
-  bool is_writeable (void) const;
-  bool is_executable (void) const;
+  BOOL is_readable (void) const;
+  BOOL is_writeable (void) const;
+  BOOL is_executable (void) const;
   USIZE size (void) const;
 
 private:
