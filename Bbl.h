@@ -13,8 +13,8 @@
 #ifndef _OASIS_PIN_BBL_H_
 #define _OASIS_PIN_BBL_H_
 
-#include "pin.H"
 #include "Ins.h"
+#include "Pin_export.h"
 
 namespace OASIS
 {
@@ -26,28 +26,30 @@ namespace Pin
  *
  * Wrapper class for the INS object in Pin.
  */
-class Bbl
+class OASIS_PIN_Export Bbl
 {
 public:
+  /// Type definition for Iterator support.
+  typedef BBL pin_type;
+
+  /// Type definition of the iterator type.
+  typedef Iterator <Bbl, &BBL_Prev, &BBL_Next> iterator_type;
+
   /// Initializing constructor.
-  Bbl (const BBL & bbl);
+  Bbl (BBL & bbl);
 
   /// Destructor.
   ~Bbl (void);
+
+  static const BBL invalid;
 
   /// Convert the object to a BBL type.
   operator BBL () const;
 
   /// @{ Instruction Methods
   UINT32 ins_count (void) const;
-  Ins ins_head (void) const;
-  Ins ins_tail (void) const;
-  /// @}
-
-
-  /// @{ Iterator Methods
-  Bbl & next (void);
-  Bbl & prev (void);
+  Ins::iterator_type ins_head (void) const;
+  Ins::iterator_type ins_tail (void) const;
   /// @}
 
   /// @{ Inspection Methods
@@ -57,6 +59,8 @@ public:
   USIZE size (void) const;
   bool has_fall_through (void) const;
   /// @}
+
+  void move_all_attributes (const Bbl & bbl);
 
   /// @{ Insert Call Methods
   template <typename CALLBACK>
@@ -111,7 +115,11 @@ public:
 
 private:
   /// The target INS
-  BBL bbl_;
+  BBL & bbl_;
+
+  /// Temp fix since ::BBL_Invalid () does not exist. Once Pin implements
+  /// BBL_Invalid (), then we will remove this function.
+  static BBL BBL_Invalid (void);
 };
 
 } // namespace OASIS

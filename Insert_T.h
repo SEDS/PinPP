@@ -39,7 +39,7 @@ struct Insert_T <S, CALLBACK, F, 1>
   template <typename A>
   inline static void execute (S scope, IPOINT location, CALLBACK * callback, A analyze)
   {
-    F (scope, location, (AFUNPTR)F,
+    F (scope, location, (AFUNPTR)analyze,
        IARG_FAST_ANALYSIS_CALL,
        IARG_PTR, callback,
        Arg_List <CALLBACK>::template get_arg <0> (),
