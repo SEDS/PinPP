@@ -19,7 +19,7 @@ Semaphore::~Semaphore (void)
 }
 
 inline
-bool Semaphore::locked (void)
+bool Semaphore::is_locked (void)
 {
   return PIN_SemaphoreIsSet (&this->semaphore_);
 }

@@ -41,7 +41,7 @@ void Mutex::release (void)
 }
 
 inline
-bool Mutex::locked (void)
+bool Mutex::is_locked (void)
 {
   return this->locked_;
 }

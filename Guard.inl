@@ -48,9 +48,9 @@ void Guard <T>::release(void)
 
 template <typename T>
 inline
-bool Guard <T>::locked (void)
+bool Guard <T>::is_locked (void)
 {
-  return this->lock_.locked ();
+  return this->lock_.is_locked ();
 }
 
 template <typename T>
@@ -96,7 +96,7 @@ void Read_Guard::release(void)
 }
 
 inline
-bool Read_Guard::locked (void)
+bool Read_Guard::is_locked (void)
 {
   return this->lock_.locked_read ();
 }
@@ -143,7 +143,7 @@ void Write_Guard::release(void)
 }
 
 inline
-bool Write_Guard::locked (void)
+bool Write_Guard::is_locked (void)
 {
   return this->lock_.locked_write ();
 }

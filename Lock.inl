@@ -51,7 +51,7 @@ void Lock::release (void)
 }
 
 inline
-bool Lock::locked (void)
+bool Lock::is_locked (void)
 {
   return this->locked_;
 }

@@ -42,7 +42,7 @@ public:
   bool try_acquire (void);
 
   /// Test if the semaphore is set
-  bool locked (void);
+  bool is_locked (void);
 
   /// Clear the lock
   void release (void);

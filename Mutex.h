@@ -45,7 +45,7 @@ public:
   void release (void);
 
   /// Check if it is locked
-  bool locked (void); 
+  bool is_locked (void); 
 
 private:
   bool locked_;
