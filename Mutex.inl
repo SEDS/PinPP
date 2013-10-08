@@ -6,9 +6,6 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// Mutex
-//
 inline
 Mutex::Mutex (void)
 : locked_ (false)
@@ -16,18 +13,12 @@ Mutex::Mutex (void)
   PIN_MutexInit (&this->mutex_);
 }
 
-//
-// ~Mutex
-//
 inline
 Mutex::~Mutex (void)
 {
   PIN_MutexFini (&this->mutex_);
 }
 
-//
-// acquire
-//
 inline
 void Mutex::acquire (void)
 {
@@ -35,9 +26,6 @@ void Mutex::acquire (void)
   this->locked_ = true;
 }
 
-//
-// try_lock
-//
 inline
 bool Mutex::try_acquire (void)
 {
@@ -45,10 +33,6 @@ bool Mutex::try_acquire (void)
   return this->locked_;
 }
 
-
-//
-// release
-//
 inline
 void Mutex::release (void)
 {
@@ -56,9 +40,6 @@ void Mutex::release (void)
   this->locked_ = false;
 }
 
-//
-// locked
-//
 inline
 bool Mutex::locked (void)
 {

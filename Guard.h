@@ -13,7 +13,7 @@
 #ifndef _OASIS_PIN_GUARD_H_
 #define _OASIS_PIN_GUARD_H_
 
-#include "RWMutex.h"
+#include "RW_Mutex.h"
 
 namespace OASIS
 {
@@ -52,7 +52,7 @@ public:
   void release (void);
 
   /// Test if it is locked
-  bool locked (void);
+  bool is_locked (void);
 
 private:
   T & lock_;
@@ -67,14 +67,14 @@ class Read_Guard
 {
 public:
   /// Default constructor, do not acquire the lock
-  Read_Guard (RWMutex & lock);
+  Read_Guard (RW_Mutex & lock);
 
   /**
    * Locking constructor
    *
    * @param[in]   block     Block when acquiring the lock
    */
-  Read_Guard (RWMutex & lock, bool block);
+  Read_Guard (RW_Mutex & lock, bool block);
 
   /// Destructor.
   ~Read_Guard (void);
@@ -89,10 +89,10 @@ public:
   void release (void);
 
   /// Test if it is locked
-  bool locked (void);
+  bool is_locked (void);
 
 private:
-  RWMutex & lock_;
+  RW_Mutex & lock_;
 };
 
 /**
@@ -104,14 +104,14 @@ class Write_Guard
 {
 public:
   /// Default constructor, do not acquire the lock
-  Write_Guard (RWMutex & lock);
+  Write_Guard (RW_Mutex & lock);
 
   /**
    * Locking constructor
    *
    * @param[in]   block     Block when acquiring the lock
    */
-  Write_Guard (RWMutex & lock, bool block);
+  Write_Guard (RW_Mutex & lock, bool block);
 
   /// Destructor.
   ~Write_Guard (void);
@@ -126,10 +126,10 @@ public:
   void release (void);
 
   /// Test if it is locked
-  bool locked (void);
+  bool is_locked (void);
 
 private:
-  RWMutex & lock_;
+  RW_Mutex & lock_;
 };
 
 } // namespace OASIS

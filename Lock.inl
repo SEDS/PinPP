@@ -6,9 +6,6 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// Lock
-//
 inline
 Lock::Lock (void)
 : owner_ (0),
@@ -17,9 +14,6 @@ Lock::Lock (void)
   InitLock (&this->lock_);
 }
 
-//
-// Lock
-//
 inline
 Lock::Lock (int owner)
 : owner_ (owner),
@@ -28,18 +22,12 @@ Lock::Lock (int owner)
   InitLock (&this->lock_);
 }
 
-//
-// ~Lock
-//
 inline
 Lock::~Lock (void)
 {
 
 }
 
-//
-// acquire
-//
 inline
 void Lock::acquire (void)
 {
@@ -47,9 +35,6 @@ void Lock::acquire (void)
   this->locked_ = true;
 }
 
-//
-// try_acquire
-//
 inline
 bool Lock::try_acquire (void)
 {
@@ -58,9 +43,6 @@ bool Lock::try_acquire (void)
   return true;
 }
 
-//
-// release
-//
 inline
 void Lock::release (void)
 {
@@ -68,27 +50,18 @@ void Lock::release (void)
   this->locked_ = false;
 }
 
-//
-// locked
-//
 inline
 bool Lock::locked (void)
 {
   return this->locked_;
 }
 
-//
-// owner
-//
 inline
 void Lock::owner (int owner)
 {
   this->owner_ = owner;
 }
 
-//
-// owner
-//
 inline
 int Lock::owner (void)
 {

@@ -6,63 +6,42 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// Semaphore
-//
 inline
 Semaphore::Semaphore (void)
 {
   PIN_SemaphoreInit (&this->semaphore_);
 }
 
-//
-// ~Semaphore
-//
 inline
 Semaphore::~Semaphore (void)
 {
   PIN_SemaphoreFini (&this->semaphore_);
 }
 
-//
-// locked
-//
 inline
 bool Semaphore::locked (void)
 {
   return PIN_SemaphoreIsSet (&this->semaphore_);
 }
 
-//
-// set
-//
 inline
 void Semaphore::set (void)
 {
   PIN_SemaphoreSet (&this->semaphore_);
 }
 
-//
-// release
-//
 inline
 void Semaphore::release (void)
 {
   PIN_SemaphoreClear (&this->semaphore_);
 }
 
-//
-// acquire 
-//
 inline
 void Semaphore::acquire (void)
 {
   PIN_SemaphoreWait (&this->semaphore_);
 }
 
-//
-// try_acquire
-//
 inline
 bool Semaphore::try_acquire (void)
 {
@@ -71,9 +50,6 @@ bool Semaphore::try_acquire (void)
   return this->locked ();
 }
 
-//
-// wait
-//
 inline
 void Semaphore::wait (unsigned timeout)
 {

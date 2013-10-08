@@ -2,16 +2,16 @@
 
 //==============================================================================
 /**
- *  @file        RWMutex.h
+ *  @file        RW_Mutex.h
  *
- *  $Id: RWMutex.h 2288 2013-09-19 19:09:57Z hillj $
+ *  $Id: RW_Mutex.h 2288 2013-09-19 19:09:57Z hillj $
  *
  *  @author      INSERT NAME HERE
  */
 //==============================================================================
 
-#ifndef _OASIS_PIN_RWMUTEX_H_
-#define _OASIS_PIN_RWMUTEX_H_
+#ifndef _OASIS_PIN_RW_MUTEX_H_
+#define _OASIS_PIN_RW_MUTEX_H_
 
 #include "pin.H"
 
@@ -21,19 +21,19 @@ namespace Pin
 {
 
 /**
- * @class RWMutex
+ * @class RW_Mutex
  *
- * Wrapper class for PIN_RWMUTEX.  Should be used with the GUARD class for
- * GetRWMutex and ReleaseRWMutex calls.
+ * Wrapper class for PIN_RW_MUTEX.  Should be used with the GUARD class for
+ * GetRW_Mutex and ReleaseRW_Mutex calls.
  */
-class RWMutex
+class RW_Mutex
 {
 public:
   /// Default constructor.
-  RWMutex (void);
+  RW_Mutex (void);
 
   /// Destructor.
-  ~RWMutex (void);
+  ~RW_Mutex (void);
 
   /// Lock the mutex for reading (blocking).
   void acquire_read (void);
@@ -65,6 +65,6 @@ private:
 } // namespace OASIS
 } // namespace Pin
 
-#include "RWMutex.inl"
+#include "RW_Mutex.inl"
 
-#endif  // _OASIS_PIN_RWMUTEX_H_
+#endif  // _OASIS_PIN_RW_MUTEX_H_

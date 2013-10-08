@@ -6,13 +6,6 @@ namespace OASIS
 namespace Pin
 {
 
-// /////////////////////////////////////////////////////////
-// Guard
-// /////////////////////////////////////////////////////////
-
-//
-// Guard
-//
 template <typename T>
 inline
 Guard <T>::Guard (T & lock)
@@ -21,9 +14,6 @@ Guard <T>::Guard (T & lock)
 
 }
 
-//
-// Guard
-//
 template <typename T>
 inline
 Guard <T>::Guard (T & lock, bool block)
@@ -35,9 +25,6 @@ Guard <T>::Guard (T & lock, bool block)
     this->try_acquire ();
 }
 
-//
-// ~Guard
-//
 template <typename T>
 inline
 Guard <T>::~Guard (void)
@@ -45,9 +32,6 @@ Guard <T>::~Guard (void)
   this->lock_.release ();
 }
 
-//
-// acquire
-//
 template <typename T>
 inline
 void Guard <T>::acquire(void)
@@ -55,9 +39,6 @@ void Guard <T>::acquire(void)
   this->lock_.acquire ();
 }
 
-//
-// release
-//
 template <typename T>
 inline
 void Guard <T>::release(void)
@@ -65,9 +46,6 @@ void Guard <T>::release(void)
   this->lock_.release ();
 }
 
-//
-// locked
-//
 template <typename T>
 inline
 bool Guard <T>::locked (void)
@@ -75,9 +53,6 @@ bool Guard <T>::locked (void)
   return this->lock_.locked ();
 }
 
-//
-// try_acquire
-//
 template <typename T>
 inline
 bool Guard <T>::try_acquire (void)
@@ -85,25 +60,15 @@ bool Guard <T>::try_acquire (void)
   return this->lock_.try_acquire ();
 }
 
-// /////////////////////////////////////////////////////////
-// Read_Guard
-// /////////////////////////////////////////////////////////
-
-//
-// Read_Guard
-//
 inline
-Read_Guard::Read_Guard (RWMutex & lock)
+Read_Guard::Read_Guard (RW_Mutex & lock)
 : lock_ (lock)
 {
 
 }
 
-//
-// Read_Guard
-//
 inline
-Read_Guard::Read_Guard (RWMutex & lock, bool block)
+Read_Guard::Read_Guard (RW_Mutex & lock, bool block)
 : lock_ (lock)
 {
   if (block)
@@ -112,70 +77,45 @@ Read_Guard::Read_Guard (RWMutex & lock, bool block)
     this->try_acquire ();
 }
 
-//
-// ~Guard
-//
 inline
 Read_Guard::~Read_Guard (void)
 {
   this->lock_.release ();
 }
 
-//
-// acquire
-//
 inline
 void Read_Guard::acquire(void)
 {
   this->lock_.acquire_read ();
 }
 
-//
-// release
-//
 inline
 void Read_Guard::release(void)
 {
   this->lock_.release ();
 }
 
-//
-// locked
-//
 inline
 bool Read_Guard::locked (void)
 {
   return this->lock_.locked_read ();
 }
 
-//
-// try_acquire
-//
 inline
 bool Read_Guard::try_acquire (void)
 {
   return this->lock_.try_acquire_read ();
 }
 
-// /////////////////////////////////////////////////////////
-// Write_Guard
-// /////////////////////////////////////////////////////////
-
-//
-// Write_Guard
-//
 inline
-Write_Guard::Write_Guard (RWMutex & lock)
+Write_Guard::Write_Guard (RW_Mutex & lock)
 : lock_ (lock)
 {
 
 }
 
-//
-// Write_Guard
-//
 inline
-Write_Guard::Write_Guard (RWMutex & lock, bool block)
+Write_Guard::Write_Guard (RW_Mutex & lock, bool block)
 : lock_ (lock)
 {
   if (block)
@@ -184,45 +124,30 @@ Write_Guard::Write_Guard (RWMutex & lock, bool block)
     this->try_acquire ();
 }
 
-//
-// ~Write_Guard
-//
 inline
 Write_Guard::~Write_Guard (void)
 {
   this->lock_.release ();
 }
 
-//
-// acquire
-//
 inline
 void Write_Guard::acquire (void)
 {
   this->lock_.acquire_write ();
 }
 
-//
-// release
-//
 inline
 void Write_Guard::release(void)
 {
   this->lock_.release ();
 }
 
-//
-// locked
-//
 inline
 bool Write_Guard::locked (void)
 {
   return this->lock_.locked_write ();
 }
 
-//
-// try_acquire
-//
 inline
 bool Write_Guard::try_acquire (void)
 {
