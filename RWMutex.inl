@@ -21,54 +21,78 @@ RWMutex::RWMutex (void)
 inline
 RWMutex::~RWMutex (void)
 {
-  PIN_RWMutexFini (&this->mutex);
+  PIN_RWMutexFini (&this->mutex_);
 }
 
 //
-// read_lock
+// acquire_read
 //
 inline
-void RWMutex::read_lock (void)
+void RWMutex::acquire_read (void)
 {
   PIN_RWMutexReadLock (&this->mutex_);
+  this->read_lock_ = true;
 }
 
 //
-// write_lock
+// acquire_write
 //
 inline
-void RWMutex::write_lock (void)
+void RWMutex::acquire_write (void)
 {
   PIN_RWMutexWriteLock (&this->mutex_);
+  this->write_lock_ = true;
 }
 
 
 //
-// try_read_lock
+// try_acquire_read
 //
 inline
-void RWMutex::try_read_lock (void)
+bool RWMutex::try_acquire_read (void)
 {
-  return PIN_RWMutexTryReadLock (&this->mutex_);
+  this->read_lock_ = PIN_RWMutexTryReadLock (&this->mutex_);
+  return this->read_lock_;
 }
 
 //
-// try_write_lock
+// try_acquire_write
 //
 inline
-void RWMutex::try_write_lock (void)
+bool RWMutex::try_acquire_write (void)
 {
-  return PIN_RWMutexTryWriteLock (&this->mutex_);
+  this->write_lock_ = PIN_RWMutexTryWriteLock (&this->mutex_);
+  return this->write_lock_;
 }
 
 
 //
-// unlock
+// release
 //
 inline
-void RWMutex::unlock (void)
+void RWMutex::release (void)
 {
   PIN_RWMutexUnlock (&this->mutex_);
+  this->write_lock_ = false;
+  this->read_lock_ = false;
+}
+
+//
+// locked_read
+//
+inline
+bool RWMutex::locked_read (void)
+{
+  return this->read_lock_;
+}
+
+//
+// locked_write
+//
+inline
+bool RWMutex::locked_write (void)
+{
+  return this->write_lock_;
 }
 
 } // namespace OASIS
