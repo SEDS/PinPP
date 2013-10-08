@@ -36,21 +36,29 @@ public:
   ~RWMutex (void);
 
   /// Lock the mutex for reading (blocking).
-  void read_lock (void);
+  void acquire_read (void);
 
   /// Lock the mutex for writing (blocking).
-  void write_lock (void);
+  void acquire_write (void);
 
   /// Lock the mutex for reading (non-blocking).
-  bool try_read_lock (void);
+  bool try_acquire_read (void);
 
   /// Lock the mutex for writing (non-blocking).
-  bool try_write_lock (void);
+  bool try_acquire_write (void);
 
   /// Unlock the mutex.
-  void unlock (void);
+  void release (void);
+
+  /// Check if it is read locked
+  bool locked_read (void);
+
+  /// Check if it is write locked
+  bool locked_write (void);
 
 private:
+  bool read_lock_;
+  bool write_lock_;
   PIN_RWMUTEX mutex_;
 };
 
