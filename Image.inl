@@ -7,8 +7,15 @@ namespace Pin
 {
 
 inline
-Image::Image (IMG & img)
+Image::Image (const IMG & img)
 : img_ (img)
+{
+
+}
+
+inline
+Image::Image (const Image & img)
+: img_ (img.img_)
 {
 
 }
@@ -23,6 +30,20 @@ inline
 Image::operator IMG () const
 {
   return this->img_;
+}
+
+inline
+const Image & Image::operator = (const Image & img)
+{
+  this->img_ = img.img_;
+  return *this;
+}
+
+inline
+const Image & Image::operator = (const IMG & img)
+{
+  this->img_ = img;
+  return *this;
 }
 
 inline

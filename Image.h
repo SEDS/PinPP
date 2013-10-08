@@ -36,7 +36,8 @@ public:
   typedef Iterator <Image, &IMG_Prev, &IMG_Next> iterator_type;
 
   /// Initializing constructor.
-  Image (IMG & img);
+  Image (const IMG & img);
+  Image (const Image & img);
 
   /// Destructor.
   ~Image (void);
@@ -48,6 +49,9 @@ public:
    * Convert the object to an INS value.
    */
   operator IMG () const;
+
+  const Image & operator = (const Image & img);
+  const Image & operator = (const IMG & img);
 
   /// @{ Search Methods
   static Image find_by_id (UINT32 id);
@@ -85,7 +89,7 @@ public:
 
 private:
   /// Reference to target image object.
-  IMG & img_;
+  IMG img_;
 };
 
 } // namespace OASIS
