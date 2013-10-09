@@ -32,33 +32,20 @@ public:
   /// Default constructor.
   Lock (void);
 
-  /// Initalizing constructor.
-  Lock (int owner);
-
   /// Destructor.
   ~Lock (void);
 
-  /// Acquire the lock.
-  void acquire (void);
-
-  /// Try to acquire the lock.
-  bool try_acquire (void);
+  /**
+   * Acquire the lock
+   *
+   * @param[in]     owner     The owner of the lock.
+   */
+  void acquire (int owner);
 
   /// Release ownership of the lock.
   void release (void);
 
-  /// Check if it is locked
-  bool is_locked (void);
-
-  /// Owner setter
-  void owner (int owner);
-
-  /// Owner getter
-  int owner (void);
-
 private:
-  bool locked_;
-  int owner_;
   PIN_LOCK lock_;
 };
 

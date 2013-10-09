@@ -61,6 +61,32 @@ bool Guard <T>::try_acquire (void)
 }
 
 inline
+Guard <Lock>::Guard (Lock & lock)
+: lock_ (lock)
+{
+
+}
+
+inline
+Guard <Lock>::Guard (Lock & lock, int owner)
+: lock_ (lock)
+{
+  this->acquire (owner);
+}
+
+inline
+void Guard <Lock>::acquire (int owner)
+{
+  this->lock_.acquire (owner);
+}
+
+inline
+void Guard <Lock>::release (void)
+{
+  this->lock_.release ();
+}
+
+inline
 Read_Guard::Read_Guard (RW_Mutex & lock)
 : lock_ (lock)
 {

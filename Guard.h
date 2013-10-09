@@ -14,6 +14,7 @@
 #define _OASIS_PIN_GUARD_H_
 
 #include "RW_Mutex.h"
+#include "Lock.h"
 
 namespace OASIS
 {
@@ -59,9 +60,44 @@ private:
 };
 
 /**
+ * Template specalization for Lock.
+ * Unique features are:
+ *  Locks do not have a non-blocking acquire, removing try_acquire and is_locked.
+ *  Can provide owner identifier upon acquisition.
+ *
+ */
+template <>
+class Guard <Lock>
+{
+public:
+  /// Default constructor, do not acquire the lock.
+  Guard (Lock & lock);
+
+  /**
+   * Locking constructor.
+   *
+   * @param[in]     owner       Owner of the lock
+   */
+  Guard (Lock & lock, int owner);
+
+  /**
+   * Acquire the lock (blocking)
+   *
+   * @param[in]     owner       Owner of the lock
+   */
+  void acquire (int owner);
+
+  /// Release the lock
+  void release (void);
+
+private:
+  Lock & lock_;
+};
+
+/**
  * @class Read_Guard
  *
- * Guard for getting read locks
+ * Guard for getting read locks from a RW_Mutex
  */
 class Read_Guard
 {
@@ -98,7 +134,7 @@ private:
 /**
  * @class Write_Guard
  *
- * Guard for getting write locks
+ * Guard for getting write locks from a RW_Mutex
  */
 class Write_Guard 
 {
