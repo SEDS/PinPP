@@ -51,10 +51,10 @@ public:
   void release (void);
 
   /// Check if it is read locked
-  bool locked_read (void);
+  bool is_locked_read (void);
 
   /// Check if it is write locked
-  bool locked_write (void);
+  bool is_locked_write (void);
 
 private:
   bool read_lock_;

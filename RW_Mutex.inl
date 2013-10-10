@@ -8,6 +8,8 @@ namespace Pin
 
 inline
 RW_Mutex::RW_Mutex (void)
+: read_lock_ (false),
+  write_lock_ (false)
 {
   PIN_RWMutexInit (&this->mutex_);
 }
@@ -55,13 +57,13 @@ void RW_Mutex::release (void)
 }
 
 inline
-bool RW_Mutex::locked_read (void)
+bool RW_Mutex::is_locked_read (void)
 {
   return this->read_lock_;
 }
 
 inline
-bool RW_Mutex::locked_write (void)
+bool RW_Mutex::is_locked_write (void)
 {
   return this->write_lock_;
 }

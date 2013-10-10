@@ -47,7 +47,7 @@ bool Semaphore::try_acquire (void)
 {
   // Semantically, this would be a wait with timeout
   // of 0, so just return the locked status.
-  return this->locked ();
+  return this->is_locked ();
 }
 
 inline

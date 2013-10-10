@@ -6,60 +6,6 @@ namespace OASIS
 namespace Pin
 {
 
-template <typename T>
-inline
-Guard <T>::Guard (T & lock)
-: lock_ (lock)
-{
-
-}
-
-template <typename T>
-inline
-Guard <T>::Guard (T & lock, bool block)
-: lock_ (lock)
-{
-  if (block)
-    this->acquire ();
-  else
-    this->try_acquire ();
-}
-
-template <typename T>
-inline
-Guard <T>::~Guard (void)
-{
-  this->lock_.release ();
-}
-
-template <typename T>
-inline
-void Guard <T>::acquire(void)
-{
-  this->lock_.acquire ();
-}
-
-template <typename T>
-inline
-void Guard <T>::release(void)
-{
-  this->lock_.release ();
-}
-
-template <typename T>
-inline
-bool Guard <T>::is_locked (void)
-{
-  return this->lock_.is_locked ();
-}
-
-template <typename T>
-inline
-bool Guard <T>::try_acquire (void)
-{
-  return this->lock_.try_acquire ();
-}
-
 inline
 Guard <Lock>::Guard (Lock & lock)
 : lock_ (lock)
@@ -87,61 +33,14 @@ void Guard <Lock>::release (void)
 }
 
 inline
-Read_Guard::Read_Guard (RW_Mutex & lock)
+Guard <Mutex>::Guard (Mutex & lock)
 : lock_ (lock)
 {
 
 }
 
 inline
-Read_Guard::Read_Guard (RW_Mutex & lock, bool block)
-: lock_ (lock)
-{
-  if (block)
-    this->acquire ();
-  else
-    this->try_acquire ();
-}
-
-inline
-Read_Guard::~Read_Guard (void)
-{
-  this->lock_.release ();
-}
-
-inline
-void Read_Guard::acquire(void)
-{
-  this->lock_.acquire_read ();
-}
-
-inline
-void Read_Guard::release(void)
-{
-  this->lock_.release ();
-}
-
-inline
-bool Read_Guard::is_locked (void)
-{
-  return this->lock_.locked_read ();
-}
-
-inline
-bool Read_Guard::try_acquire (void)
-{
-  return this->lock_.try_acquire_read ();
-}
-
-inline
-Write_Guard::Write_Guard (RW_Mutex & lock)
-: lock_ (lock)
-{
-
-}
-
-inline
-Write_Guard::Write_Guard (RW_Mutex & lock, bool block)
+Guard <Mutex>::Guard (Mutex & lock, bool block)
 : lock_ (lock)
 {
   if (block)
@@ -151,33 +50,89 @@ Write_Guard::Write_Guard (RW_Mutex & lock, bool block)
 }
 
 inline
-Write_Guard::~Write_Guard (void)
+Guard <Mutex>::~Guard (void)
 {
   this->lock_.release ();
 }
 
 inline
-void Write_Guard::acquire (void)
+void Guard <Mutex>::acquire (void)
 {
-  this->lock_.acquire_write ();
+  this->lock_.acquire ();
 }
 
 inline
-void Write_Guard::release(void)
+bool Guard <Mutex>::try_acquire (void)
+{
+  return this->lock_.try_acquire ();
+}
+
+inline
+void Guard <Mutex>::release(void)
 {
   this->lock_.release ();
 }
 
 inline
-bool Write_Guard::is_locked (void)
+bool Guard <Mutex>::is_locked (void)
 {
-  return this->lock_.locked_write ();
+  return this->lock_.is_locked ();
 }
 
 inline
-bool Write_Guard::try_acquire (void)
+Guard <RW_Mutex>::Guard (RW_Mutex & lock)
+: lock_ (lock)
 {
-  return this->lock_.try_acquire_write ();
+
+}
+
+inline
+Guard <RW_Mutex>::Guard (RW_Mutex & lock, Lock_Type type, bool block)
+: lock_ (lock)
+{
+  if (block)
+    this->acquire (type);
+  else
+    this->try_acquire (type);
+}
+
+inline
+Guard <RW_Mutex>::~Guard (void)
+{
+  this->lock_.release ();
+}
+
+inline
+void Guard <RW_Mutex>::acquire (Lock_Type type)
+{
+  if (type == READ)
+    this->lock_.acquire_read ();
+  else
+    this->lock_.acquire_write ();
+}
+
+inline
+bool Guard <RW_Mutex>::try_acquire (Lock_Type type)
+{
+  if (type == READ)
+    return this->lock_.try_acquire_read ();
+  else
+    return this->lock_.try_acquire_write ();
+}
+
+inline
+void Guard <RW_Mutex>::release(void)
+{
+  this->lock_.release ();
+}
+
+inline
+bool Guard <RW_Mutex>::is_locked (Lock_Type type)
+{
+  if (type == READ)
+    return this->lock_.is_locked_read ();
+  else
+    return this->lock_.is_locked_write ();
 }
 
 } // namespace OASIS

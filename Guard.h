@@ -15,6 +15,8 @@
 
 #include "RW_Mutex.h"
 #include "Lock.h"
+#include "Mutex.h"
+#include "Semaphore.h"
 
 namespace OASIS
 {
@@ -27,37 +29,7 @@ namespace Pin
  * Guard for restricting lock ownership to a scope.
  */
 template <typename T>
-class Guard
-{
-public:
-  /// Default constructor, do not acquire the lock.
-  Guard (T & lock);
-
-  /**
-   * Locking constructor
-   *
-   * @param[in]     block     Block when acquiring the lock
-   */
-  Guard (T & lock, bool block);
-
-  /// Destructor.
-  ~Guard (void);
-
-  /// Acquire the lock (blocking)
-  void acquire (void);
-
-  /// Try to acquire the lock (non-blocking)
-  bool try_acquire (void);
-
-  /// Release the lock
-  void release (void);
-
-  /// Test if it is locked
-  bool is_locked (void);
-
-private:
-  T & lock_;
-};
+class Guard;
 
 /**
  * Template specalization for Lock.
@@ -93,6 +65,97 @@ public:
 private:
   Lock & lock_;
 };
+
+/**
+ * Template specalization for Mutex.
+ */
+template <>
+class Guard <Mutex>
+{
+public:
+  /// Default constructor, do not acquire the lock.
+  Guard (Mutex & lock);
+
+  /**
+   * Locking constructor
+   *
+   * @param[in]     block     Block when acquiring the lock
+   */
+  Guard (Mutex & lock, bool block);
+
+  /// Destructor.
+  ~Guard (void);
+
+  /// Acquire the lock (blocking)
+  void acquire (void);
+
+  /// Try to acquire the lock (non-blocking)
+  bool try_acquire (void);
+
+  /// Release the lock
+  void release (void);
+
+  /// Is the mutex locked?
+  bool is_locked (void);
+
+private:
+  Mutex & lock_;
+};
+
+/**
+ * Template specalization for RW_Mutex
+ * Unique features are:
+ *  Similar to Mutex but has two locks (Read/Write)
+ *  Release removes both locks
+ */
+template <>
+class Guard <RW_Mutex>
+{
+public:
+  enum Lock_Type {READ, WRITE};
+
+  /// Default constructor, do not acquire the lock.
+  Guard (RW_Mutex & lock);
+
+  /**
+   * Locking constructor
+   *
+   * @param[in]     type      The type of lock to acquire
+   * @param[in]     block     Block when acquiring the lock
+   */
+  Guard (RW_Mutex & lock, Lock_Type type, bool block);
+
+  /// Destructor.
+  ~Guard (void);
+
+  /**  
+   * Acquire the lock (blocking)
+   *
+   * @param[in]     type      The type of lock to acquire
+   */
+  void acquire (Lock_Type type);
+
+  /**
+   * Try to acquire the lock (non-blocking)
+   *
+   * @param[in]     type      The type of lock to acquire
+   */
+  bool try_acquire (Lock_Type type);
+
+  /// Release the lock.  This releases both read and write locks
+  void release (void);
+
+  /**
+   * Is the mutex locked?
+   *
+   * @param[in]     type      The type of lock to check
+   */
+  bool is_locked (Lock_Type type);
+
+private:
+  RW_Mutex & lock_;
+};
+
 
 /**
  * @class Read_Guard
