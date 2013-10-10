@@ -52,6 +52,9 @@ public:
    */
   Guard (Lock & lock, int owner);
 
+  /// Destructor.
+  ~Guard (void);
+
   /**
    * Acquire the lock (blocking)
    *

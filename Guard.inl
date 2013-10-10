@@ -20,6 +20,11 @@ Guard <Lock>::Guard (Lock & lock, int owner)
   this->acquire (owner);
 }
 
+inline Guard <Lock>::~Guard (void)
+{
+  this->lock_.release ();
+}
+
 inline
 void Guard <Lock>::acquire (int owner)
 {
