@@ -12,7 +12,7 @@ namespace Pin
 inline
 Lock::Lock (void)
 {
-  InitLock (&this->lock_);
+  PIN_InitLock (&this->lock_);
 }
 
 //
@@ -30,7 +30,7 @@ Lock::~Lock (void)
 inline
 void Lock::acquire (int owner)
 {
-  GetLock (&this->lock_, owner);
+  PIN_GetLock (&this->lock_, owner);
 }
 
 //
@@ -39,7 +39,7 @@ void Lock::acquire (int owner)
 inline
 void Lock::release (void)
 {
-  ReleaseLock (&this->lock_);
+  PIN_ReleaseLock (&this->lock_);
 }
 
 } // namespace OASIS
