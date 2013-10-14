@@ -7,17 +7,10 @@ namespace Pin
 {
 
 inline
-Guard <Lock>::Guard (Lock & lock)
-: lock_ (lock)
-{
-
-}
-
-inline
 Guard <Lock>::Guard (Lock & lock, int owner)
 : lock_ (lock)
 {
-  this->acquire (owner);
+  this->lock_.acquire (owner);
 }
 
 inline Guard <Lock>::~Guard (void)
@@ -26,32 +19,10 @@ inline Guard <Lock>::~Guard (void)
 }
 
 inline
-void Guard <Lock>::acquire (int owner)
-{
-  this->lock_.acquire (owner);
-}
-
-inline
-void Guard <Lock>::release (void)
-{
-  this->lock_.release ();
-}
-
-inline
 Guard <Mutex>::Guard (Mutex & lock)
 : lock_ (lock)
 {
-
-}
-
-inline
-Guard <Mutex>::Guard (Mutex & lock, bool block)
-: lock_ (lock)
-{
-  if (block)
-    this->acquire ();
-  else
-    this->try_acquire ();
+  this->lock_.acquire ();
 }
 
 inline
@@ -61,54 +32,8 @@ Guard <Mutex>::~Guard (void)
 }
 
 inline
-void Guard <Mutex>::acquire (void)
-{
-  this->lock_.acquire ();
-}
-
-inline
-bool Guard <Mutex>::try_acquire (void)
-{
-  return this->lock_.try_acquire ();
-}
-
-inline
-void Guard <Mutex>::release(void)
-{
-  this->lock_.release ();
-}
-
-inline
-bool Guard <Mutex>::is_locked (void)
-{
-  return this->lock_.is_locked ();
-}
-
-inline
-Guard <RW_Mutex>::Guard (RW_Mutex & lock)
+Guard <RW_Mutex>::Guard (RW_Mutex & lock, Lock_Type type)
 : lock_ (lock)
-{
-
-}
-
-inline
-Guard <RW_Mutex>::Guard (RW_Mutex & lock, Lock_Type type, bool block)
-: lock_ (lock)
-{
-  if (block)
-    this->acquire (type);
-  else
-    this->try_acquire (type);
-}
-
-inline
-Guard <RW_Mutex>::~Guard (void)
-{
-  this->lock_.release ();
-}
-
-inline
-void Guard <RW_Mutex>::acquire (Lock_Type type)
 {
   if (type == READ)
     this->lock_.acquire_read ();
@@ -117,27 +42,9 @@ void Guard <RW_Mutex>::acquire (Lock_Type type)
 }
 
 inline
-bool Guard <RW_Mutex>::try_acquire (Lock_Type type)
-{
-  if (type == READ)
-    return this->lock_.try_acquire_read ();
-  else
-    return this->lock_.try_acquire_write ();
-}
-
-inline
-void Guard <RW_Mutex>::release(void)
+Guard <RW_Mutex>::~Guard (void)
 {
   this->lock_.release ();
-}
-
-inline
-bool Guard <RW_Mutex>::is_locked (Lock_Type type)
-{
-  if (type == READ)
-    return this->lock_.is_locked_read ();
-  else
-    return this->lock_.is_locked_write ();
 }
 
 } // namespace OASIS
