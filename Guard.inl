@@ -6,21 +6,43 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// Guard
-//
 inline
-Guard::Guard (Lock & lock, int owner)
+Guard <Lock>::Guard (Lock & lock, int owner)
 : lock_ (lock)
 {
   this->lock_.acquire (owner);
 }
 
-//
-// ~Guard
-//
+inline Guard <Lock>::~Guard (void)
+{
+  this->lock_.release ();
+}
+
 inline
-Guard::~Guard (void)
+Guard <Mutex>::Guard (Mutex & lock)
+: lock_ (lock)
+{
+  this->lock_.acquire ();
+}
+
+inline
+Guard <Mutex>::~Guard (void)
+{
+  this->lock_.release ();
+}
+
+inline
+Guard <RW_Mutex>::Guard (RW_Mutex & lock, Lock_Type type)
+: lock_ (lock)
+{
+  if (type == READ)
+    this->lock_.acquire_read ();
+  else
+    this->lock_.acquire_write ();
+}
+
+inline
+Guard <RW_Mutex>::~Guard (void)
 {
   this->lock_.release ();
 }

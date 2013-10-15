@@ -36,9 +36,9 @@ public:
   ~Lock (void);
 
   /**
-   * Acquire the lock.
+   * Acquire the lock
    *
-   * @param[in]       owner       Owner of the lock
+   * @param[in]     owner     The owner of the lock.
    */
   void acquire (int owner);
 
