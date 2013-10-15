@@ -7,7 +7,5 @@ namespace OASIS
 namespace Pin
 {
 
-Tool * Tool::current_ = 0;
-
 } // namespace Pin
 } // namespace OASIS

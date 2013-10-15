@@ -14,6 +14,7 @@
 #define _OASIS_PIN_PINTOOL_H_
 
 #include "Exception.h"
+#include "Tool.h"
 
 namespace OASIS
 {
@@ -36,10 +37,16 @@ public:
   /**
    * Initializing constructor.
    */
-  Pintool (int argc, char * argv [], bool init_symbols = false);
+  Pintool (int argc, char * argv []);
 
   /// Destructor.
   ~Pintool (void);
+
+  /// Initialize the symbols.
+  Pintool & init_symbols (void);
+
+  /// Initialize the symbols in a certain mode.
+  Pintool & init_symbols (SYMBOL_INFO_MODE mode);
 
   /// {@ Enable control/initalization callbacks
   Pintool & enable_thread_start (void);
@@ -63,7 +70,6 @@ public:
 
 private:
   /// {@ Pin Callbacks
-  static void __fini (int code, void * obj);
   static void __detach (void * obj);
   static void __thread_start (THREADID threadIndex, CONTEXT *ctxt, INT32 flags, VOID *v);
   static void __thread_fini (THREADID threadIndex, const CONTEXT *ctxt, INT32 flags, VOID *v);

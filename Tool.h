@@ -28,22 +28,20 @@ namespace Pin
  * from Pin events once registered via the Pintool class. Likewise, this class
  * exposes Pin methods that can be executed at runtime.
  */
+template <typename T>
 class Tool
 {
-protected:
+public:
   /// Default constructor.
   Tool (void);
 
-public:
   /// Destructor.
   ~Tool (void);
 
-  /**
-   * Tool singleton
-   */
-  static Tool * current (void);
+  /// {@ ControlIinitalization Callback Registration
+  void register_fini_callback (void);
+  void unregister_fini_callbacks (void);
 
-  /// {@ Register control/initalization callbacks
   template <typename CALLBACK>
   void add_fork_function (FPOINT location, CALLBACK * callback);
 
@@ -55,8 +53,7 @@ public:
   void detach (void);
   /// @}
 
-  /// {@
-  void handle_init (int argc, char * argv []);
+  /// {@ Callback Handler Methods
   void handle_fini (int code);
   void handle_detach (void);
 
@@ -73,12 +70,14 @@ public:
   static void get_source_location (ADDRINT address, INT32 * column, INT32 * line, string * filename);
   static bool is_process_exiting (void);
   static void exit_process (const INT32 code);
+  static void exit_application (const INT32 code);
   static int get_pid (void);
-  static void exit_application (const INT32 status);
-  /// @}
+   /// @}
+
 private:
-  // Singleton self
-  static Tool * current_;
+  /// {@ Pin Callbacks
+  static void __fini (int code, void * obj);
+  /// @}
 
   Tool (const Tool &);
   const Tool & operator = (const Tool &);

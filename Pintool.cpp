@@ -5,33 +5,13 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// Pintool
-//
 template <typename T>
-Pintool <T>::Pintool (int argc, char * argv [], bool init_symbols)
-: tool_ (new T ())
+Pintool <T>::Pintool (int argc, char * argv [])
+: tool_ (0)
 {
-  // Initialize Pin, and our finalize method.
-  if (init_symbols)
-    PIN_InitSymbols ();
-
+  // Initialize first, the allocate the tool.
   PIN_Init (argc, argv);
-
-  // Initialize standard Pin++ callback functions.
-  PIN_AddFiniFunction (&Pintool::__fini, this->tool_);
-
-  // Finish initializing the tool.
-  this->tool_->handle_init (argc, argv);
-}
-
-//
-// __fini
-//
-template <typename T>
-void Pintool <T>::__fini (int code, void * obj)
-{
-  reinterpret_cast <T *> (obj)->handle_fini (code);
+  this->tool_ = new T ();
 }
 
 //

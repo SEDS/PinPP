@@ -6,14 +6,27 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// ~Pintool
-//
 template <typename T>
 inline
 Pintool <T>::~Pintool (void)
 {
 
+}
+
+template <typename T>
+inline
+Pintool <T> & Pintool <T>::init_symbols (void)
+{
+  PIN_InitSymbols ();
+  return *this;
+}
+
+template <typename T>
+inline
+Pintool <T> & Pintool <T>::init_symbols (SYMBOL_INFO_MODE mode)
+{
+  PIN_InitSymbolsAlt (mode);
+  return *this;
 }
 
 //

@@ -2,18 +2,18 @@
 
 //==============================================================================
 /**
- *  @file        Instruction_Tool.h
+ *  @file        Instruction_Instrument.h
  *
- *  $Id: Instruction_Tool.h 2285 2013-09-18 05:24:04Z hillj $
+ *  $Id: Instruction_Instrument.h 2285 2013-09-18 05:24:04Z hillj $
  *
  *  @author      INSERT NAME HERE
  */
 //==============================================================================
 
-#ifndef _OASIS_PIN_INSTRUCTION_PROBE_H_
-#define _OASIS_PIN_INSTRUCTION_PROBE_H_
+#ifndef _OASIS_PIN_INSTRUCTION_INSTRUMENT_H_
+#define _OASIS_PIN_INSTRUCTION_INSTRUMENT_H_
 
-#include "Tool.h"
+#include "Instrument.h"
 #include "Ins.h"
 
 namespace OASIS
@@ -22,22 +22,19 @@ namespace Pin
 {
 
 /**
- * @class Instruction_Tool
+ * @class Instruction_Instrument
  *
- * Base class for instruction-level instrumentation Pin tools.
+ * Base class for instruction-level instruments in Pin.
  */
 template <typename T>
-class Instruction_Tool : public Tool
+class Instruction_Instrument : public Instrument
 {
 public:
   /// Default constructor.
-  Instruction_Tool (void);
+  Instruction_Instrument (void);
 
   /// Destructor.
-  ~Instruction_Tool (void);
-
-  /// Initialize the tool.
-  void handle_init (int argc, char * argv []);
+  ~Instruction_Instrument (void);
 
 private:
   // PIN Instrumentation hook
@@ -47,7 +44,7 @@ private:
 } // namespace Pin
 } // namespace OASIS
 
-#include "Instruction_Tool.inl"
-#include "Instruction_Tool.cpp"
+#include "Instruction_Instrument.inl"
+#include "Instruction_Instrument.cpp"
 
 #endif  // _OASIS_PIN_INSTRUCTION_PROBE_H_

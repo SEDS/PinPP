@@ -22,7 +22,7 @@ namespace Pin
 {
 
 /**
- * @class Instruction_Tool
+ * @class Instruction_Instrument
  *
  * Base class for instruction-level instrumentation Pin tools.
  */
