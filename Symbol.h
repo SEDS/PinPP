@@ -70,7 +70,7 @@ public:
   std::string undecorate (UNDECORATION style) const;
 
 private:
-  SYM sym_;
+  SYM & sym_;
 };
 
 } // namespace OASIS
