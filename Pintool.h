@@ -55,6 +55,9 @@ public:
 private:
   /// Implementation of the tool.
   T * tool_;
+
+  /// Command-line error.
+  bool cmdline_error_;
 };
 
 } // namespace OASIS
@@ -62,5 +65,15 @@ private:
 
 #include "Pintool.inl"
 #include "Pintool.cpp"
+
+#define DECLARE_PINTOOL(T) \
+  int main (int argc, char * argv []) { \
+    OASIS::Pin::Pintool <T> (argc, argv).start_program (); \
+  }
+
+#define DECLARE_PINTOOL_PROBED(T) \
+  int main (int argc, char * argv []) { \
+    OASIS::Pin::Pintool <T> (argc, argv).start_program_probed (); \
+  }
 
 #endif  // _OASIS_PIN_PINTOOL_H_

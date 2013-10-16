@@ -17,14 +17,16 @@ template <typename T>
 inline
 void Pintool <T>::start_program (void)
 {
-  PIN_StartProgram ();
+  if (!this->cmdline_error_)
+    PIN_StartProgram ();
 }
 
 template <typename T>
 inline
 void Pintool <T>::start_program_probed (void)
 {
-  PIN_StartProgramProbed ();
+  if (!this->cmdline_error_)
+    PIN_StartProgramProbed ();
 }
 
 } // namespace OASIS
