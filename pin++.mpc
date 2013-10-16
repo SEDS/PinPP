@@ -34,7 +34,6 @@ project (pin++) : requires_pin, oasis_lib {
     Ins.cpp
     Routine.cpp
     Section.cpp
-    Static_Pintool.cpp
     Symbol.cpp
   }
 

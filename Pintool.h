@@ -52,6 +52,9 @@ public:
   /// Image_Instrument when this method is invoked.
   void start_program_probed (void);
 
+  /// Get a pointer to the underlying tool.
+  T * operator -> (void);
+
 private:
   /// Implementation of the tool.
   T * tool_;

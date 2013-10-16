@@ -29,5 +29,12 @@ void Pintool <T>::start_program_probed (void)
     PIN_StartProgramProbed ();
 }
 
+template <typename T>
+inline
+T * Pintool <T>::operator -> (void)
+{
+  return this->tool_;
+}
+
 } // namespace OASIS
 } // namespace Pin
