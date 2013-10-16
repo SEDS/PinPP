@@ -39,7 +39,6 @@ public:
   /// @}
 
   static void __analyze_fork (THREADID index, const CONTEXT * ctxt, void * callback);
-  static BOOL __analyze_follow_child_process (CHILD_PROCESS child, void * callback);
 
 private:
   /// Argument list for the callback.

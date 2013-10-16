@@ -21,16 +21,6 @@ void Callback <T, List>::__analyze_fork (THREADID index, const CONTEXT *ctx, VOI
   reinterpret_cast <T *> (obj)->handle_analyze_fork (index, ctx);
 }
 
-//
-// __analyze_follow_child_process
-//
-template <typename T, typename List>
-inline
-BOOL Callback <T, List>::__analyze_follow_child_process (CHILD_PROCESS child, VOID * obj)
-{
-  return reinterpret_cast <T *> (obj)->handle_analyze_follow_child_process (child);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // class Callback0
 

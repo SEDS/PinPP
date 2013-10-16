@@ -21,21 +21,79 @@ Tool <T>::~Tool (void)
 }
 
 template <typename T>
-void Tool <T>::register_fini_callback (void)
+inline
+void Tool <T>::init_symbols (void)
+{
+  PIN_InitSymbols ();
+}
+
+template <typename T>
+inline
+void Tool <T>::init_symbols (SYMBOL_INFO_MODE mode)
+{
+  PIN_InitSymbolsAlt (mode);
+}
+
+
+template <typename T>
+void Tool <T>::enable_fini_callback (void)
 {
   PIN_AddFiniFunction (&Tool::__fini, this);
 }
 
 template <typename T>
-void Tool <T>::unregister_fini_callbacks (void)
+inline
+void Tool <T>::enable_thread_start_callback (void)
 {
-  PIN_RemoveFiniFunctions ();
+  PIN_AddThreadStartFunction (&Tool::__thread_start, this);
 }
 
 template <typename T>
-void Tool <T>::__fini (int code, void * obj)
+inline
+void Tool <T>::enable_thread_fini_callback (void)
 {
-  reinterpret_cast <T *> (obj)->handle_fini (code);
+  PIN_AddThreadFiniFunction (&Tool::__thread_fini, this);
+}
+
+template <typename T>
+inline
+void Tool <T>::enable_syscall_entry_callback (void)
+{
+  PIN_AddSyscallEntryFunction (&Tool::__syscall_entry, this);
+}
+
+template <typename T>
+inline
+void Tool <T>::enable_syscall_exit_callback (void)
+{
+  PIN_AddSyscallExitFunction (&Tool::__syscall_exit, this);
+}
+
+template <typename T>
+inline
+void Tool <T>::enable_detach_callback (void)
+{
+  PIN_AddDetachFunction (&Tool::__detach, this);
+}
+
+template <typename T>
+inline
+void Tool <T>::enable_internal_exception_handler_callback (void)
+{
+  PIN_AddInternalExceptionHandler (&Tool::__internal_exception_handler, this);
+}
+
+template <typename T>
+inline
+void Tool <T>::enable_follow_child_process_callback (void)
+{
+  PIN_AddFollowChildProcessFunction (&Tool::__follow_child_process, this);
+}
+
+template <typename T>
+void Tool <T>::disable_fini_callbacks (void)
+{
+  PIN_RemoveFiniFunctions ();
 }
 
 template <typename T>
@@ -43,13 +101,6 @@ template <typename CALLBACK>
 void Tool <T>::add_fork_function (FPOINT location, CALLBACK * callback)
 {
   PIN_AddForkFunction (location, &CALLBACK::__analyze_fork, callback);
-}
-
-template <typename T>
-template <typename CALLBACK>
-void Tool <T>::add_follow_child_process_function (CALLBACK * callback)
-{
-  PIN_AddFollowChildProcessFunction (&CALLBACK::__analyze_follow_child_process, callback);
 }
 
 template <typename T>
@@ -99,6 +150,13 @@ inline
 EXCEPT_HANDLING_RESULT Tool <T>::handle_internal_exception (THREADID, Exception &, PHYSICAL_CONTEXT *)
 {
   return EHR_UNHANDLED;
+}
+
+template <typename T>
+inline
+BOOL Tool <T>::handle_follow_child_process (CHILD_PROCESS)
+{
+
 }
 
 template <typename T>
