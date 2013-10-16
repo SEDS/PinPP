@@ -89,10 +89,10 @@ public:
   static Routine create (ADDRINT address, string name);
 
   /// Open a routine for usage.
-  void open (void);
+  void open (void) const;
 
   /// Close the current routine.
-  void close (void);
+  void close (void) const;
 
   /// Get symbol representation of the routine.
   Symbol symbol (void) const;
@@ -180,14 +180,13 @@ class Routine_Guard
 {
 public:
   /// Initializing constructor.
-  Routine_Guard (Routine & rtn);
+  Routine_Guard (const Routine & rtn);
 
   /// Destructor.
   ~Routine_Guard (void);
 
 private:
-  /// Target routine.
-  Routine & rtn_;
+  const Routine & rtn_;
 };
 
 } // namespace OASIS

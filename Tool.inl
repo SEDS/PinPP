@@ -161,6 +161,13 @@ void Tool <T>::enable_probes_inserted_callback (void)
 
 template <typename T>
 inline
+void Tool <T>::enable_unload_callback (void)
+{
+  IMG_AddUnloadFunction (&Tool::__unload, this);
+}
+
+template <typename T>
+inline
 void Tool <T>::disable_fini_callbacks (void)
 {
   PIN_RemoveFiniFunctions ();

@@ -76,6 +76,8 @@ public:
 
   void enable_probes_inserted_callback (void);
 
+  void enable_unload_callback (void);
+
   void disable_fini_callbacks (void);
 
   // TODO Create Fork_Function object
@@ -121,6 +123,7 @@ protected:
   void handle_context_change (THREADID threadIndex, CONTEXT_CHANGE_REASON reason, const CONTEXT *from, CONTEXT *to, INT32 info);
   void handle_probes_inserted (const Image & img);
 
+  void handle_unload (const Image & img);
   /// @}
 
 private:
@@ -145,6 +148,8 @@ private:
   static void __application_start (void);
   static void __context_change (THREADID threadIndex, CONTEXT_CHANGE_REASON reason, const CONTEXT *from, CONTEXT *to, INT32 info, VOID *v);
   static void __probes_inserted (IMG img, VOID *v);
+
+  static void __unload (IMG img, VOID *v);
   /// @}
 
   Tool (const Tool &);

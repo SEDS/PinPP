@@ -48,8 +48,8 @@ public:
   /// program is only started in this mode when instrumenting at
   /// routine or image level.
   ///
-  /// @TODO Add a static check validates T is of type Routine_Tool or
-  /// Image_Tool when this method is invoked.
+  /// @TODO Add a static check validates T is of type Routine_Instrument or
+  /// Image_Instrument when this method is invoked.
   void start_program_probed (void);
 
 private:

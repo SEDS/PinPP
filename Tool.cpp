@@ -137,5 +137,11 @@ void Tool <T>::__probes_inserted (IMG img, VOID *v)
   reinterpret_cast <T *> (v)->handle_probes_inserted (Image (img));
 }
 
+template <typename T>
+void Tool <T>::__unload (IMG img, VOID *v)
+{
+  reinterpret_cast <T *> (v)->handle_unload (Image (img));
+}
+
 } // namespace Pin
 } // namespace OASIS

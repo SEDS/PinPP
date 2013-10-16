@@ -99,7 +99,7 @@ Routine Routine::find (ADDRINT addr)
 }
 
 inline
-void Routine::open (void)
+void Routine::open (void) const
 {
   RTN_Open (this->rtn_);
 }
@@ -111,7 +111,7 @@ Routine Routine::create (ADDRINT addr, string name)
 }
 
 inline
-void Routine::close (void)
+void Routine::close (void) const
 {
   RTN_Close (this->rtn_);
 }
@@ -269,7 +269,7 @@ insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, c
 // Routine_Guard
 //
 inline
-Routine_Guard::Routine_Guard (Routine & rtn)
+Routine_Guard::Routine_Guard (const Routine & rtn)
 : rtn_ (rtn)
 {
   this->rtn_.open ();

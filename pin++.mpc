@@ -59,12 +59,12 @@ project (pin++) : requires_pin, oasis_lib {
 
   Template_Files {
     Buffer.cpp
-    Image_Tool.cpp
+    Image_Instrument.cpp
     Iterator.cpp
     Instruction_Instrument.cpp
     Pintool.cpp
     Routine_T.cpp
-    Routine_Tool.cpp
+    Routine_Instrument.cpp
     Tool.cpp
     Trace_Instrument.cpp
     Try_Block.cpp
