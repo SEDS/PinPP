@@ -7,7 +7,7 @@ namespace Pin
 {
 
 inline
-Symbol::Symbol (const SYM & sym)
+Symbol::Symbol (SYM sym)
 : sym_ (sym)
 {
 

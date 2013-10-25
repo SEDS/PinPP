@@ -38,7 +38,7 @@ public:
   typedef Iterator <Symbol, &SYM_Prev, &SYM_Next> iterator_type;
 
   /// Default constructor.
-  Symbol (const SYM & sym);
+  Symbol (SYM sym);
 
   /// Destructor.
   ~Symbol (void);
@@ -70,7 +70,7 @@ public:
   std::string undecorate (UNDECORATION style) const;
 
 private:
-  SYM & sym_;
+  SYM sym_;
 };
 
 } // namespace OASIS
