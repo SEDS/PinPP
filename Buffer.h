@@ -13,6 +13,8 @@
 #ifndef _OASIS_PIN_BUFFER_H_
 #define _OASIS_PIN_BUFFER_H_
 
+#include "pin.H"
+
 namespace OASIS
 {
 namespace Pin
