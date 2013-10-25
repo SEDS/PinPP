@@ -14,6 +14,15 @@ Section Routine::section (void) const
 {
   return RTN_Sec (this->rtn_);
 }
+  
+const Symbol & Routine::symbol (void) const
+{
+  if (this->symbol_.is_valid ())
+    return this->symbol_;
+    
+  this->sym_ = RTN_Sym (this->rtn_);
+  return this->symbol_;
+}
 
 }
 }

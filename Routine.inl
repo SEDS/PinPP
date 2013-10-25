@@ -13,7 +13,8 @@ namespace Pin
 //
 inline
 Routine::Routine (RTN rtn)
-: rtn_ (rtn)
+: rtn_ (rtn),
+  symbol_ (sym_)
 {
 
 }
@@ -23,7 +24,9 @@ Routine::Routine (RTN rtn)
 //
 inline
 Routine::Routine (const Routine & rtn)
-: rtn_ (rtn.rtn_)
+: rtn_ (rtn.rtn_),
+  sym_ (rtn.sym_),
+  symbol_ (sym_)
 {
 
 }
@@ -53,6 +56,8 @@ inline
 const Routine & Routine::operator = (const Routine & rtn)
 {
   this->rtn_ = rtn.rtn_;
+  this->sym_ = rtn.sym_;
+  
   return *this;
 }
 
@@ -114,12 +119,6 @@ inline
 void Routine::close (void)
 {
   RTN_Close (this->rtn_);
-}
-
-inline
-Symbol Routine::symbol (void) const
-{
-  return RTN_Sym (this->rtn_);
 }
 
 inline

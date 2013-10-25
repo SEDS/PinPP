@@ -38,7 +38,7 @@ public:
   typedef Iterator <Symbol, &SYM_Prev, &SYM_Next> iterator_type;
 
   /// Default constructor.
-  Symbol (const SYM & sym);
+  Symbol (SYM & sym);
 
   /// Destructor.
   ~Symbol (void);

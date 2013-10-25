@@ -95,7 +95,7 @@ public:
   void close (void);
 
   /// Get symbol representation of the routine.
-  Symbol symbol (void) const;
+  const Symbol & symbol (void) const;
 
   /// @{ Instruction Methods
   Ins::iterator_type instruction_head (void) const;
@@ -169,6 +169,12 @@ public:
 
 private:
   RTN rtn_;
+  
+  /// Symbol associated with routine.
+  mutable SYM sym_;
+  
+  /// Wrapper for the symbol.
+  Symbol symbol_;
 };
 
 /**

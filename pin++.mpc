@@ -1,8 +1,11 @@
 // $Id
 
-project (pin++) : requires_pin, oasis_lib {
+project (pin++) : requires_pin {
   staticname    = pin++
   staticflags  += OASIS_PIN_HAS_DLL=0
+
+  includes += $(OASIS_ROOT)
+  libout    = $(OASIS_ROOT)/lib
 
   specific (prop:windows) {
     Debug::lib_modifier = d
