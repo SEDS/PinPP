@@ -9,7 +9,11 @@ namespace Pin
 inline
 Lock::Lock (void)
 {
-  PIN_InitLock (&this->lock_);
+  #if (PIN_PRODUCT_VERSION_MAJOR == 2) and (PIN_PRODUCT_VERSION_MINOR < 13)
+    InitLock (&this->lock_);
+  #else
+    PIN_InitLock (&this->lock_);
+  #endif
 }
 
 inline
@@ -21,13 +25,21 @@ Lock::~Lock (void)
 inline
 void Lock::acquire (int owner)
 {
-  PIN_GetLock (&this->lock_, owner);
+  #if (PIN_PRODUCT_VERSION_MAJOR == 2) and (PIN_PRODUCT_VERSION_MINOR < 13)
+    GetLock (&this->lock_, owner);
+  #else
+    PIN_GetLock (&this->lock_, owner);
+  #endif
 }
 
 inline
 void Lock::release (void)
 {
-  PIN_ReleaseLock (&this->lock_);
+  #if (PIN_PRODUCT_VERSION_MAJOR == 2) and (PIN_PRODUCT_VERSION_MINOR < 13)
+    ReleaseLock (&this->lock_);
+  #else
+    PIN_ReleaseLock (&this->lock_);
+  #endif
 }
 
 } // namespace OASIS
