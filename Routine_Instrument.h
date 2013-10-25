@@ -2,18 +2,18 @@
 
 //==============================================================================
 /**
- *  @file        Routine_Tool.h
+ *  @file        Routine_Instrument.h
  *
- *  $Id: Routine_Tool.h 2288 2013-09-19 19:09:57Z hillj $
+ *  $Id: Routine_Instrument.h 2288 2013-09-19 19:09:57Z hillj $
  *
  *  @author      James H. Hill
  */
 //==============================================================================
 
-#ifndef _OASIS_PIN_ROUTINE_TOOL_H_
-#define _OASIS_PIN_ROUTINE_TOOL_H_
+#ifndef _OASIS_PIN_ROUTINE_INSTRUMENT_H_
+#define _OASIS_PIN_ROUTINE_INSTRUMENT_H_
 
-#include "Tool.h"
+#include "Instrument.h"
 #include "Routine.h"
 
 namespace OASIS
@@ -22,22 +22,19 @@ namespace Pin
 {
 
 /**
- * @class Instruction_Tool
+ * @class Instruction_Instrument
  *
  * Base class for instruction-level instrumentation Pin tools.
  */
 template <typename T>
-class Routine_Tool : public Tool
+class Routine_Instrument : public Instrument
 {
 public:
   /// Default constructor.
-  Routine_Tool (void);
+  Routine_Instrument (void);
 
   /// Destructor.
-  ~Routine_Tool (void);
-
-  /// Initialize the tool.
-  void handle_init (int argc, char * argv []);
+  ~Routine_Instrument (void);
 
 private:
   // PIN Instrumentation hook
@@ -47,10 +44,7 @@ private:
 } // namespace Pin
 } // namespace OASIS
 
-#if defined (__inline__)
-#include "Routine_Tool.inl"
-#endif  // !defined __inline__
+#include "Routine_Instrument.inl"
+#include "Routine_Instrument.cpp"
 
-#include "Routine_Tool.cpp"
-
-#endif  // _OASIS_PIN_ROUTINE_TOOL_H_
+#endif  // _OASIS_PIN_ROUTINE_INSTRUMENT_H_

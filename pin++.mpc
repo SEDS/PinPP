@@ -20,6 +20,7 @@ project (pin++) : requires_pin {
     Exception.h
     Guard.h
     Insert_T.h
+    Instrument.h
     Lock.h
     Mutex.h
     RW_Mutex.h
@@ -39,9 +40,7 @@ project (pin++) : requires_pin {
     Ins.cpp
     Routine.cpp
     Section.cpp
-    Static_Pintool.cpp
     Symbol.cpp
-    Tool.cpp
   }
 
   Header_Files {
@@ -67,13 +66,15 @@ project (pin++) : requires_pin {
   }
 
   Template_Files {
-    Image_Tool.cpp
+    Buffer.cpp
+    Image_Instrument.cpp
     Iterator.cpp
-    Instruction_Tool.cpp
+    Instruction_Instrument.cpp
     Pintool.cpp
     Routine_T.cpp
-    Routine_Tool.cpp
-    Trace_Tool.cpp
+    Routine_Instrument.cpp
+    Tool.cpp
+    Trace_Instrument.cpp
     Try_Block.cpp
   }
 }

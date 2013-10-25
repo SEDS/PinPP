@@ -2,9 +2,9 @@
 
 //==============================================================================
 /**
- *  @file        Instruction_Tool.h
+ *  @file        Instruction_Instrument.h
  *
- *  $Id: Trace_Tool.h 2288 2013-09-19 19:09:57Z hillj $
+ *  $Id: Trace_Instrument.h 2288 2013-09-19 19:09:57Z hillj $
  *
  *  @author      INSERT NAME HERE
  */
@@ -13,7 +13,7 @@
 #ifndef _OASIS_PIN_TRACE_TOOL_H_
 #define _OASIS_PIN_TRACE_TOOL_H_
 
-#include "Tool.h"
+#include "Instrument.h"
 #include "Trace.h"
 
 namespace OASIS
@@ -22,25 +22,22 @@ namespace Pin
 {
 
 /**
- * @class Trace_Tool
+ * @class Trace_Instrument
  *
- * Base class for trace-level instrumentation Pin tools.
+ * Base class for trace-level instruments.
  */
 template <typename T>
-class Trace_Tool : public Tool
+class Trace_Instrument : public Instrument
 {
 public:
   /// Type definition of the tool type.
   typedef T type;
 
   /// Default constructor.
-  Trace_Tool (void);
+  Trace_Instrument (void);
 
   /// Destructor.
-  ~Trace_Tool (void);
-
-  /// Initialize the tool.
-  void handle_init (int argc, char * argv []);
+  ~Trace_Instrument (void);
 
 private:
   // PIN Instrumentation hook
@@ -50,10 +47,7 @@ private:
 } // namespace Pin
 } // namespace OASIS
 
-#if defined (__inline__)
-#include "Trace_Tool.inl"
-#endif  // !defined __inline__
-
-#include "Trace_Tool.cpp"
+#include "Trace_Instrument.inl"
+#include "Trace_Instrument.cpp"
 
 #endif  // _OASIS_PIN_TRACE_TOOL_H_

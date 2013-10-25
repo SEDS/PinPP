@@ -13,7 +13,7 @@
 #ifndef _OASIS_PIN_PINTOOL_H_
 #define _OASIS_PIN_PINTOOL_H_
 
-#include "Exception.h"
+#include "Tool.h"
 
 namespace OASIS
 {
@@ -23,8 +23,8 @@ namespace Pin
 /**
  * @class Pintool
  *
- * Utility class for instantiating a loaded tool in Pin. This wrapper
- * class prevents the implementation from needing virtual methods.
+ * Runner class for all pintools. This class is responsible for initializing
+ * the Pin environment, and starting the instrumented program.
  */
 template <typename T>
 class Pintool
@@ -36,19 +36,10 @@ public:
   /**
    * Initializing constructor.
    */
-  Pintool (int argc, char * argv [], bool init_symbols = false);
+  Pintool (int argc, char * argv []);
 
   /// Destructor.
   ~Pintool (void);
-
-  /// {@ Enable control/initalization callbacks
-  Pintool & enable_thread_start (void);
-  Pintool & enable_thread_fini (void);
-  Pintool & enable_syscall_entry (void);
-  Pintool & enable_syscall_exit (void);
-  Pintool & enable_internal_exception_handler (void);
-  Pintool & enable_detach (void);
-  /// @}
 
   /// Start the program in JIT mode.
   void start_program (void);
@@ -57,23 +48,19 @@ public:
   /// program is only started in this mode when instrumenting at
   /// routine or image level.
   ///
-  /// @TODO Add a static check validates T is of type Routine_Tool or
-  /// Image_Tool when this method is invoked.
+  /// @TODO Add a static check validates T is of type Routine_Instrument or
+  /// Image_Instrument when this method is invoked.
   void start_program_probed (void);
 
-private:
-  /// {@ Pin Callbacks
-  static void __fini (int code, void * obj);
-  static void __detach (void * obj);
-  static void __thread_start (THREADID threadIndex, CONTEXT *ctxt, INT32 flags, VOID *v);
-  static void __thread_fini (THREADID threadIndex, const CONTEXT *ctxt, INT32 flags, VOID *v);
-  static void __syscall_entry (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std, VOID * obj);
-  static void __syscall_exit (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std, VOID * obj);
-  static EXCEPT_HANDLING_RESULT __internal_exception_handler (THREADID threadIndex, EXCEPTION_INFO *, PHYSICAL_CONTEXT * pPhysCtxt, VOID *v);
-  /// @}
+  /// Get a pointer to the underlying tool.
+  T * operator -> (void);
 
+private:
   /// Implementation of the tool.
   T * tool_;
+
+  /// Command-line error.
+  bool cmdline_error_;
 };
 
 } // namespace OASIS
@@ -81,5 +68,15 @@ private:
 
 #include "Pintool.inl"
 #include "Pintool.cpp"
+
+#define DECLARE_PINTOOL(T) \
+  int main (int argc, char * argv []) { \
+    OASIS::Pin::Pintool <T> (argc, argv).start_program (); \
+  }
+
+#define DECLARE_PINTOOL_PROBED(T) \
+  int main (int argc, char * argv []) { \
+    OASIS::Pin::Pintool <T> (argc, argv).start_program_probed (); \
+  }
 
 #endif  // _OASIS_PIN_PINTOOL_H_
