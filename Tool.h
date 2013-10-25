@@ -143,9 +143,9 @@ private:
   static ADDRINT __memory_address_trans (PIN_MEM_TRANS_INFO *memTransInfo, VOID *v);
 
   static void __thread_attach_probed (VOID *sigmask, VOID *v);
-  static void __thread_detach_probed (void);
+  static void __thread_detach_probed (VOID *v);
 
-  static void __application_start (void);
+  static void __application_start (VOID *v);
   static void __context_change (THREADID threadIndex, CONTEXT_CHANGE_REASON reason, const CONTEXT *from, CONTEXT *to, INT32 info, VOID *v);
   static void __probes_inserted (IMG img, VOID *v);
 

@@ -114,13 +114,13 @@ void Tool <T>::__thread_attach_probed (VOID *sigmask, VOID *v)
 }
 
 template <typename T>
-void Tool <T>::__thread_detach_probed (void)
+void Tool <T>::__thread_detach_probed (VOID *v)
 {
   reinterpret_cast <T *> (v)->handle_thread_detach_probed ();
 }
 
 template <typename T>
-void Tool <T>::__application_start (void)
+void Tool <T>::__application_start (VOID *v)
 {
   reinterpret_cast <T *> (v)->handle_application_start ();
 }
