@@ -1,5 +1,3 @@
 workspace (pin++) {
-  cmdline += -include $OASIS_ROOT/MPC/config \
-             -feature_file $OASIS_ROOT/default.features \
-             -static
+  cmdline += -include $OASIS_ROOT/MPC/config -static
 }
