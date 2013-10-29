@@ -118,7 +118,7 @@ ADDRINT Context_Base <T>::get_syscall_argument (SYSCALL_STANDARD std, UINT32 num
 //
 inline
 Const_Context::Const_Context (const CONTEXT * ctx)
-: Context_Base (ctx)
+: Context_Base <const CONTEXT *>  (ctx)
 {
 
 }
@@ -140,7 +140,7 @@ Const_Context::~Const_Context (void)
 //
 inline
 Context::Context (const Context & ctx)
-: Context_Base (ctx.ctx_)
+: Context_Base <CONTEXT *> (ctx.ctx_)
 {
 
 }
@@ -150,7 +150,7 @@ Context::Context (const Context & ctx)
 //
 inline
 Context::Context (CONTEXT * ctx)
-: Context_Base (ctx)
+: Context_Base <CONTEXT *> (ctx)
 {
 
 }
