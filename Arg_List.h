@@ -40,19 +40,20 @@ struct End
  *
  * An IARG_TYPE node in the argument list.
  */
-template <IARG_TYPE T, typename NEXT = End>
+template <typename T, typename NEXT = End>
 struct Type_Node
 {
   /// Type definition of the arg value type.
   typedef IARG_TYPE arg_value_type;
 
   /// Type definition of the parameter type
-  typedef typename Arg_T <T>::param_type param_type;
+  typedef typename T::param_type param_type;
 
   /// Type definition of the next node.
   typedef NEXT Tail;
 
-  static const IARG_TYPE value = T;
+  /// Value of the type node.
+  static const IARG_TYPE value = T::arg_type;
 };
 
 /**
@@ -76,19 +77,19 @@ struct Value_Node
 
 // template specializations
 
-#define DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT(IARG, ARG_VALUE_TYPE, PARAM_TYPE) \
+#define DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT(ARG_TYPE, ARG_VALUE_TYPE, PARAM_TYPE) \
   template <typename NEXT> \
-  struct Type_Node <IARG, NEXT> { \
+  struct Type_Node <ARG_TYPE, NEXT> { \
     typedef IARG_TYPE arg_value_type; \
-    typedef typename Arg_T <IARG>::param_type param_type; \
-    static const IARG_TYPE value = IARG; \
+    typedef typename ARG_TYPE::param_type param_type; \
+    static const IARG_TYPE value = ARG_TYPE::arg_type; \
     typedef Value_Node <ARG_VALUE_TYPE, PARAM_TYPE, NEXT> Tail; \
   }
 
-DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (IARG_MEMORYOP_EA, int, ADDRINT);
-DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (IARG_FUNCARG_ENTRYPOINT_VALUE, int, ADDRINT);
-DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (IARG_REG_REFERENCE, REG, PIN_REGISTER *);
-DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (IARG_REG_VALUE, REG, ADDRINT);
+DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (ARG_MEMORYOP_EA, int, ADDRINT);
+DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (ARG_FUNCARG_ENTRYPOINT_VALUE, int, ADDRINT);
+DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (ARG_REG_REFERENCE, REG, PIN_REGISTER *);
+DEFINE_TYPE_NODE_WITH_EXTRA_ARGUMENT (ARG_REG_VALUE, REG, ADDRINT);
 
 /**
  * @struct Length
@@ -103,12 +104,6 @@ struct Length
 
 template < >
 struct Length <End>
-{
-  static const int RET = 0;
-};
-
-template < >
-struct Length < Type_Node <IARG_LAST> >
 {
   static const int RET = 0;
 };

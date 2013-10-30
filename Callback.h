@@ -20,7 +20,7 @@ namespace OASIS
 {
 namespace Pin
 {
-
+    
 /**
  * @class Callback
  *
@@ -28,7 +28,7 @@ namespace Pin
  * analysis code resides.
  */
 template <typename T, typename List>
-class Callback
+class Callback_Base
 {
 public:
   typedef T type;
@@ -38,20 +38,20 @@ public:
   static const int arglist_length = Length <List>::RET;
   /// @}
 
-  static void __analyze_fork (THREADID index, const CONTEXT * ctxt, void * callback);
-
 private:
   /// Argument list for the callback.
   List arglist_;
 };
-
+  
+template <typename T> class Callback;
+    
 /**
  * @class Callback0
  *
  * Callback for passing 0 arguments to the analysis routine.
  */
 template <typename T>
-class Callback0 : public Callback <T, End>
+class Callback <T (void)> : public Callback_Base <T, End>
 {
 public:
   /// @{ Analysis Methods
@@ -61,17 +61,17 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1>
-class Callback1 :
-  public Callback <T, Type_Node <A1> >
+template <typename T, typename A1>
+class Callback <T (A1)> :
+    public Callback_Base <T, Type_Node <A1> >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
+  typedef typename A1::param_type param_type1;
   /// @}
 
   /// @{ Analysis Methods
@@ -81,19 +81,19 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1, IARG_TYPE A2>
-class Callback2 :
-  public Callback <T, Type_Node < A1, Type_Node <A2> > >
+template <typename T, typename A1, typename A2>
+class Callback <T (A1, A2)> :
+  public Callback_Base <T, Type_Node < A1, Type_Node <A2> > >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
-  static const IARG_TYPE arg_type2 = A2;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
-  typedef typename Arg_T <A2>::param_type param_type2;
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
   /// @}
 
   /// @{ Analysis Methods
@@ -103,21 +103,21 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1, IARG_TYPE A2, IARG_TYPE A3>
-class Callback3 :
-  public Callback <T, Type_Node < A1, Type_Node <A2, Type_Node <A3> > > >
+template <typename T, typename A1, typename A2, typename A3>
+class Callback <T (A1, A2, A3)> :
+  public Callback_Base <T, Type_Node < A1, Type_Node <A2, Type_Node <A3> > > >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
-  static const IARG_TYPE arg_type2 = A2;
-  static const IARG_TYPE arg_type3 = A3;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
-  typedef typename Arg_T <A2>::param_type param_type2;
-  typedef typename Arg_T <A3>::param_type param_type3;
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
   /// @}
 
   /// @{ Analysis Methods
@@ -127,23 +127,23 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1, IARG_TYPE A2, IARG_TYPE A3, IARG_TYPE A4>
-class Callback4 :
-  public Callback <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4> > > > >
+template <typename T, typename A1, typename A2, typename A3, typename A4>
+class Callback <T (A1, A2, A3, A4)> :
+  public Callback_Base <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4> > > > >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
-  static const IARG_TYPE arg_type2 = A2;
-  static const IARG_TYPE arg_type3 = A3;
-  static const IARG_TYPE arg_type4 = A4;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
+  static const IARG_TYPE arg_type4 = A4::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
-  typedef typename Arg_T <A2>::param_type param_type2;
-  typedef typename Arg_T <A3>::param_type param_type3;
-  typedef typename Arg_T <A4>::param_type param_type4;
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
+  typedef typename A4::param_type param_type4;
   /// @}
 
   /// @{ Analysis Methods
@@ -153,25 +153,25 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1, IARG_TYPE A2, IARG_TYPE A3, IARG_TYPE A4, IARG_TYPE A5>
-class Callback5 :
-  public Callback <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5> > > > > >
+template <typename T, typename A1, typename A2, typename A3, typename A4, typename A5>
+class Callback <T (A1, A2, A3, A4, A5)> :
+  public Callback_Base <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5> > > > > >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
-  static const IARG_TYPE arg_type2 = A2;
-  static const IARG_TYPE arg_type3 = A3;
-  static const IARG_TYPE arg_type4 = A4;
-  static const IARG_TYPE arg_type5 = A5;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
+  static const IARG_TYPE arg_type4 = A4::arg_type;
+  static const IARG_TYPE arg_type5 = A5::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
-  typedef typename Arg_T <A2>::param_type param_type2;
-  typedef typename Arg_T <A3>::param_type param_type3;
-  typedef typename Arg_T <A4>::param_type param_type4;
-  typedef typename Arg_T <A5>::param_type param_type5;
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
+  typedef typename A4::param_type param_type4;
+  typedef typename A5::param_type param_type5;
   /// @}
 
   /// @{ Analysis Methods
@@ -181,27 +181,27 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1, IARG_TYPE A2, IARG_TYPE A3, IARG_TYPE A4, IARG_TYPE A5, IARG_TYPE A6>
-class Callback6 :
-  public Callback <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5, Type_Node <A6> > > > > > >
+template <typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+class Callback <T (A1, A2, A3, A4, A5, A6)> :
+  public Callback_Base <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5, Type_Node <A6> > > > > > >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
-  static const IARG_TYPE arg_type2 = A2;
-  static const IARG_TYPE arg_type3 = A3;
-  static const IARG_TYPE arg_type4 = A4;
-  static const IARG_TYPE arg_type5 = A5;
-  static const IARG_TYPE arg_type6 = A6;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
+  static const IARG_TYPE arg_type4 = A4::arg_type;
+  static const IARG_TYPE arg_type5 = A5::arg_type;
+  static const IARG_TYPE arg_type6 = A6::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
-  typedef typename Arg_T <A2>::param_type param_type2;
-  typedef typename Arg_T <A3>::param_type param_type3;
-  typedef typename Arg_T <A4>::param_type param_type4;
-  typedef typename Arg_T <A5>::param_type param_type5;
-  typedef typename Arg_T <A6>::param_type param_type6;
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
+  typedef typename A4::param_type param_type4;
+  typedef typename A5::param_type param_type5;
+  typedef typename A6::param_type param_type6;
   /// @}
 
   /// @{ Analysis Methods
@@ -211,29 +211,29 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1, IARG_TYPE A2, IARG_TYPE A3, IARG_TYPE A4, IARG_TYPE A5, IARG_TYPE A6, IARG_TYPE A7>
-class Callback7 :
-  public Callback <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5, Type_Node <A6, Type_Node <A7> > > > > > > >
+template <typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+class Callback <T (A1, A2, A3, A4, A5, A6, A7)> :
+  public Callback_Base <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5, Type_Node <A6, Type_Node <A7> > > > > > > >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
-  static const IARG_TYPE arg_type2 = A2;
-  static const IARG_TYPE arg_type3 = A3;
-  static const IARG_TYPE arg_type4 = A4;
-  static const IARG_TYPE arg_type5 = A5;
-  static const IARG_TYPE arg_type6 = A6;
-  static const IARG_TYPE arg_type7 = A7;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
+  static const IARG_TYPE arg_type4 = A4::arg_type;
+  static const IARG_TYPE arg_type5 = A5::arg_type;
+  static const IARG_TYPE arg_type6 = A6::arg_type;
+  static const IARG_TYPE arg_type7 = A7::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
-  typedef typename Arg_T <A2>::param_type param_type2;
-  typedef typename Arg_T <A3>::param_type param_type3;
-  typedef typename Arg_T <A4>::param_type param_type4;
-  typedef typename Arg_T <A5>::param_type param_type5;
-  typedef typename Arg_T <A6>::param_type param_type6;
-  typedef typename Arg_T <A7>::param_type param_type7;
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
+  typedef typename A4::param_type param_type4;
+  typedef typename A5::param_type param_type5;
+  typedef typename A6::param_type param_type6;
+  typedef typename A7::param_type param_type7;
   /// @}
 
   /// @{ Analysis Methods
@@ -243,31 +243,31 @@ public:
   /// @}
 };
 
-template <typename T, IARG_TYPE A1, IARG_TYPE A2, IARG_TYPE A3, IARG_TYPE A4, IARG_TYPE A5, IARG_TYPE A6, IARG_TYPE A7, IARG_TYPE A8>
-class Callback8 :
-  public Callback <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5, Type_Node <A6, Type_Node <A7, Type_Node <A8> > > > > > > > >
+template <typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
+class Callback <T (A1, A2, A3, A4, A5, A6, A7, A8)> :
+  public Callback_Base <T, Type_Node < A1, Type_Node <A2, Type_Node <A3, Type_Node <A4, Type_Node <A5, Type_Node <A6, Type_Node <A7, Type_Node <A8> > > > > > > > >
 {
 public:
   /// @{ Argument Type Definitions
-  static const IARG_TYPE arg_type1 = A1;
-  static const IARG_TYPE arg_type2 = A2;
-  static const IARG_TYPE arg_type3 = A3;
-  static const IARG_TYPE arg_type4 = A4;
-  static const IARG_TYPE arg_type5 = A5;
-  static const IARG_TYPE arg_type6 = A6;
-  static const IARG_TYPE arg_type7 = A7;
-  static const IARG_TYPE arg_type8 = A8;
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
+  static const IARG_TYPE arg_type4 = A4::arg_type;
+  static const IARG_TYPE arg_type5 = A5::arg_type;
+  static const IARG_TYPE arg_type6 = A6::arg_type;
+  static const IARG_TYPE arg_type7 = A7::arg_type;
+  static const IARG_TYPE arg_type8 = A8::arg_type;
   /// @}
 
   /// @{ Parameter Type Definitions
-  typedef typename Arg_T <A1>::param_type param_type1;
-  typedef typename Arg_T <A2>::param_type param_type2;
-  typedef typename Arg_T <A3>::param_type param_type3;
-  typedef typename Arg_T <A4>::param_type param_type4;
-  typedef typename Arg_T <A5>::param_type param_type5;
-  typedef typename Arg_T <A6>::param_type param_type6;
-  typedef typename Arg_T <A7>::param_type param_type7;
-  typedef typename Arg_T <A8>::param_type param_type8;
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
+  typedef typename A4::param_type param_type4;
+  typedef typename A5::param_type param_type5;
+  typedef typename A6::param_type param_type6;
+  typedef typename A7::param_type param_type7;
+  typedef typename A8::param_type param_type8;
   /// @}
 
   /// @{ Analysis Methods
