@@ -174,13 +174,26 @@ void Tool <T>::disable_fini_callbacks (void)
 }
 
 template <typename T>
-template <typename CALLBACK>
 inline
-void Tool <T>::add_fork_function (FPOINT location, CALLBACK * callback)
+void Tool <T>::enable_fork_before_callback (void)
 {
-  PIN_AddForkFunction (location, &CALLBACK::__analyze_fork, callback);
+  PIN_AddForkFunction (FPOINT_BEFORE, &Tool::__fork_before, this);
 }
-
+  
+template <typename T>
+inline
+void Tool <T>::enable_fork_after_in_child_callback (void)
+{
+  PIN_AddForkFunction (FPOINT_AFTER_IN_CHILD, &Tool::__fork_after_in_child, this);
+}
+  
+template <typename T>
+inline
+void Tool <T>::enable_fork_after_in_parent_callback (void)
+{
+  PIN_AddForkFunction (FPOINT_AFTER_IN_PARENT, &Tool::__fork_after_in_parent, this);
+}
+  
 template <typename T>
 inline
 void Tool <T>::handle_fini (INT32)
@@ -307,6 +320,27 @@ void Tool <T>::handle_probes_inserted (const Image & img)
 
 }
 
+template <typename T>
+inline
+void Tool <T>::handle_fork_before (THREADID threadid, const Const_Context & ctx)
+{
+  
+}
+  
+template <typename T>
+inline
+void Tool <T>::handle_fork_after_in_child (THREADID threadid, const Const_Context & ctx)
+{
+    
+}
+  
+template <typename T>
+inline
+void Tool <T>::handle_fork_after_in_parent (THREADID threadid, const Const_Context & ctx)
+{
+    
+}
+  
 template <typename T>
 inline
 void Tool <T>::detach (void)

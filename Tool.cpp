@@ -142,6 +142,24 @@ void Tool <T>::__unload (IMG img, VOID *v)
 {
   reinterpret_cast <T *> (v)->handle_unload (Image (img));
 }
+  
+template <typename T>
+void Tool <T>::__fork_before (THREADID thr_id, const CONTEXT * ctx, VOID * v)
+{
+  reinterpret_cast <T *> (v)->handle_fork_before (thr_id, Const_Context (ctx));
+}
+
+template <typename T>
+void Tool <T>::__fork_after_in_child (THREADID thr_id, const CONTEXT * ctx, VOID *v)
+{
+  reinterpret_cast <T *> (v)->handle_fork_after_in_child (thr_id, Const_Context (ctx));
+}
+  
+template <typename T>
+void Tool <T>::__fork_after_in_parent (THREADID thr_id, const CONTEXT * ctx, VOID *v)
+{
+  reinterpret_cast <T *> (v)->handle_fork_after_in_parent (thr_id, Const_Context (ctx));
+}
 
 } // namespace Pin
 } // namespace OASIS

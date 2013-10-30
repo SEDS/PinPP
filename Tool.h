@@ -77,6 +77,10 @@ public:
   void enable_probes_inserted_callback (void);
 
   void enable_unload_callback (void);
+  
+  void enable_fork_before_callback (void);
+  void enable_fork_after_in_child_callback (void);
+  void enable_fork_after_in_parent_callback (void);
 
   void disable_fini_callbacks (void);
 
@@ -124,6 +128,10 @@ protected:
   void handle_probes_inserted (const Image & img);
 
   void handle_unload (const Image & img);
+  
+  void handle_fork_before (THREADID threadid, const Const_Context & ctx);
+  void handle_fork_after_in_child (THREADID threadid, const Const_Context & ctx);
+  void handle_fork_after_in_parent (THREADID threadid, const Const_Context & ctx);
   /// @}
 
 private:
@@ -150,6 +158,10 @@ private:
   static void __probes_inserted (IMG img, VOID *v);
 
   static void __unload (IMG img, VOID *v);
+  
+  static void __fork_before (THREADID threadid, const CONTEXT *ctxt, VOID * v);
+  static void __fork_after_in_child (THREADID threadid, const CONTEXT *ctxt, VOID *v);
+  static void __fork_after_in_parent (THREADID threadid, const CONTEXT *ctxt, VOID *v);
   /// @}
 
   Tool (const Tool &);
