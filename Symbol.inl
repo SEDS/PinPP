@@ -20,6 +20,24 @@ Symbol::~Symbol (void)
 }
 
 inline
+bool Symbol::operator == (const Symbol & rhs) const
+{
+  return this->sym_ == rhs.sym_;
+}
+
+inline
+bool Symbol::operator != (const Symbol & rhs) const
+{
+  return this->sym_ != rhs.sym_;
+}
+
+inline
+Symbol::operator SYM () const
+{
+  return this->sym_;
+}
+
+inline
 std::string Symbol::undecorate (const std::string & name, UNDECORATION style)
 {
   return PIN_UndecorateSymbolName (name, style);
@@ -77,6 +95,112 @@ inline
 Symbol::iterator_type Symbol::make_iter (void) const
 {
   return this->sym_;
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next>::Iterator (void)
+: curr_ (Symbol::invalid),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next>::Iterator (const Symbol & t)
+: curr_ (t),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next>::Iterator (const pin_type & t)
+: curr_ (t),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next>::Iterator (const Iterator & t)
+: curr_ (t.curr_),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next>::~Iterator (void)
+{
+
+}
+
+inline
+const Iterator<Symbol, &SYM_Prev, &SYM_Next> & Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator = (const Iterator & rhs)
+{
+  this->curr_ = rhs.curr_;
+  return *this;
+}
+inline
+Symbol & Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator * (void)
+{
+  return this->wrapper_;
+}
+
+inline
+Symbol * Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator -> (void)
+{
+  return &this->wrapper_;
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next> Iterator <Symbol, &SYM_Prev, &SYM_Next>::make_end (void) const
+{
+  return Iterator (Symbol::invalid);
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next> & Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator -- (void)
+{
+  this->curr_ = SYM_Prev (this->curr_);
+  return *this;
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next> & Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator ++ (void)
+{
+  this->curr_ = SYM_Next (this->curr_);
+  return *this;
+}
+
+inline
+bool Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator == (const Iterator & rhs) const
+{
+  return this->wrapper_ == rhs.wrapper_;
+}
+
+inline
+bool Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator != (const Iterator & rhs) const
+{
+  return this->wrapper_ != rhs.wrapper_;
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next> Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator -- (int)
+{
+  Iterator tmp (this->wrapper_);
+  this->curr_ = SYM_Prev (this->curr_);
+
+  return tmp;
+}
+
+inline
+Iterator <Symbol, &SYM_Prev, &SYM_Next> Iterator <Symbol, &SYM_Prev, &SYM_Next>::operator ++ (int)
+{
+  Iterator tmp (this->wrapper_);
+  this->curr_ = SYM_Next (this->curr_);
+
+  return tmp;
 }
 
 } // namespace OASIS
