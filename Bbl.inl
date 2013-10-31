@@ -20,6 +20,18 @@ Bbl::~Bbl (void)
 }
 
 inline
+bool Bbl::operator == (const Bbl & rhs) const
+{
+  return this->bbl_ == rhs.bbl_;
+}
+
+inline
+bool Bbl::operator != (const Bbl & rhs) const
+{
+  return this->bbl_ != rhs.bbl_;
+}
+
+inline
 UINT32 Bbl::ins_count (void) const
 {
   return BBL_NumIns (this->bbl_);
@@ -182,6 +194,112 @@ inline
 void Bbl::insert_then_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const
 {
   Insert_T <BBL, CALLBACK, &BBL_InsertThenCall>::execute (this->bbl_, location, callback, &CALLBACK::__analyze_then, xarg1, xarg2, xarg3, xarg4);
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next>::Iterator (void)
+: curr_ (Bbl::invalid),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next>::Iterator (const Bbl & t)
+: curr_ (t),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next>::Iterator (const pin_type & t)
+: curr_ (t),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next>::Iterator (const Iterator & t)
+: curr_ (t.curr_),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next>::~Iterator (void)
+{
+
+}
+
+inline
+const Iterator<Bbl, &BBL_Prev, &BBL_Next> & Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator = (const Iterator & rhs)
+{
+  this->curr_ = rhs.curr_;
+  return *this;
+}
+inline
+Bbl & Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator * (void)
+{
+  return this->wrapper_;
+}
+
+inline
+Bbl * Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator -> (void)
+{
+  return &this->wrapper_;
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next> Iterator <Bbl, &BBL_Prev, &BBL_Next>::make_end (void) const
+{
+  return Iterator (Bbl::invalid);
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next> & Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator -- (void)
+{
+  this->curr_ = BBL_Prev (this->curr_);
+  return *this;
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next> & Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator ++ (void)
+{
+  this->curr_ = BBL_Next (this->curr_);
+  return *this;
+}
+
+inline
+bool Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator == (const Iterator & rhs) const
+{
+  return this->wrapper_ == rhs.wrapper_;
+}
+
+inline
+bool Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator != (const Iterator & rhs) const
+{
+  return this->wrapper_ != rhs.wrapper_;
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next> Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator -- (int)
+{
+  Iterator tmp (this->wrapper_);
+  this->curr_ = BBL_Prev (this->curr_);
+
+  return tmp;
+}
+
+inline
+Iterator <Bbl, &BBL_Prev, &BBL_Next> Iterator <Bbl, &BBL_Prev, &BBL_Next>::operator ++ (int)
+{
+  Iterator tmp (this->wrapper_);
+  this->curr_ = BBL_Next (this->curr_);
+
+  return tmp;
 }
 
 } // namespace OASIS

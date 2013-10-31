@@ -71,11 +71,7 @@ public:
   /// @}
 
 private:
-  /// The current iterator position.
-  pin_type curr_;
-
-  /// Wrapper to pin_type_. The value of this object should
-  /// never change after construction.
+  /// Pin++ wrapper to iterate over.
   T wrapper_;
 };
 

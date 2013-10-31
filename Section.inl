@@ -34,6 +34,25 @@ const Section & Section::operator = (const Section & sec)
 }
 
 inline
+const Section & Section::operator = (const SEC & sec)
+{
+  this->sec_ = sec;
+  return *this;
+}
+
+inline
+bool Section::operator == (const Section & rhs) const
+{
+  return this->sec_ == rhs.sec_;
+}
+
+inline
+bool Section::operator != (const Section & rhs) const
+{
+  return this->sec_ != rhs.sec_;
+}
+
+inline
 Section::operator SEC () const
 {
   return this->sec_;

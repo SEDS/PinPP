@@ -62,6 +62,25 @@ const Routine & Routine::operator = (const Routine & rtn)
 }
 
 inline
+const Routine & Routine::operator = (const RTN & rtn)
+{
+  this->rtn_ = rtn;
+  return *this;
+}
+
+inline
+bool Routine::operator == (const Routine & rhs) const
+{
+  return this->rtn_ == rhs.rtn_;
+}
+
+inline
+bool Routine::operator != (const Routine & rhs) const
+{
+  return this->rtn_ != rhs.rtn_;
+}
+
+inline
 bool Routine::valid (void)
 {
   return RTN_Valid (this->rtn_);

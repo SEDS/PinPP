@@ -9,7 +9,7 @@ namespace Pin
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 inline
 Iterator <T, PREV, NEXT>::Iterator (void)
-: wrapper_ (curr_)
+: wrapper_ (T::invalid)
 {
 
 }
@@ -17,8 +17,7 @@ Iterator <T, PREV, NEXT>::Iterator (void)
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 inline
 Iterator <T, PREV, NEXT>::Iterator (const T & t)
-: curr_ (t),
-  wrapper_ (curr_)
+: wrapper_ (t)
 {
 
 }
@@ -26,8 +25,7 @@ Iterator <T, PREV, NEXT>::Iterator (const T & t)
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 inline
 Iterator <T, PREV, NEXT>::Iterator (const pin_type & t)
-: curr_ (t),
-  wrapper_ (curr_)
+: wrapper_ (t)
 {
 
 }
@@ -35,8 +33,7 @@ Iterator <T, PREV, NEXT>::Iterator (const pin_type & t)
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 inline
 Iterator <T, PREV, NEXT>::Iterator (const Iterator & t)
-: curr_ (t.curr_),
-  wrapper_ (curr_)
+: wrapper_ (t.wrapper_)
 {
 
 }
@@ -52,7 +49,7 @@ template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typen
 inline
 const Iterator<T, PREV, NEXT> & Iterator <T, PREV, NEXT>::operator = (const Iterator & rhs)
 {
-  this->curr_ = rhs.curr_;
+  this->wrapper_ = rhs.wrapper_;
   return *this;
 }
 
@@ -81,7 +78,7 @@ template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typen
 inline
 Iterator <T, PREV, NEXT> & Iterator <T, PREV, NEXT>::operator -- (void)
 {
-  this->curr_ = PREV (this->curr_);
+  this->wrapper_ = PREV (this->wrapper_);
   return *this;
 }
 
@@ -89,7 +86,7 @@ template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typen
 inline
 Iterator <T, PREV, NEXT> & Iterator <T, PREV, NEXT>::operator ++ (void)
 {
-  this->curr_ = NEXT (this->curr_);
+  this->wrapper_ = NEXT (this->wrapper_);
   return *this;
 }
 
@@ -97,14 +94,14 @@ template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typen
 inline
 bool Iterator <T, PREV, NEXT>::operator == (const Iterator & rhs) const
 {
-  return this->curr_ == rhs.curr_;
+  return this->wrapper_ == rhs.wrapper_;
 }
 
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 inline
 bool Iterator <T, PREV, NEXT>::operator != (const Iterator & rhs) const
 {
-  return this->curr_ != rhs.curr_;
+  return this->wrapper_ != rhs.wrapper_;
 }
 
 } // namespace OASIS

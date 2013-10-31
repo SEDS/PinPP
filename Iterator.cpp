@@ -7,8 +7,8 @@ namespace Pin
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 Iterator <T, PREV, NEXT> Iterator <T, PREV, NEXT>::operator -- (int)
 {
-  Iterator tmp (this->curr_);
-  this->curr_ = PREV (this->curr_);
+  Iterator tmp (this->wrapper_);
+  this->wrapper_ = PREV (this->wrapper_);
 
   return tmp;
 }
@@ -16,8 +16,8 @@ Iterator <T, PREV, NEXT> Iterator <T, PREV, NEXT>::operator -- (int)
 template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
 Iterator <T, PREV, NEXT> Iterator <T, PREV, NEXT>::operator ++ (int)
 {
-  Iterator tmp (this->curr_);
-  this->curr_ = NEXT (this->curr_);
+  Iterator tmp (this->wrapper_);
+  this->wrapper_ = NEXT (this->wrapper_);
 
   return tmp;
 }
