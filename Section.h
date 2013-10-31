@@ -42,8 +42,16 @@ public:
   /// Destructor.
   ~Section (void);
 
-  /// Assignment operator.
+  /// Assignment operator for pin++.
   const Section & operator = (const Section & sec);
+
+  /// Assignment operator for pin++.
+  const Section & operator = (const SEC & sec);
+
+  /// {@ Comparison Operators
+  bool operator == (const Section & rhs) const;
+  bool operator != (const Section & rhs) const;
+  /// @}
 
   static const SEC invalid;
 

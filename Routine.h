@@ -52,8 +52,16 @@ public:
   /// Invalid type.
   static const RTN invalid;
 
-  /// Assignment operator.
+  /// Assignment operator for pin++ type.
   const Routine & operator = (const Routine & rtn);
+
+  /// Assignment operator for pin type.
+  const Routine & operator = (const RTN & rtn);
+
+  /// {@ Comparison Operators
+  bool operator == (const Routine & rhs) const;
+  bool operator != (const Routine & rhs) const;
+  /// @}
 
   /// Conversion operator.
   operator RTN () const;

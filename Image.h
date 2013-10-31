@@ -53,6 +53,11 @@ public:
   const Image & operator = (const Image & img);
   const Image & operator = (const IMG & img);
 
+  /// {@ Comparison Operators
+  bool operator == (const Image & rhs) const;
+  bool operator != (const Image & rhs) const;
+  /// @}
+
   /// @{ Search Methods
   static Image find_by_id (UINT32 id);
   static Image find_by_address (ADDRINT addr);

@@ -59,6 +59,11 @@ public:
   /// Type conversion operator
   operator INS () const;
 
+  /// {@ Comparison Operators
+  bool operator == (const Ins & rhs) const;
+  bool operator != (const Ins & rhs) const;
+  /// @}
+
   /// Make an iterator to the current instruction.
   iterator_type make_iter (void) const;
 
@@ -277,6 +282,65 @@ public:
 
 private:
   INS & ins_;
+};
+
+/**
+ * @class Iterator <Ins, &INS_PREV, &INS_NEXT specalization
+ */
+template <>
+class Iterator <Ins, &INS_Prev, &INS_Next>
+{
+public:
+  typedef typename Ins::pin_type pin_type;
+
+  /// Default constructor.
+  Iterator (void);
+
+  /// Initializing constructor.
+  Iterator (const Ins & t);
+
+  /// Initializing constructor.
+  Iterator (const pin_type & t);
+
+  /// Copy constructor.
+  Iterator (const Iterator & iter);
+
+  /// Destructor.
+  ~Iterator (void);
+
+  /// Assignment operator
+  const Iterator & operator = (const Iterator & rhs);
+
+  /// {@ Reference/Dereference Operators
+  Ins & operator * (void);
+  Ins * operator -> (void);
+  /// @}
+
+  /// Make an end iterator.
+  Iterator make_end (void) const;
+
+  /// @{ Prefix Operators
+  Iterator & operator ++ (void);
+  Iterator & operator -- (void);
+  /// @}
+
+  /// @{ Postfix Operators
+  Iterator operator ++ (int);
+  Iterator operator -- (int);
+  /// @}
+
+  /// {@ Comparision Operators
+  bool operator == (const Iterator & rhs) const;
+  bool operator != (const Iterator & rhs) const;
+  /// @}
+
+private:
+  /// The current iterator position.
+  pin_type curr_;
+
+  /// Wrapper to pin_type_. The value of this object should
+  /// never change after construction.
+  Ins wrapper_;
 };
 
 } // namespace Pin

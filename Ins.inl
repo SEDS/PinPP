@@ -40,6 +40,18 @@ Ins::operator INS () const
 }
 
 inline
+bool Ins::operator == (const Ins & rhs) const
+{
+  return this->ins_ == rhs.ins_;
+}
+
+inline
+bool Ins::operator != (const Ins & rhs) const
+{
+  return this->ins_ != rhs.ins_;
+}
+
+inline
 Ins::iterator_type Ins::make_iter (void) const
 {
   return iterator_type (this->ins_);
@@ -722,6 +734,113 @@ void Ins::
 insert_then_predicated_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const
 {
   Insert_T <INS, CALLBACK, &INS_InsertThenPredicatedCall>::execute (this->ins_, location, callback, &CALLBACK::__analyze_then, xarg1, xarg2, xarg3, xarg4);
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next>::Iterator (void)
+: curr_ (Ins::invalid),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next>::Iterator (const Ins & t)
+: curr_ (t),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next>::Iterator (const pin_type & t)
+: curr_ (t),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next>::Iterator (const Iterator & t)
+: curr_ (t.curr_),
+  wrapper_ (curr_)
+{
+
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next>::~Iterator (void)
+{
+
+}
+
+inline
+const Iterator<Ins, &INS_Prev, &INS_Next> & Iterator <Ins, &INS_Prev, &INS_Next>::operator = (const Iterator & rhs)
+{
+  this->curr_ = rhs.curr_;
+  return *this;
+}
+
+inline
+Ins & Iterator <Ins, &INS_Prev, &INS_Next>::operator * (void)
+{
+  return this->wrapper_;
+}
+
+inline
+Ins * Iterator <Ins, &INS_Prev, &INS_Next>::operator -> (void)
+{
+  return &this->wrapper_;
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next> Iterator <Ins, &INS_Prev, &INS_Next>::make_end (void) const
+{
+  return Iterator (Ins::invalid);
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next> & Iterator <Ins, &INS_Prev, &INS_Next>::operator -- (void)
+{
+  this->curr_ = INS_Prev (this->curr_);
+  return *this;
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next> & Iterator <Ins, &INS_Prev, &INS_Next>::operator ++ (void)
+{
+  this->curr_ = INS_Next (this->curr_);
+  return *this;
+}
+
+inline
+bool Iterator <Ins, &INS_Prev, &INS_Next>::operator == (const Iterator & rhs) const
+{
+  return this->wrapper_ == rhs.wrapper_;
+}
+
+inline
+bool Iterator <Ins, &INS_Prev, &INS_Next>::operator != (const Iterator & rhs) const
+{
+  return this->wrapper_ != rhs.wrapper_;
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next> Iterator <Ins, &INS_Prev, &INS_Next>::operator -- (int)
+{
+  Iterator tmp (this->wrapper_);
+  this->curr_ = INS_Prev (this->curr_);
+
+  return tmp;
+}
+
+inline
+Iterator <Ins, &INS_Prev, &INS_Next> Iterator <Ins, &INS_Prev, &INS_Next>::operator ++ (int)
+{
+  Iterator tmp (this->wrapper_);
+  this->curr_ = INS_Next (this->curr_);
+
+  return tmp;
 }
 
 } // namespace OASIS

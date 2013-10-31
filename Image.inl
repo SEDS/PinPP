@@ -47,6 +47,18 @@ const Image & Image::operator = (const IMG & img)
 }
 
 inline
+bool Image::operator == (const Image & rhs) const
+{
+  return this->img_ == rhs.img_;
+}
+
+inline
+bool Image::operator != (const Image & rhs) const
+{
+  return this->img_ != rhs.img_;
+}
+
+inline
 bool Image::valid (void) const
 {
   return IMG_Valid (this->img_);
