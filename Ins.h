@@ -188,6 +188,12 @@ public:
 
   template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
   void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
+
+  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
+  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5) const;
+
+  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
+  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6) const;
   /// @}
 
   /// @{ Insert If Call Methods

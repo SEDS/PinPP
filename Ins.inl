@@ -524,6 +524,22 @@ insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XA
   Insert_T <INS, CALLBACK, &INS_InsertCall>::execute (this->ins_, location, callback, &CALLBACK::__analyze, xarg1, xarg2, xarg3, xarg4);
 }
 
+  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
+  inline
+  void Ins::
+  insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5) const
+  {
+    Insert_T <INS, CALLBACK, &INS_InsertCall>::execute (this->ins_, location, callback, &CALLBACK::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5);
+  }
+
+  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
+  inline
+  void Ins::
+  insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6) const
+  {
+    Insert_T <INS, CALLBACK, &INS_InsertCall>::execute (this->ins_, location, callback, &CALLBACK::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5, xarg6);
+  }
+
 template <typename CALLBACK>
 inline
 void Ins::
