@@ -238,14 +238,14 @@ void Tool <T>::handle_thread_fini (THREADID, const Const_Context &, INT32)
 
 template <typename T>
 inline
-void Tool <T>::handle_syscall_entry (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std)
+void Tool <T>::handle_syscall_entry (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std)
 {
 
 }
 
 template <typename T>
 inline
-void Tool <T>::handle_syscall_exit (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std)
+void Tool <T>::handle_syscall_exit (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std)
 {
 
 }

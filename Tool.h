@@ -111,8 +111,8 @@ protected:
   void handle_thread_fini (THREADID threadIndex, const Const_Context & ctxt, INT32 flags);
   void handle_destroy_thread_data (void * data);
 
-  void handle_syscall_entry (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std);
-  void handle_syscall_exit (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std);
+  void handle_syscall_entry (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std);
+  void handle_syscall_exit (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std);
   EXCEPT_HANDLING_RESULT handle_internal_exception (THREADID, Exception & ex, PHYSICAL_CONTEXT *);
 
   BOOL handle_follow_child_process (CHILD_PROCESS child);
