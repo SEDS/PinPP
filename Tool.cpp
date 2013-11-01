@@ -55,7 +55,7 @@ void Tool <T>::__syscall_entry (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STAN
   reinterpret_cast <T *> (obj)->handle_syscall_entry (thr_index, Context (ctxt), std);
  #else
   Context ctx (ctxt);
-  reinterpret_cast <T *> (obj)->handle_syscall_exit (thr_index, ctx, std);
+  reinterpret_cast <T *> (obj)->handle_syscall_entry (thr_index, ctx, std);
 #endif
 
 }
