@@ -13,6 +13,10 @@ template <typename T>
 inline
 Image_Instrument <T>::Image_Instrument (void)
 {
+#if defined (TARGET_MAC)
+  PIN_InitSymbols ();
+#endif
+  
   IMG_AddInstrumentFunction (&Image_Instrument::__instrument, this);
 }
 
