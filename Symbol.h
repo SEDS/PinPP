@@ -88,7 +88,7 @@ template <>
 class Iterator <Symbol, &SYM_Prev, &SYM_Next>
 {
 public:
-  typedef typename Symbol::pin_type pin_type;
+  typedef Symbol::pin_type pin_type;
 
   /// Default constructor.
   Iterator (void);

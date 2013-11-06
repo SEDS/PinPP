@@ -297,7 +297,7 @@ template <>
 class Iterator <Ins, &INS_Prev, &INS_Next>
 {
 public:
-  typedef typename Ins::pin_type pin_type;
+  typedef Ins::pin_type pin_type;
 
   /// Default constructor.
   Iterator (void);

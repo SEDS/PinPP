@@ -134,7 +134,7 @@ template <>
 class Iterator <Bbl, &BBL_Prev, &BBL_Next>
 {
 public:
-  typedef typename Bbl::pin_type pin_type;
+  typedef Bbl::pin_type pin_type;
 
   /// Default constructor.
   Iterator (void);
