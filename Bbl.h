@@ -33,7 +33,7 @@ public:
   typedef BBL pin_type;
 
   /// Type definition of the iterator type.
-  typedef Iterator <Bbl, &BBL_Prev, &BBL_Next> iterator_type;
+  typedef Iterator2 <Bbl, &BBL_Prev, &BBL_Next> iterator_type;
 
   /// Initializing constructor.
   Bbl (BBL & bbl);
@@ -125,65 +125,6 @@ private:
   /// Temp fix since ::BBL_Invalid () does not exist. Once Pin implements
   /// BBL_Invalid (), then we will remove this function.
   static BBL BBL_Invalid (void);
-};
-
-/**
- * @class Iterator <Bbl, &BBL_PREV, &BBL_NEXT specalization
- */
-template <>
-class Iterator <Bbl, &BBL_Prev, &BBL_Next>
-{
-public:
-  typedef Bbl::pin_type pin_type;
-
-  /// Default constructor.
-  Iterator (void);
-
-  /// Initializing constructor.
-  Iterator (const Bbl & t);
-
-  /// Initializing constructor.
-  Iterator (const pin_type & t);
-
-  /// Copy constructor.
-  Iterator (const Iterator & iter);
-
-  /// Destructor.
-  ~Iterator (void);
-
-  /// Assignment operator
-  const Iterator & operator = (const Iterator & rhs);
-
-  /// {@ Reference/Dereference Operators
-  Bbl & operator * (void);
-  Bbl * operator -> (void);
-  /// @}
-
-  /// Make an end iterator.
-  Iterator make_end (void) const;
-
-  /// @{ Prefix Operators
-  Iterator & operator ++ (void);
-  Iterator & operator -- (void);
-  /// @}
-
-  /// @{ Postfix Operators
-  Iterator operator ++ (int);
-  Iterator operator -- (int);
-  /// @}
-
-  /// {@ Comparision Operators
-  bool operator == (const Iterator & rhs) const;
-  bool operator != (const Iterator & rhs) const;
-  /// @}
-
-private:
-  /// The current iterator position.
-  pin_type curr_;
-
-  /// Wrapper to pin_type_. The value of this object should
-  /// never change after construction.
-  Bbl wrapper_;
 };
 
 } // namespace OASIS

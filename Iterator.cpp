@@ -21,6 +21,25 @@ Iterator <T, PREV, NEXT> Iterator <T, PREV, NEXT>::operator ++ (int)
 
   return tmp;
 }
+  
+  template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
+  Iterator2 <T, PREV, NEXT> Iterator2 <T, PREV, NEXT>::operator -- (int)
+  {
+    Iterator2 tmp (this->wrapper_);
+    this->curr_ = PREV (this->curr_);
+    
+    return tmp;
+  }
+  
+  template <typename T, typename T::pin_type (*PREV) (typename T::pin_type), typename T::pin_type (*NEXT) (typename T::pin_type)>
+  Iterator2 <T, PREV, NEXT> Iterator2 <T, PREV, NEXT>::operator ++ (int)
+  {
+    Iterator2 tmp (this->wrapper_);
+    this->curr_ = NEXT (this->curr_);
+    
+    return tmp;
+  }
+   
 
 } // namespace OASIS
 } // namespace Pin

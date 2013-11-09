@@ -35,7 +35,7 @@ public:
   typedef SYM pin_type;
 
   /// Type definition of the iterator type.
-  typedef Iterator <Symbol, &SYM_Prev, &SYM_Next> iterator_type;
+  typedef Iterator2 <Symbol, &SYM_Prev, &SYM_Next> iterator_type;
 
   /// Default constructor.
   Symbol (SYM & sym);
@@ -79,65 +79,6 @@ public:
 
 private:
   SYM & sym_;
-};
-
-/**
- * @class Iterator <Symbol, &SYM_Prev, &SYM_Next specalization
- */
-template <>
-class Iterator <Symbol, &SYM_Prev, &SYM_Next>
-{
-public:
-  typedef Symbol::pin_type pin_type;
-
-  /// Default constructor.
-  Iterator (void);
-
-  /// Initializing constructor.
-  Iterator (const Symbol & t);
-
-  /// Initializing constructor.
-  Iterator (const pin_type & t);
-
-  /// Copy constructor.
-  Iterator (const Iterator & iter);
-
-  /// Destructor.
-  ~Iterator (void);
-
-  /// Assignment operator
-  const Iterator & operator = (const Iterator & rhs);
-
-  /// {@ Reference/Dereference Operators
-  Symbol & operator * (void);
-  Symbol * operator -> (void);
-  /// @}
-
-  /// Make an end iterator.
-  Iterator make_end (void) const;
-
-  /// @{ Prefix Operators
-  Iterator & operator ++ (void);
-  Iterator & operator -- (void);
-  /// @}
-
-  /// @{ Postfix Operators
-  Iterator operator ++ (int);
-  Iterator operator -- (int);
-  /// @}
-
-  /// {@ Comparision Operators
-  bool operator == (const Iterator & rhs) const;
-  bool operator != (const Iterator & rhs) const;
-  /// @}
-
-private:
-  /// The current iterator position.
-  pin_type curr_;
-
-  /// Wrapper to pin_type_. The value of this object should
-  /// never change after construction.
-  Symbol wrapper_;
 };
 
 } // namespace OASIS
