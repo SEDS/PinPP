@@ -1,6 +1,6 @@
 // $Id
 
-project (pin++) : requires_pin {
+project (pin++) : pin {
   staticname    = pin++
   staticflags  += OASIS_PIN_HAS_DLL=0
 

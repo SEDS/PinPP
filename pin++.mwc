@@ -1,3 +1,6 @@
+
 workspace (pin++) {
   cmdline += -include $OASIS_ROOT/MPC/config -static
+
+  pin++.mpc
 }
