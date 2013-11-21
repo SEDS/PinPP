@@ -100,9 +100,6 @@ public:
    */
   string disassemble (void) const;
 
-  BOOL is_memory_operand_read (UINT32 mem_op) const;
-  BOOL is_memory_operand_written (UINT32 mem_op) const;
-
   /// Get the mnemonic for the instruction.
   std::string mnemonic (void) const;
 
@@ -161,25 +158,6 @@ public:
 
   /// Get the parent routine.
   Routine routine (void) const;
-
-  /// @{ Operand Methods
-  BOOL operand_is_memory (UINT32 n) const;
-  REG operand_memory_base_reg (UINT32 n) const;
-  REG operand_memory_index_reg (UINT32 n) const;
-  REG operand_memory_segment_reg (UINT32 n) const;
-  UINT32 operand_memory_scale (UINT32 n) const;
-  INT64 operand_memory_displacement (UINT32 n) const;
-
-  BOOL operand_is_fixed_memop (UINT32 n) const;
-  BOOL operand_is_address_generator (UINT32 n) const;
-  BOOL operand_is_branch_displacememt (UINT32 n) const;
-  BOOL operand_is_reg (UINT32 n) const;
-  REG operand_reg (UINT32 n) const;
-  BOOL operand_is_immediate (UINT32 n) const;
-  UINT64 operand_immediate (UINT32 n) const;
-  BOOL operand_is_implicit (UINT32 n) const;
-  UINT32 operand_width (UINT32 n) const;
-  /// @}
 
     //RTN   LEVEL_PINCLIENT::INS_Rtn (INS x)
   ADDRINT direct_branch_or_call_target_address (void) const;

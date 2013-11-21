@@ -184,18 +184,6 @@ UINT32 Ins::memory_operand_count (void) const
 }
 
 inline
-BOOL Ins::is_memory_operand_read (UINT32 mem_op) const
-{
-  return INS_MemoryOperandIsRead (this->ins_, mem_op);
-}
-
-inline
-BOOL Ins::is_memory_operand_written (UINT32 mem_op) const
-{
-  return INS_MemoryOperandIsWritten (this->ins_, mem_op);
-}
-
-inline
 std::string Ins::mnemonic (void) const
 {
   return INS_Mnemonic (this->ins_);
@@ -403,97 +391,6 @@ inline
 UINT32 Ins::operand_count (void) const
 {
   return INS_OperandCount (this->ins_);
-}
-
-inline
-BOOL Ins::operand_is_memory (UINT32 n) const
-{
-  return INS_OperandIsMemory (this->ins_, n);
-}
-
-inline
-REG Ins::operand_memory_base_reg (UINT32 n) const
-{
-  return INS_OperandMemoryBaseReg (this->ins_, n);
-}
-
-inline
-REG Ins::operand_memory_index_reg (UINT32 n) const
-{
-  return INS_OperandMemoryIndexReg (this->ins_, n);
-}
-
-inline
-REG Ins::operand_memory_segment_reg (UINT32 n) const
-{
-  return INS_OperandMemorySegmentReg (this->ins_, n);
-}
-
-
-inline
-UINT32 Ins::operand_memory_scale (UINT32 n) const
-{
-  return INS_OperandMemoryScale (this->ins_, n);
-}
-
-inline
-INT64 Ins::operand_memory_displacement (UINT32 n) const
-{
-  return INS_OperandMemoryDisplacement (this->ins_, n);
-}
-
-inline
-BOOL Ins::operand_is_fixed_memop (UINT32 n) const
-{
-  return INS_OperandIsFixedMemop (this->ins_, n);
-}
-
-inline
-BOOL Ins::operand_is_address_generator (UINT32 n) const
-{
-  return INS_OperandIsAddressGenerator (this->ins_, n);
-}
-
-inline
-BOOL Ins::operand_is_branch_displacememt (UINT32 n) const
-{
-  return INS_OperandIsBranchDisplacement (this->ins_, n);
-}
-
-inline
-BOOL Ins::operand_is_reg (UINT32 n) const
-{
-  return INS_OperandIsReg (this->ins_, n);
-}
-
-inline
-REG Ins::operand_reg (UINT32 n) const
-{
-  return INS_OperandReg (this->ins_, n);
-}
-
-inline
-BOOL Ins::operand_is_immediate (UINT32 n) const
-{
-  return INS_OperandIsImmediate (this->ins_, n);
-}
-
-inline
-UINT64 Ins::operand_immediate (UINT32 n) const
-{
-  return INS_OperandImmediate (this->ins_, n);
-}
-
-inline
-BOOL Ins::operand_is_implicit (UINT32 n) const
-{
-  return INS_OperandIsImplicit (this->ins_, n);
-}
-
-inline
-UINT32 Ins::operand_width (UINT32 n) const
-{
-  return INS_OperandWidth (this->ins_, n);
 }
 
 template <typename CALLBACK>
