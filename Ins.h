@@ -24,6 +24,7 @@ namespace Pin
 {
 // Forward decl.
 class Routine;
+class Operand;
 
 /**
  * @class Ins
@@ -67,6 +68,15 @@ public:
   /// Make an iterator to the current instruction.
   iterator_type make_iter (void) const;
 
+  /// {@ Operand Methods
+
+  Operand operand (int index) const;
+  Operand operator [] (int index) const;
+  UINT32 memory_operand_count (void) const;
+  UINT32 operand_count (void) const;
+
+  /// @}
+
   /// {@ Inspection Methods
 
   /// Get the instructions' category.
@@ -90,7 +100,6 @@ public:
    */
   string disassemble (void) const;
 
-  UINT32 memory_operand_count (void) const;
   BOOL is_memory_operand_read (UINT32 mem_op) const;
   BOOL is_memory_operand_written (UINT32 mem_op) const;
 
@@ -154,7 +163,6 @@ public:
   Routine routine (void) const;
 
   /// @{ Operand Methods
-  UINT32 operand_count (void) const;
   BOOL operand_is_memory (UINT32 n) const;
   REG operand_memory_base_reg (UINT32 n) const;
   REG operand_memory_index_reg (UINT32 n) const;

@@ -13,12 +13,12 @@
 #ifndef _OASIS_PIN_OPERAND_H_
 #define _OASIS_PIN_OPERAND_H_
 
+#include "Ins.h"
+
 namespace OASIS
 {
 namespace Pin
 {
-// Forward decl.
-class Ins;
 
 /**
  * @class Operand
