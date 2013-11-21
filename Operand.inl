@@ -66,6 +66,7 @@ REG Operand::memory_index_reg (void) const
   return INS_OperandMemoryIndexReg (this->ins_, this->index_);
 }
 
+inline
 REG Operand::memory_segment_reg (void) const
 {
   return INS_OperandMemorySegmentReg (this->ins_, this->index_);
