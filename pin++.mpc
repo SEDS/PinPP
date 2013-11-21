@@ -23,6 +23,7 @@ project (pin++) : pin {
     Instrument.h
     Lock.h
     Mutex.h
+    Operand.h
     RW_Mutex.h
     Semaphore.h
     Prototype.h
@@ -63,6 +64,7 @@ project (pin++) : pin {
     Routine.inl
     TLS.inl
     Trace.inl
+    Operand.inl
   }
 
   Template_Files {
