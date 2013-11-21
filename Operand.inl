@@ -7,7 +7,7 @@ namespace Pin
 {
 
 inline
-Operand::Operand (const Ins & ins, int index)
+Operand::Operand (INS ins, int index)
 : ins_ (ins),
   index_ (index)
 {
@@ -31,7 +31,7 @@ Operand::~Operand (void)
 inline
 const Operand & Operand::operator = (const Operand & rhs)
 {
-//  this->ins_ = rhs.ins_;
+  this->ins_ = rhs.ins_;
   this->index_ = rhs.index_;
   return *this;
 }

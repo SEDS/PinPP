@@ -28,7 +28,7 @@ namespace Pin
 class OASIS_PIN_Export Operand
 {
 public:
-  Operand (const Ins & ins, int index);
+  Operand (INS ins, int index);
   Operand (const Operand & rhs);
 
   /// Destructor.
@@ -65,7 +65,7 @@ public:
   /// @}
 
 private:
-  const Ins & ins_;
+  INS ins_;
   int index_;
 };
 
