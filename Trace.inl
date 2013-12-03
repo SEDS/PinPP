@@ -128,6 +128,18 @@ ADDRINT Trace::version (void) const
   return TRACE_Version (this->trace_);
 }
 
+inline
+ADDRINT Trace::code_cache_address (void) const
+{
+  return TRACE_CodeCacheAddress (this->trace_);
+}
+
+inline
+USIZE Trace::code_cache_size (void) const
+{
+  return TRACE_CodeCacheSize (this->trace_);
+}
+
 template <typename CALLBACK>
 inline
 void Trace::insert_call (IPOINT location, CALLBACK * callback) const

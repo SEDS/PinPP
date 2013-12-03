@@ -394,6 +394,18 @@ UINT32 Ins::operand_count (void) const
 }
 
 inline
+ADDRINT Ins::code_cache_address (void) const
+{
+  return INS_CodeCacheAddress (this->ins_);
+}
+
+inline
+USIZE Ins::code_cache_size (void) const
+{
+  return INS_CodeCacheSize (this->ins_);
+}
+
+inline
 void Ins::insert_version_case (REG reg, INT32 case_value, ADDRINT new_version, CALL_ORDER order) const
 {
   INS_InsertVersionCase (this->ins_, reg, case_value, new_version,

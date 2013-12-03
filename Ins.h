@@ -165,6 +165,11 @@ public:
 
   void insert_version_case (REG reg, INT32 case_value, ADDRINT new_version, CALL_ORDER order = CALL_ORDER_DEFAULT) const;
 
+  /// {@ Code Cache methods
+  ADDRINT code_cache_address (void) const;
+  USIZE code_cache_size (void) const;
+  /// @}
+
   /// @{ Insert Call Methods
   template <typename CALLBACK>
   void insert_call (IPOINT location, CALLBACK * callback) const;
