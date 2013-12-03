@@ -393,6 +393,13 @@ UINT32 Ins::operand_count (void) const
   return INS_OperandCount (this->ins_);
 }
 
+inline
+void Ins::insert_version_case (REG reg, INT32 case_value, ADDRINT new_version, CALL_ORDER order) const
+{
+  INS_InsertVersionCase (this->ins_, reg, case_value, new_version,
+                         IARG_CALL_ORDER, order, IARG_END);
+}
+
 template <typename CALLBACK>
 inline
 void Ins::

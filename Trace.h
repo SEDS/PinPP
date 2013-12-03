@@ -55,12 +55,13 @@ public:
 
   USIZE size (void) const;
 
-  // RTN rtn (void) const;
-
   bool has_fall_through (void) const;
   USIZE stub_size (void) const;
 
   /// @}
+
+  /// Version getter
+  ADDRINT version (void) const;
 
   /// @{ Insert Call Methods
   template <typename CALLBACK>

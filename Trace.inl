@@ -122,6 +122,12 @@ USIZE Trace::stub_size (void) const
   return TRACE_StubSize (this->trace_);
 }
 
+inline
+ADDRINT Trace::version (void) const
+{
+  return TRACE_Version (this->trace_);
+}
+
 template <typename CALLBACK>
 inline
 void Trace::insert_call (IPOINT location, CALLBACK * callback) const

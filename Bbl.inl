@@ -91,6 +91,12 @@ void Bbl::move_all_attributes (const Bbl & bbl)
   BBL_MoveAllAttributes (this->bbl_, bbl.bbl_);
 }
 
+inline
+void Bbl::set_target_version (ADDRINT version)
+{
+  BBL_SetTargetVersion (this->bbl_, version);
+}
+
 template <typename CALLBACK>
 inline
 void Bbl::insert_call (IPOINT location, CALLBACK * callback) const

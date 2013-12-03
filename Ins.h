@@ -159,10 +159,11 @@ public:
   /// Get the parent routine.
   Routine routine (void) const;
 
-    //RTN   LEVEL_PINCLIENT::INS_Rtn (INS x)
   ADDRINT direct_branch_or_call_target_address (void) const;
   ADDRINT next_address (void) const;
   /// @}
+
+  void insert_version_case (REG reg, INT32 case_value, ADDRINT new_version, CALL_ORDER order = CALL_ORDER_DEFAULT) const;
 
   /// @{ Insert Call Methods
   template <typename CALLBACK>
