@@ -40,7 +40,11 @@ public:
 
   /// {@ PIN wrapper methods
   static bool supports_processor_state (PROCESSOR_STATE state);
+#if (PIN_PRODUCT_VERSION_MAJOR <= 2) && (PIN_PRODUCT_VERSION_MINOR < 13)
   void get_regval (REG reg, REGVAL * val) const;
+#else
+  void get_regval (REG reg, UINT8 * val) const;
+#endif
 
   ADDRINT get_reg (REG reg) const;
 
@@ -94,7 +98,12 @@ public:
   /// @}
 
   /// @{ Register Methods
+#if (PIN_PRODUCT_VERSION_MAJOR <= 2) && (PIN_PRODUCT_VERSION_MINOR < 13)
   void set_regval (REG reg, const REGVAL *val);
+#else
+  void set_regval (REG reg, const UINT8 * val);
+#endif
+
   void set_reg (REG reg, ADDRINT val);
   /// @}
 };
