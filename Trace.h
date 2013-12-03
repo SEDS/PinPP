@@ -19,6 +19,8 @@ namespace OASIS
 {
 namespace Pin
 {
+// foraward decl
+class Routine;
 
 /**
  * @class Trace
@@ -35,6 +37,9 @@ public:
   ~Trace (void);
 
   operator TRACE () const;
+
+  // Get the parent Routine
+  Routine routine () const;
 
   /// @{ Bbl Methods
   UINT32 num_ins (void) const;
