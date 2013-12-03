@@ -86,6 +86,18 @@ INT64 Operand::memory_displacement (void) const
 }
 
 inline
+USIZE Operand::memory_size (void) const
+{
+  return INS_MemoryOperandSize (this->ins_, this->index_);
+}
+
+inline
+VOID Operand::rewrite_memory_operand (REG reg) const
+{
+  INS_RewriteMemoryOperand (this->ins_, this->index_, reg);
+}
+
+inline
 BOOL Operand::is_fixed_memop (void) const
 {
   return INS_OperandIsFixedMemop (this->ins_, this->index_);
@@ -137,6 +149,42 @@ inline
 UINT32 Operand::width (void) const
 {
   return INS_OperandWidth (this->ins_, this->index_);
+}
+
+inline
+UINT32 Operand::name_id (void) const
+{
+  return INS_OperandNameId (this->ins_, this->index_);
+}
+
+inline
+BOOL Operand::is_read (void) const
+{
+  return INS_OperandRead (this->ins_, this->index_);
+}
+
+inline
+BOOL Operand::is_read_only (void) const
+{
+  return INS_OperandReadOnly (this->ins_, this->index_);
+}
+
+inline
+BOOL Operand::is_written (void) const
+{
+  return INS_OperandWritten (this->ins_, this->index_);
+}
+
+inline
+BOOL Operand::is_written_only (void) const
+{
+  return INS_OperandWrittenOnly (this->ins_, this->index_);
+}
+
+inline
+BOOL Operand::is_read_and_written (void) const
+{
+  return INS_OperandReadAndWritten (this->ins_, this->index_);
 }
 
 } // namespace OASIS
