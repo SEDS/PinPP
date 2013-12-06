@@ -43,6 +43,9 @@ public:
   T * operator -> (void) const;
   T * operator [] (THREADID thr_id) const;
 
+  T * get (void) const;
+  T * get (THREADID thr_id) const;
+
   /// Set the data for the local storage.
   void set (T * data);
   void set (THREADID thr_id, T * data);
