@@ -11,9 +11,21 @@ namespace Pin
 //
 template <typename T>
 inline
-TLS <T>::TLS (void)
+TLS <T>::TLS (DESTRUCTFUN destructor)
+: key_ (PIN_CreateThreadDataKey (destructor))
 {
-  this->key_ = PIN_CreateThreadDataKey (0);
+
+}
+
+//
+// TLS
+//
+template <typename T>
+inline
+TLS <T>::TLS (const TLS & tls)
+: key_ (tls.key_)
+{
+
 }
 
 //
@@ -41,7 +53,7 @@ T * TLS <T>::operator -> (void) const
 //
 template <typename T>
 inline
-T * TLS <T>::get (THREADID thr_id) const
+T * TLS <T>::operator [] (THREADID thr_id) const
 {
   return reinterpret_cast <T *> (PIN_GetThreadData (this->key_, thr_id));
 }
@@ -74,6 +86,14 @@ inline
 void TLS <T>::set (THREADID thr_id, T * data)
 {
   PIN_SetThreadData (this->key_, data, thr_id);
+}
+
+template <typename T>
+inline
+const TLS <T> & TLS <T>::operator = (const TLS & rhs)
+{
+  this->key_ = rhs.key_;
+  return *this;
 }
 
 } // namespace OASIS
