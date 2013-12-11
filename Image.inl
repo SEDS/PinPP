@@ -167,6 +167,18 @@ Image Image::open (const std::string & filename)
 }
 
 inline
+Image Image::head (void)
+{
+  return APP_ImgHead ();
+}
+
+inline
+Image Image::tail (void)
+{
+  return APP_ImgTail ();
+}
+
+inline
 Section::iterator_type Image::section_head (void) const
 {
   return IMG_SecHead (this->img_);

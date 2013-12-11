@@ -67,6 +67,14 @@ public:
 
   void move_all_attributes (const Bbl & bbl);
 
+  /// Set the target version for all Traces in the Bbl
+  void set_target_version (ADDRINT version);
+
+  /// {@ Code Cache methods
+  ADDRINT code_cache_address (void) const;
+  USIZE code_cache_size (void) const;
+  /// @}
+
   /// @{ Insert Call Methods
   template <typename CALLBACK>
   void insert_call (IPOINT location, CALLBACK * callback) const;

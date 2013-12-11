@@ -42,6 +42,7 @@ project (pin++) : pin {
     Routine.cpp
     Section.cpp
     Symbol.cpp
+    Trace.cpp
   }
 
   Header_Files {
