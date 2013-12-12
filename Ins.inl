@@ -477,11 +477,13 @@ BOOL Ins::is_vgather (void) const
   return INS_IsVgather (this->ins_);
 }
 
+#if (PIN_PRODUCT_VERSION_MAJOR > 2) || (PIN_PRODUCT_VERSION_MAJOR == 2 && PIN_PRODUCT_VERSION_MINOR >= 13)
 inline
 BOOL Ins::is_vscatter (void) const
 {
   return INS_IsVscatter (this->ins_);
 }
+#endif
 
 inline
 BOOL Ins::is_sub (void) const

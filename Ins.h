@@ -141,7 +141,7 @@ public:
   BOOL is_xend (void) const;
   BOOL is_halt (void) const;
   BOOL is_vgather (void) const;
-  BOOL is_vscatter (void) const;
+
   BOOL is_sub (void) const;
   BOOL is_mov (void) const;
   // Returns true if instruction is a mov reg1, reg1 and reg1 is a full reg
@@ -150,6 +150,12 @@ public:
   BOOL is_mask_mov (void) const;
   BOOL is_string_op (void) const;
   BOOL is_iret (void) const;
+
+#if (PIN_PRODUCT_VERSION_MAJOR > 2) || (PIN_PRODUCT_VERSION_MAJOR == 2 && PIN_PRODUCT_VERSION_MINOR >= 13)
+  BOOL is_vscatter (void) const;
+#endif
+
+
   BOOL has_real_rep (void) const;
   BOOL seg_prefix_is_memory_read (void) const;
   BOOL seg_prefix_is_memory_write (void) const;
