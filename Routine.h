@@ -85,6 +85,12 @@ public:
   /// Get the routine's size.
   USIZE size (void) const;
 
+  /// Get the routine's range.
+  USIZE range (void) const;
+
+  /// Clear history of routine check
+  static VOID delete_check_history (void);
+
   /// @{ Search Methods
   static std::string find_name (ADDRINT addr);
   static Routine find (ADDRINT addr);

@@ -19,6 +19,8 @@ namespace OASIS
 {
 namespace Pin
 {
+// foraward decl
+class Routine;
 
 /**
  * @class Trace
@@ -36,6 +38,9 @@ public:
 
   operator TRACE () const;
 
+  // Get the parent Routine
+  Routine routine () const;
+
   /// @{ Bbl Methods
   UINT32 num_ins (void) const;
   UINT32 num_bbl (void) const;
@@ -50,11 +55,17 @@ public:
 
   USIZE size (void) const;
 
-  // RTN rtn (void) const;
-
   bool has_fall_through (void) const;
   USIZE stub_size (void) const;
 
+  /// @}
+
+  /// Version getter
+  ADDRINT version (void) const;
+
+  /// {@ Code Cache methods
+  ADDRINT code_cache_address (void) const;
+  USIZE code_cache_size (void) const;
   /// @}
 
   /// @{ Insert Call Methods

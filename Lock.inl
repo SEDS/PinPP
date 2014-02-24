@@ -17,9 +17,23 @@ Lock::Lock (void)
 }
 
 inline
+Lock::Lock (const Lock & lock)
+: lock_ (lock.lock_)
+{
+
+}
+
+inline
 Lock::~Lock (void)
 {
 
+}
+
+inline
+const Lock & Lock::operator = (const Lock & lock)
+{
+  this->lock_ = lock.lock_;
+  return *this;
 }
 
 inline

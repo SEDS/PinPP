@@ -42,6 +42,7 @@ project (pin++) : pin {
     Routine.cpp
     Section.cpp
     Symbol.cpp
+    Trace.cpp
   }
 
   Header_Files {
@@ -76,6 +77,7 @@ project (pin++) : pin {
     Routine_T.cpp
     Routine_Instrument.cpp
     Tool.cpp
+    Trace_Buffer.cpp
     Trace_Instrument.cpp
     Try_Block.cpp
   }

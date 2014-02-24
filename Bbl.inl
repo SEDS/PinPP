@@ -91,6 +91,24 @@ void Bbl::move_all_attributes (const Bbl & bbl)
   BBL_MoveAllAttributes (this->bbl_, bbl.bbl_);
 }
 
+inline
+void Bbl::set_target_version (ADDRINT version)
+{
+  BBL_SetTargetVersion (this->bbl_, version);
+}
+
+inline
+ADDRINT Bbl::code_cache_address (void) const
+{
+  return BBL_CodeCacheAddress (this->bbl_);
+}
+
+inline
+USIZE Bbl::code_cache_size (void) const
+{
+  return BBL_CodeCacheSize (this->bbl_);
+}
+
 template <typename CALLBACK>
 inline
 void Bbl::insert_call (IPOINT location, CALLBACK * callback) const

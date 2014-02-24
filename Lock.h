@@ -32,8 +32,14 @@ public:
   /// Default constructor.
   Lock (void);
 
+  /// Copy constructor.
+  Lock (const Lock & lock);
+
   /// Destructor.
   ~Lock (void);
+
+  /// Assignment operator.
+  const Lock & operator = (const Lock & lock);
 
   /**
    * Acquire the lock

@@ -66,6 +66,12 @@ public:
   /// Open image based on a filename.
   static Image open (const std::string & filename);
 
+  /// Open first image loaded into memory
+  static Image head (void);
+
+  /// Open last image loaded into memory
+  static Image tail (void);
+
   bool valid (void) const;
   iterator_type make_iter (void) const;
 

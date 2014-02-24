@@ -48,7 +48,8 @@ public:
   UINT32 memory_scale (void) const;
   INT64 memory_displacement (void) const;
   BOOL is_fixed_memop (void) const;
-
+  USIZE memory_size (void) const;
+  VOID rewrite_memory_operand (REG reg) const;
   /// @}
 
   /// {@ Generic ops
@@ -61,7 +62,12 @@ public:
   UINT64 immediate (void) const;
   BOOL is_implicit (void) const;
   UINT32 width (void) const;
-
+  UINT32 name_id (void) const;
+  BOOL is_read (void) const;
+  BOOL is_read_only (void) const;
+  BOOL is_written (void) const;
+  BOOL is_written_only (void) const;
+  BOOL is_read_and_written (void) const;
   /// @}
 
 private:

@@ -111,6 +111,18 @@ USIZE Routine::size (void) const
 }
 
 inline
+USIZE Routine::range (void) const
+{
+  return RTN_Range (this->rtn_);
+}
+
+inline
+VOID Routine::delete_check_history (void)
+{
+  DeleteRtnCheckHistory ();
+}
+
+inline
 string Routine::find_name (ADDRINT addr)
 {
   return RTN_FindNameByAddress (addr);

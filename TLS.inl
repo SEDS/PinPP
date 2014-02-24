@@ -6,19 +6,22 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// TLS
-//
 template <typename T>
 inline
-TLS <T>::TLS (void)
+TLS <T>::TLS (DESTRUCTFUN destructor)
+: key_ (PIN_CreateThreadDataKey (destructor))
 {
-  this->key_ = PIN_CreateThreadDataKey (0);
+
 }
 
-//
-// ~TLS
-//
+template <typename T>
+inline
+TLS <T>::TLS (const TLS & tls)
+: key_ (tls.key_)
+{
+
+}
+
 template <typename T>
 inline
 TLS <T>::~TLS (void)
@@ -26,9 +29,6 @@ TLS <T>::~TLS (void)
   PIN_DeleteThreadDataKey (this->key_);
 }
 
-//
-// operator ->
-//
 template <typename T>
 inline
 T * TLS <T>::operator -> (void) const
@@ -36,9 +36,20 @@ T * TLS <T>::operator -> (void) const
   return reinterpret_cast <T *> (PIN_GetThreadData (this->key_));
 }
 
-//
-// get
-//
+template <typename T>
+inline
+T * TLS <T>::operator [] (THREADID thr_id) const
+{
+  return reinterpret_cast <T *> (PIN_GetThreadData (this->key_, thr_id));
+}
+
+template <typename T>
+inline
+T * TLS <T>::get (void) const
+{
+  return reinterpret_cast <T *> (PIN_GetThreadData (this->key_));
+}
+
 template <typename T>
 inline
 T * TLS <T>::get (THREADID thr_id) const
@@ -46,9 +57,6 @@ T * TLS <T>::get (THREADID thr_id) const
   return reinterpret_cast <T *> (PIN_GetThreadData (this->key_, thr_id));
 }
 
-//
-// is_set
-//
 template <typename T>
 inline
 bool TLS <T>::is_set (void) const
@@ -56,9 +64,6 @@ bool TLS <T>::is_set (void) const
   return 0 != PIN_GetThreadData (this->key_);
 }
 
-//
-// set
-//
 template <typename T>
 inline
 void TLS <T>::set (T * data)
@@ -66,14 +71,19 @@ void TLS <T>::set (T * data)
   PIN_SetThreadData (this->key_, data);
 }
 
-//
-// set
-//
 template <typename T>
 inline
 void TLS <T>::set (THREADID thr_id, T * data)
 {
   PIN_SetThreadData (this->key_, data, thr_id);
+}
+
+template <typename T>
+inline
+const TLS <T> & TLS <T>::operator = (const TLS & rhs)
+{
+  this->key_ = rhs.key_;
+  return *this;
 }
 
 } // namespace OASIS

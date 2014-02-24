@@ -112,6 +112,12 @@ BOOL Ins::is_return (void) const
 }
 
 inline
+BOOL Ins::is_system_return (void) const
+{
+  return INS_IsSysret (this->ins_);
+}
+
+inline
 BOOL Ins::is_memory_read (void) const
 {
   return INS_IsMemoryRead (this->ins_);
@@ -145,6 +151,12 @@ inline
 BOOL Ins::is_nop (void) const
 {
   return INS_IsNop (this->ins_);
+}
+
+inline
+BOOL Ins::is_lea (void) const
+{
+  return INS_IsLea (this->ins_);
 }
 
 inline
@@ -196,9 +208,27 @@ BOOL Ins::is_branch (void) const
 }
 
 inline
+BOOL Ins::is_direct_branch (void) const
+{
+  return INS_IsDirectBranch (this->ins_);
+}
+
+inline
+BOOL Ins::is_direct_call (void) const
+{
+  return INS_IsDirectCall (this->ins_);
+}
+
+inline
 BOOL Ins::is_branch_or_call (void) const
 {
   return INS_IsBranchOrCall (this->ins_);
+}
+
+inline
+BOOL Ins::stutters (void) const
+{
+  return INS_Stutters (this->ins_);
 }
 
 inline
@@ -292,6 +322,42 @@ ADDRINT Ins::next_address (void) const
 }
 
 inline
+ADDRDELTA Ins::memory_displacement (void) const
+{
+  return INS_MemoryDisplacement (this->ins_);
+}
+
+inline
+REG Ins::memory_base_reg (void) const
+{
+  return INS_MemoryBaseReg (this->ins_);
+}
+
+inline
+REG Ins::memory_index_reg (void) const
+{
+  return INS_MemoryIndexReg (this->ins_);
+}
+
+inline
+UINT32 Ins::memory_scale (void) const
+{
+  return INS_MemoryScale (this->ins_);
+}
+
+inline
+BOOL Ins::change_reg (const REG old_reg, const REG new_reg, const BOOL as_read) const
+{
+  return INS_ChangeReg (this->ins_, old_reg, new_reg, as_read);
+}
+
+inline
+VOID Ins::get_mem_accesses (int * num, int * size, int * indexSize) const
+{
+  return GetNumberAndSizeOfMemAccesses (this->ins_, num, size, indexSize);
+}
+
+inline
 REG Ins::reg_read (UINT32 k) const
 {
   return INS_RegR (this->ins_, k);
@@ -301,6 +367,18 @@ inline
 REG Ins::reg_write (UINT32 k) const
 {
   return INS_RegW (this->ins_, k);
+}
+
+inline
+REG Ins::rep_counter (void) const
+{
+  return INS_RepCountRegister (this->ins_);
+}
+
+inline
+REG Ins::segment_reg_prefix (void) const
+{
+  return INS_SegmentRegPrefix (this->ins_);
 }
 
 inline
@@ -370,6 +448,146 @@ BOOL Ins::is_ip_relative_write (void) const
 }
 
 inline
+BOOL Ins::is_xbegin (void) const
+{
+  return INS_IsXbegin (this->ins_);
+}
+
+inline
+BOOL Ins::is_xchg (void) const
+{
+  return INS_IsXchg (this->ins_);
+}
+
+inline
+BOOL Ins::is_xend (void) const
+{
+  return INS_IsXend (this->ins_);
+}
+
+inline
+BOOL Ins::is_halt (void) const
+{
+  return INS_IsHalt (this->ins_);
+}
+
+inline
+BOOL Ins::is_vgather (void) const
+{
+  return INS_IsVgather (this->ins_);
+}
+
+#if (PIN_PRODUCT_VERSION_MAJOR > 2) || (PIN_PRODUCT_VERSION_MAJOR == 2 && PIN_PRODUCT_VERSION_MINOR >= 13)
+inline
+BOOL Ins::is_vscatter (void) const
+{
+  return INS_IsVscatter (this->ins_);
+}
+#endif
+
+inline
+BOOL Ins::is_sub (void) const
+{
+  return INS_IsSub (this->ins_);
+}
+
+inline
+BOOL Ins::is_mov (void) const
+{
+  return INS_IsMov (this->ins_);
+}
+
+inline
+BOOL Ins::is_mov_reg_reg_same (void) const
+{
+  return INS_IsMovFullRegRegSame (this->ins_);
+}
+
+inline
+BOOL Ins::is_rdtsc (void) const
+{
+  return INS_IsRDTSC (this->ins_);
+}
+
+inline
+BOOL Ins::is_mask_mov (void) const
+{
+  return INS_IsMaskMov (this->ins_);
+}
+
+inline
+BOOL Ins::is_string_op (void) const
+{
+  return INS_IsStringop (this->ins_);
+}
+
+inline
+BOOL Ins::is_iret (void) const
+{
+  return INS_IsIRet (this->ins_);
+}
+
+inline
+BOOL Ins::has_real_rep (void) const
+{
+  return INS_HasRealRep (this->ins_);
+}
+
+inline
+BOOL Ins::seg_prefix_is_memory_read (void) const
+{
+  return INS_SegPrefixIsMemoryRead (this->ins_);
+}
+
+inline
+BOOL Ins::seg_prefix_is_memory_write (void) const
+{
+  return INS_SegPrefixIsMemoryWrite (this->ins_);
+}
+
+inline
+BOOL Ins::address_size_prefix (void) const
+{
+  return INS_AddressSizePrefix (this->ins_);
+}
+
+inline
+BOOL Ins::branch_not_taken_prefix (void) const
+{
+  return INS_BranchNotTakenPrefix (this->ins_);
+}
+
+inline
+BOOL Ins::lock_prefix (void) const
+{
+  return INS_LockPrefix (this->ins_);
+}
+
+inline
+BOOL Ins::operand_size_prefix (void) const
+{
+  return INS_OperandSizePrefix (this->ins_);
+}
+
+inline
+BOOL Ins::rep_prefix (void) const
+{
+  return INS_RepPrefix (this->ins_);
+}
+
+inline
+BOOL Ins::repne_prefix (void) const
+{
+  return INS_RepnePrefix (this->ins_);
+}
+
+inline
+BOOL Ins::segment_prefix (void) const
+{
+  return INS_SegmentPrefix (this->ins_);
+}
+
+inline
 PREDICATE Ins::get_predicate (void) const
 {
   return INS_GetPredicate (this->ins_);
@@ -391,6 +609,55 @@ inline
 UINT32 Ins::operand_count (void) const
 {
   return INS_OperandCount (this->ins_);
+}
+
+inline
+ADDRINT Ins::code_cache_address (void) const
+{
+  return INS_CodeCacheAddress (this->ins_);
+}
+
+inline
+USIZE Ins::code_cache_size (void) const
+{
+  return INS_CodeCacheSize (this->ins_);
+}
+
+inline
+void Ins::set_att_syntax (void)
+{
+  PIN_SetSyntaxATT ();
+}
+
+inline
+void Ins::set_intel_syntax (void)
+{
+  PIN_SetSyntaxIntel ();
+}
+
+inline
+void Ins::set_xed_syntax (void)
+{
+  PIN_SetSyntaxXED ();
+}
+
+inline
+void Ins::insert_version_case (REG reg, INT32 case_value, ADDRINT new_version, CALL_ORDER order) const
+{
+  INS_InsertVersionCase (this->ins_, reg, case_value, new_version,
+                         IARG_CALL_ORDER, order, IARG_END);
+}
+
+inline
+void Ins::insert_indirect_jump (IPOINT location, REG reg) const
+{
+  INS_InsertIndirectJump (this->ins_, location, reg);
+}
+
+inline
+void Ins::insert_direct_jump (IPOINT location, ADDRINT tgt) const
+{
+  INS_InsertDirectJump (this->ins_, location, tgt);
 }
 
 template <typename CALLBACK>
