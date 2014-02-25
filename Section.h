@@ -68,8 +68,8 @@ public:
   BOOL valid (void) const;
 
   /// @{ Iterator Methods
-  Routine::iterator_type routine_head (void) const;
-  Routine::iterator_type routine_tail (void) const;
+  Routine::iterator_type begin (void) const;
+  Routine::iterator_type end (void) const;
   /// @}
 
   const string & name (void) const;

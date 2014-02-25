@@ -153,19 +153,19 @@ void Routine::close (void) const
 }
 
 inline
-Ins::iterator_type Routine::instruction_head (void) const
+Ins::iterator_type Routine::begin (void) const
 {
   return RTN_InsHead (this->rtn_);
 }
 
 inline
-Ins::iterator_type Routine::instruction_head_only (void) const
+Ins::iterator_type Routine::begin_only (void) const
 {
   return RTN_InsHeadOnly (this->rtn_);
 }
 
 inline
-Ins::iterator_type Routine::instruction_tail (void) const
+Ins::iterator_type Routine::end (void) const
 {
   return RTN_InsTail (this->rtn_);
 }

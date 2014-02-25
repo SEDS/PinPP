@@ -1,6 +1,11 @@
 
 workspace (pin++) {
-  cmdline += -include $OASIS_ROOT/MPC/config -static
+  cmdline += -include $OASIS_ROOT/MPC/config
 
-  pin++.mpc
+  static {
+    cmdline += -static
+    pin++.mpc
+  }
+
+  ../examples/pintools
 }

@@ -179,13 +179,13 @@ Image Image::tail (void)
 }
 
 inline
-Section::iterator_type Image::section_head (void) const
+Section::iterator_type Image::begin (void) const
 {
   return IMG_SecHead (this->img_);
 }
 
 inline
-Section::iterator_type Image::section_tail (void) const
+Section::iterator_type Image::end (void) const
 {
   return IMG_SecTail (this->img_);
 }

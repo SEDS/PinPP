@@ -112,9 +112,10 @@ public:
   const Symbol & symbol (void) const;
 
   /// @{ Instruction Methods
-  Ins::iterator_type instruction_head (void) const;
-  Ins::iterator_type instruction_head_only (void) const;
-  Ins::iterator_type instruction_tail (void) const;
+  Ins::iterator_type begin (void) const;
+  Ins::iterator_type end (void) const;
+
+  Ins::iterator_type begin_only (void) const;
   UINT32 instruction_count (void) const;
   /// @}
 

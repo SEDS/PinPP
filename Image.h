@@ -79,8 +79,8 @@ public:
   Symbol::iterator_type regular_symbol_head (void) const;
 
   /// @{ Section Methods
-  Section::iterator_type section_head (void) const;
-  Section::iterator_type section_tail (void) const;
+  Section::iterator_type begin (void) const;
+  Section::iterator_type end (void) const;
   /// @}
 
   ADDRINT entry (void) const;

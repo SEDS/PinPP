@@ -65,13 +65,13 @@ BOOL Section::valid (void) const
 }
 
 inline
-Routine::iterator_type Section::routine_head (void) const
+Routine::iterator_type Section::begin (void) const
 {
   return SEC_RtnHead (this->sec_);
 }
 
 inline
-Routine::iterator_type Section::routine_tail (void) const
+Routine::iterator_type Section::end (void) const
 {
   return SEC_RtnTail (this->sec_);
 }
