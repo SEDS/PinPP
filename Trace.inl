@@ -38,7 +38,7 @@ Trace::operator TRACE () const
 // bbl_head
 //
 inline
-Bbl::iterator_type Trace::bbl_head (void) const
+Bbl::iterator_type Trace::begin (void) const
 {
   return TRACE_BblHead (this->trace_);
 }
@@ -47,7 +47,7 @@ Bbl::iterator_type Trace::bbl_head (void) const
 // bbl_tail
 //
 inline
-Bbl::iterator_type Trace::bbl_tail (void) const
+Bbl::iterator_type Trace::end (void) const
 {
   return TRACE_BblTail (this->trace_);
 }

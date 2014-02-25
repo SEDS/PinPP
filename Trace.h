@@ -44,8 +44,9 @@ public:
   /// @{ Bbl Methods
   UINT32 num_ins (void) const;
   UINT32 num_bbl (void) const;
-  Bbl::iterator_type bbl_head (void) const;
-  Bbl::iterator_type bbl_tail (void) const;
+  
+  Bbl::iterator_type begin (void) const;
+  Bbl::iterator_type end (void) const;
   /// @}
 
   /// {@ Inspection Methods
