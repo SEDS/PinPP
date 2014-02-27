@@ -41,7 +41,7 @@ of Pin. Next, clone the Pin++ repo and configure the environment variables:
 
 Generate the Pin++ workspace: 
 
-    cd $PINPP_ROOT/pin++
+    cd $PINPP_ROOT
     $MPC_ROOT/mwc.pl -type [build type] -features pin=1,[ia32=0|1],intel64=[0|1] pin++.mwc
 
 If you are building Pin++ for a 32-bit architecture, then select 
