@@ -1,0 +1,228 @@
+// $Id: ManualExamples.mpc 2305 2013-10-07 03:23:23Z hillj $
+
+project (buffer) : oasis_pintool {
+  sharedname = buffer
+
+  Source_Files {
+    buffer.cpp
+  }
+}
+
+project (detach) : oasis_pintool {
+  sharedname    = detach
+
+  Source_Files {
+    detach.cpp
+  }
+}
+
+project (inscount0) : oasis_pintool {
+  sharedname    = inscount0
+
+  Source_Files {
+    inscount0.cpp
+  }
+}
+
+project (inscount0_reuse) : oasis_pintool {
+  sharedname    = inscount0_reuse
+
+  Source_Files {
+    inscount0_reuse.cpp
+  }
+}
+
+project (inscount1) : oasis_pintool {
+  sharedname    = inscount1
+
+  Source_Files {
+    inscount1.cpp
+  }
+}
+
+project (inscount1_reuse) : oasis_pintool {
+  sharedname    = inscount1_reuse
+
+  Source_Files {
+    inscount1_reuse.cpp
+  }
+}
+
+project (inscount2) : oasis_pintool {
+  sharedname    = inscount2
+
+  Source_Files {
+    inscount2.cpp
+  }
+}
+
+project (inscount2_reuse) : oasis_pintool {
+  sharedname    = inscount2_reuse
+
+  Source_Files {
+    inscount2_reuse.cpp
+  }
+}
+
+project (itrace) : oasis_pintool {
+  sharedname    = itrace
+
+  Source_Files {
+    itrace.cpp
+  }
+}
+
+project (isampling) : oasis_pintool {
+  sharedname    = isampling
+
+  Source_Files {
+    isampling.cpp
+  }
+}
+
+project (inscount_tls) : oasis_pintool {
+  sharedname    = inscount_tls
+
+  Source_Files {
+    inscount_tls.cpp
+  }
+}
+
+project (inscount_tls_byref) : oasis_pintool {
+  sharedname    =  inscount_tls_byref
+
+  Source_Files {
+    inscount_tls_byref.cpp
+  }
+}
+
+project (imageload) : oasis_pintool {
+  sharedname    = imageload
+
+  Source_Files {
+    imageload.cpp
+  }
+}
+
+project (invocation) : oasis_pintool {
+  sharedname    = invocation
+
+  Source_Files {
+    invocation.cpp
+  }
+}
+
+project (fork_jit_tool) : oasis_pintool {
+  sharedname    = fork_jit_tool
+
+  Source_Files {
+    conditional (!prop:windows) {
+      fork_jit_tool.cpp
+    }
+  }
+}
+
+project (nonstatica) : oasis_pintool {
+  sharedname    = nonstatica
+
+  Source_Files {
+    nonstatica.cpp
+  }
+}
+
+project (proccount) : oasis_pintool {
+  sharedname    = proccount
+
+  Source_Files {
+    proccount.cpp
+  }
+}
+
+project (proccount_reuse) : oasis_pintool {
+  sharedname    = proccount_reuse
+
+  Source_Files {
+    proccount_reuse.cpp
+  }
+}
+
+project (proccount_orig) : oasis_pintool {
+  sharedname    = proccount_orig
+
+  Source_Files {
+    proccount_orig.cpp
+  }
+}
+
+project (staticcount) : oasis_pintool {
+  sharedname    = staticcount
+
+  Source_Files {
+    staticcount.cpp
+  }
+}
+
+project (follow_child_tool) : oasis_pintool {
+  sharedname    = follow_child_tool
+
+  Source_Files {
+    follow_child_tool.cpp
+  }
+}
+
+project (malloctrace) : oasis_pintool {
+  sharedname    = malloctrace
+
+  Source_Files {
+    malloctrace.cpp
+  }
+}
+
+project (pinatrace) : oasis_pintool {
+  sharedname    = pinatrace
+
+  Source_Files {
+    pinatrace.cpp
+  }
+}
+
+project (strace) : oasis_pintool {
+  sharedname    = strace
+
+  Source_Files {
+    strace.cpp
+  }
+}
+
+project (malloc_mt) : oasis_pintool {
+  sharedname    = malloc_mt
+
+  Source_Files {
+    malloc_mt.cpp
+  }
+}
+
+project (replacesigprobed) : oasis_pintool {
+  sharedname = replacesigprobed
+
+  Source_Files {
+    replacesigprobed.cpp
+  }
+}
+
+project (statica) : oasis_pintool_static {
+  exename = statica
+  install = .
+
+  Source_Files {
+    statica.cpp
+  }
+}
+
+project (emudiv) : oasis_pintool {
+  sharedname = emudiv
+
+  Source_Files {
+    emudiv.cpp
+  }
+}

@@ -1,0 +1,10 @@
+// $Id:
+
+project (Function_Instructions) : oasis_pintool_static {
+  exename = Function_Instructions
+  install = .
+  
+  Source_Files {
+    Function_Instructions.cpp
+  }
+}

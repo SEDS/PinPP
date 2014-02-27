@@ -1,0 +1,12 @@
+// $Id:
+
+project (maid) : oasis_pintool {
+  sharedname = maid
+  install = .
+  
+  Source_Files {
+    argv_readparam.cpp
+    call_stack.cpp
+    maid.cpp
+  }
+}
