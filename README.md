@@ -15,8 +15,8 @@ To build the examples:
 
 * C++11 compliant compiler
 
-Setup
------------
+Environment Setup
+-------------------
 
 Set ```PIN_ROOT``` environment variable to the location of Pin
 since we will be building Pintools outside of the normal distribution 
