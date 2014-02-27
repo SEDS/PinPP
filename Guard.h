@@ -99,6 +99,25 @@ private:
   RW_Mutex & lock_;
 };
 
+/**
+ * @class Client_Guard
+ *
+ * Special implementation of a guard type for the Pin client. When the
+ * guard is instantiated, it will lock the client. When the guard is 
+ * destroyed, it will unlock the client. This helps simply code since the
+ * client will automatically be unlockd regardless of how the control returns
+ * to the caller.
+ */
+class Client_Guard
+{
+public:
+  /// Default constructor.
+  Client_Guard (void);
+  
+  /// Destructor.
+  ~Client_Guard (void);
+};
+  
 } // namespace OASIS
 } // namespace Pin
 

@@ -46,6 +46,18 @@ Guard <RW_Mutex>::~Guard (void)
 {
   this->lock_.release ();
 }
+  
+inline
+Client_Guard::Client_Guard (void)
+{
+  PIN_LockClient ();
+}
+
+inline
+Client_Guard::~Client_Guard (void)
+{
+  PIN_UnlockClient ();
+}
 
 } // namespace OASIS
 } // namespace Pin
