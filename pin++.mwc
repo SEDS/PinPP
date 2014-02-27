@@ -1,0 +1,11 @@
+workspace (pin++) {
+  cmdline += -include $PINPP_ROOT/MPC/config
+
+  static {
+    cmdline += -static
+    
+    ./pin++
+  }
+
+  ./examples
+}

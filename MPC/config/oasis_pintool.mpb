@@ -1,0 +1,6 @@
+// $Id: oasis_pintool.mpb 2245 2013-09-06 23:20:23Z hillj $
+
+project : pintool, oasis_pinpp {
+
+}
+
