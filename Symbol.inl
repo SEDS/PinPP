@@ -109,6 +109,12 @@ Symbols::Symbols (const Symbols & symbols)
 }
 
 inline
+Symbols::~Symbols (void)
+{
+    
+}
+
+inline
 Symbol::iterator_type Symbols::end (void) const
 {
   return SYM_Invalid ();
