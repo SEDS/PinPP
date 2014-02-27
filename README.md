@@ -1,7 +1,7 @@
 Pin++
 ========
 
-A C++ template meta-programmable framework for authoring Pintools.
+A C++ template meta-programmable framework for authoring Pintools
 
 System Requirements
 -------------------------
