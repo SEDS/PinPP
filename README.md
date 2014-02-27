@@ -15,6 +15,10 @@ To build the examples:
 
 * C++11 compliant compiler
 
+### Tested Compilers
+
+* Clang 5.0, or greater
+
 Environment Setup
 -------------------
 
