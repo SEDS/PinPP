@@ -155,6 +155,12 @@ Image Image::find_by_address (ADDRINT addr)
 }
 
 inline
+Routine Image::find_routine (const std::string & name) const
+{
+  return this->find_routine (name.c_str ());
+}
+
+inline
 Routine Image::find_routine (const char * name) const
 {
   return Routine (RTN_FindByName (this->img_, name));
@@ -194,12 +200,6 @@ inline
 Image::iterator_type Image::make_iter (void) const
 {
   return iterator_type (this->img_);
-}
-
-inline
-Symbol::iterator_type Image::regular_symbol_head (void) const
-{
-  return IMG_RegsymHead (this->img_);
 }
 
 } // namespace OASIS

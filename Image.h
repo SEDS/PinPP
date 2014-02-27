@@ -76,7 +76,7 @@ public:
   iterator_type make_iter (void) const;
 
   /// Get an iterator to the head of the regular symbols.
-  Symbol::iterator_type regular_symbol_head (void) const;
+  Symbols symbols (void) const;
 
   /// @{ Section Methods
   Section::iterator_type begin (void) const;
@@ -99,8 +99,9 @@ public:
   /// Close the open image.
   void close (void);
 
+  Routine find_routine (const std::string & name) const;
   Routine find_routine (const char * name) const;
-
+  
 private:
   /// Reference to target image object.
   IMG img_;

@@ -91,11 +91,28 @@ std::string Symbol::undecorate (UNDECORATION style) const
   return undecorate (this->name (), style);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// class Symbols
+
 inline
-Symbol::iterator_type Symbol::make_iter (void) const
+Symbols::Symbols (const Image & img)
+: img_ (img)
 {
-  return this->sym_;
+    
 }
 
+inline
+Symbols::Symbols (const Symbols & symbols)
+: img_ (symbols.img_)
+{
+    
+}
+
+inline
+Symbol::iterator_type Symbols::end (void) const
+{
+  return SYM_Invalid ();
+}
+  
 } // namespace OASIS
 } // namespace Pin

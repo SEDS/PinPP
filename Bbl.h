@@ -53,8 +53,8 @@ public:
 
   /// @{ Instruction Methods
   UINT32 ins_count (void) const;
-  Ins::iterator_type ins_head (void) const;
-  Ins::iterator_type ins_tail (void) const;
+  Ins::iterator_type begin (void) const;
+  Ins::iterator_type end (void) const;
   /// @}
 
   /// @{ Inspection Methods

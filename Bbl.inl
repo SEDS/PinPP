@@ -38,13 +38,13 @@ UINT32 Bbl::ins_count (void) const
 }
 
 inline
-Ins::iterator_type Bbl::ins_head (void) const
+Ins::iterator_type Bbl::begin (void) const
 {
   return BBL_InsHead (this->bbl_);
 }
 
 inline
-Ins::iterator_type Bbl::ins_tail (void) const
+Ins::iterator_type Bbl::end (void) const
 {
   return BBL_InsTail (this->bbl_);
 }

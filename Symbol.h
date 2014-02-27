@@ -6,7 +6,7 @@
  *
  *  $Id: generate_cpp_class.py 3685 2012-09-26 14:45:04Z dfeiock $
  *
- *  @author      INSERT NAME HERE
+ *  @author      James H. Hill
  */
 //==============================================================================
 
@@ -53,8 +53,6 @@ public:
   bool operator != (const Symbol & rhs) const;
   /// @}
 
-  iterator_type make_iter (void) const;
-
   /// Undecorate a symbol.
   static std::string undecorate (const std::string & name, UNDECORATION style);
 
@@ -81,6 +79,24 @@ private:
   SYM & sym_;
 };
 
+// Forward decl.
+class Image;
+  
+class OASIS_PIN_Export Symbols
+{
+public:
+  Symbols (const Image & img);
+  Symbols (const Symbols & symbols);
+  
+  ~Symbols (void);
+  
+  Symbol::iterator_type begin (void) const;
+  Symbol::iterator_type end (void) const;
+  
+private:
+  const Image & img_;
+};
+  
 } // namespace OASIS
 } // namespace Pin
 
