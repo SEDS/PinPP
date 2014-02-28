@@ -43,21 +43,21 @@ public:
     std::ostringstream filename;
     filename << "buffer." << getpid_portable () << "." << tid;
     this->file_.open (filename.str ().c_str ());
-    
+
     if (!this->file_.is_open ())
     {
       cerr << "Error: could not open output file." << endl;
       exit (1);
     }
-    
+
     this->file_ << std::hex;
   }
-  
+
   ~MLOG (void)
   {
     this->file_.close ();
   }
-  
+
   VOID dump_buffer_to_file (struct MEMREF * reference, UINT64 elements, THREADID tid)
   {
     for (UINT64 i = 0; i < elements; ++ i, ++ reference)
@@ -66,7 +66,7 @@ public:
         this->file_ << reference->pc << "   " << reference->ea << std::endl;
     }
   }
-  
+
 private:
   std::ofstream file_;
 };
@@ -94,7 +94,7 @@ public:
 
   }
 
-  
+
   element_type * handle_trace_buffer (BUFFER_ID id, THREADID tid, const OASIS::Pin::Const_Context & ctx, element_type * buf, UINT64 elements)
   {
 #if defined (TARGET_WINDOWS)
@@ -118,7 +118,7 @@ public:
     // to the Pin documentation.
     this->tls_mlog_[tid]->dump_buffer_to_file (buf, elements, tid);
 #endif
-    
+
     return buf;
   }
 
@@ -160,9 +160,17 @@ public:
   {
     using OASIS::Pin::Operand;
 
-    for (OASIS::Pin::Bbl bbl : trace)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Bbl & bbl in trace)
+#else
+    for (OASIS::Pin::Bbl & bbl : trace)
+#endif
     {
-      for (OASIS::Pin::Ins ins : bbl)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+      for each (OASIS::Pin::Ins & ins in bbl)
+#else
+      for (OASIS::Pin::Ins & ins : bbl)
+#endif
       {
         UINT32 mem_operands = ins.memory_operand_count ();
 
@@ -230,15 +238,19 @@ public:
 
   void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctxt, INT32 flags)
   {
+#if !defined (TARGET_WINDOWS)
     this->tls_mlog_.set (thr_id, new MLOG (thr_id));
+#endif
   }
-  
+
   void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Const_Context & ctxt, INT32 flags)
   {
+#if !defined (TARGET_WINDOWS)
     delete this->tls_mlog_[thr_id];
     this->tls_mlog_.set (thr_id, 0);
+#endif
   }
-  
+
 #if defined (TARGET_WINDOWS)
   void handle_fini (INT32 code)
   {
@@ -250,7 +262,7 @@ private:
 #if !defined (TARGET_WINDOWS)
   OASIS::Pin::TLS <MLOG> tls_mlog_;
 #endif
-  
+
   Trace trace_;
 };
 

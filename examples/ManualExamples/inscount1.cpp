@@ -47,7 +47,11 @@ public:
     item_type item (trace.num_bbl ());
     item_type::iterator callback = item.begin ();
 
-    for (OASIS::Pin::Bbl bbl : trace)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+   for each (OASIS::Pin::Bbl & bbl in trace)
+#else
+   for (OASIS::Pin::Bbl & bbl : trace)
+#endif
     {
       callback->increment (bbl.ins_count ());
       bbl.insert_call (IPOINT_BEFORE, callback ++);
@@ -60,8 +64,16 @@ public:
   {
     UINT64 count = 0;
 
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (auto & trace in this->traces_)
+#else
     for (auto trace : this->traces_)
+#endif
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+      for each (auto & item in trace)
+#else
       for (auto item : trace)
+#endif
         count += item.count ();
 
     return count;

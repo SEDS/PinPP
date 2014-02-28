@@ -4,8 +4,8 @@ project (pin++) : pin {
   staticname    = pin++
   staticflags  += OASIS_PIN_HAS_DLL=0
 
-  includes += $(OASIS_ROOT)
-  libout    = $(OASIS_ROOT)/lib
+  includes += $(PINPP_ROOT)
+  libout    = $(PINPP_ROOT)/lib
 
   specific (prop:windows) {
     Debug::lib_modifier = d

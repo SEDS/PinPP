@@ -78,7 +78,11 @@ public:
     OASIS::Pin::Routine_Guard guard (rtn);
     rtn.insert_call (IPOINT_BEFORE, rc);
 
-    for (OASIS::Pin::Ins ins : rtn)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Ins & ins in rtn)
+#else
+    for (OASIS::Pin::Ins & ins : rtn)
+#endif
       ins.insert_call (IPOINT_BEFORE, &rc->ins_count_);
   }
 

@@ -71,7 +71,11 @@ public:
   {
     using OASIS::Pin::Section;
 
-    for (OASIS::Pin::Section section : img)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Section & section in img)
+#else
+    for (OASIS::Pin::Section & section : img)
+#endif
     {
       using OASIS::Pin::Routine;
 
@@ -79,7 +83,11 @@ public:
       // appearance.  In the code sequence below, the IPOINT_AFTER is
       // executed before the IPOINT_BEFORE.
 
-      for (OASIS::Pin::Routine rtn : section)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+      for each (OASIS::Pin::Routine & rtn in section)
+#else
+      for (OASIS::Pin::Routine & rtn : section)
+#endif
       {
         OASIS::Pin::Routine_Guard guard (rtn);
 
@@ -89,7 +97,11 @@ public:
         rtn.insert_call (IPOINT_AFTER, &this->after_);
 
         // Examine each instruction in the routine.
-        for (OASIS::Pin::Ins ins : rtn)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+        for each (OASIS::Pin::Ins & ins in rtn)
+#else
+        for (OASIS::Pin::Ins & ins : rtn)
+#endif
         {
           if (ins.is_return ())
           {

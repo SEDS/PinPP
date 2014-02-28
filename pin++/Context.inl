@@ -55,7 +55,7 @@ bool Context_Base <T>::supports_processor_state (const PROCESSOR_STATE state)
 //
 template <typename T>
 inline
-#if (PIN_PRODUCT_VERSION_MAJOR < 2) || (PIN_PRODUCT_VERSION_MAJOR == 2 && PIN_PRODUCT_VERSION_MINOR <= 13)
+#if (PIN_PRODUCT_VERSION_MAJOR < 2) || (PIN_PRODUCT_VERSION_MAJOR == 2 && PIN_PRODUCT_VERSION_MINOR < 13)
 void Context_Base <T>::get_regval (REG reg, REGVAL *val) const
 #else
 void Context_Base <T>::get_regval (REG reg, UINT8 *val) const
@@ -190,7 +190,7 @@ bool Context::contains_state (PROCESSOR_STATE state)
 // set_regval
 //
 inline
-#if (PIN_PRODUCT_VERSION_MAJOR < 2) || (PIN_PRODUCT_VERSION_MAJOR == 2 && PIN_PRODUCT_VERSION_MINOR <= 13)
+#if (PIN_PRODUCT_VERSION_MAJOR < 2) || (PIN_PRODUCT_VERSION_MAJOR == 2 && PIN_PRODUCT_VERSION_MINOR < 13)
 void Context::set_regval (REG reg, const REGVAL *val)
 #else
 void Context::set_regval (REG reg, const UINT8 *val)

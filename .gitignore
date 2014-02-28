@@ -9,6 +9,11 @@
 *.exe
 *.user
 *.exp
+*.filters
+*.vcxproj
+*.opensdf
+*.sdf
+ipch/
 
 Debug/
 Release/

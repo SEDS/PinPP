@@ -1,8 +1,8 @@
-/*BEGIN_LEGAL 
-Intel Open Source License 
+/*BEGIN_LEGAL
+Intel Open Source License
 
 Copyright (c) 2002-2013 Intel Corporation. All rights reserved.
- 
+
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -15,7 +15,7 @@ other materials provided with the distribution.  Neither the name of
 the Intel Corporation nor the names of its contributors may be used to
 endorse or promote products derived from this software without
 specific prior written permission.
- 
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -100,7 +100,7 @@ std::string Target2LibName (ADDRINT target)
   // TODO Create a guard object for the Client.
   OASIS::Pin::Client_Guard guard;
   OASIS::Pin::Routine rtn = OASIS::Pin::Routine::find (target);
-  
+
   return rtn.valid () ? rtn.section ().image ().name () : "[Unknown image]";
 }
 
@@ -149,7 +149,7 @@ public:
  //cout << callStack.Depth() << ":" << SYS_SyscallName(num) << endl;
  }
  //callStack.ProcessSysCall(sp, target);
- 
+
   }
 };
 */
@@ -161,9 +161,9 @@ public:
   process_directcall (ADDRINT target)
     : target_ (target)
   {
-    
+
   }
-  
+
   void handle_analyze (ADDRINT ip, ADDRINT sp)
   {
     callStack.ProcessCall (sp, this->target_);
@@ -211,7 +211,7 @@ public:
 };
 
 
-static void 
+static void
 A_ProcessReturn(ADDRINT ip, ADDRINT sp) {
   callStack.ProcessReturn(sp, prevIpDoesPush);
 }
@@ -223,20 +223,20 @@ public:
   enter_main_image (void)
     : target_ (0)
   {
-    
+
   }
-  
+
   void target (ADDRINT target)
   {
     this->target_ = target;
   }
-  
+
   void handle_analyze (ADDRINT ip, ADDRINT sp)
   {
     main_entry_seen = true;
     callStack.ProcessMainEntry (sp, this->target_);
   }
-  
+
 private:
   ADDRINT target_;
 };
@@ -257,14 +257,14 @@ public:
   do_mem_base (bool is_store)
   : is_store_ (is_store)
   {
-    
+
   }
-  
+
   void handle_analyze (ADDRINT ea, ADDRINT pc)
   {
     string filename;
     int lineno;
-    
+
     if (addrsToDump.find ((void *)ea) != addrsToDump.end() )
     {
       do
@@ -272,23 +272,23 @@ public:
         OASIS::Pin::Client_Guard guard;
         PIN_GetSourceLocation (pc, 0, &lineno, &filename);
       } while (false);
-      
+
       *Output << (this->is_store_ ? "store" : "load")
-      
-	    << " pc=" << (void*)pc
-	    << " ea=" << ea << endl;
-      
+
+      << " pc=" << (void*)pc
+      << " ea=" << ea << endl;
+
       if (filename != "")
         *Output << filename << ":" << lineno;
       else
         *Output << "UNKNOWN:0";
-      
+
       *Output << endl;
       callStack.DumpStack(Output);
       *Output << endl;
     }
   }
-  
+
 private:
   bool is_store_;
 };
@@ -318,11 +318,11 @@ public:
 static BOOL IsPLT (const OASIS::Pin::Trace & trace)
 {
   OASIS::Pin::Routine rtn = trace.routine ();
-  
+
   // All .plt thunks have a valid RTN
   if (!rtn.valid ())
     return false;
-  
+
   return rtn.section ().name () == ".plt";
 }
 
@@ -331,25 +331,33 @@ class trace : public OASIS::Pin::Trace_Instrument <trace>
 public:
   void handle_instrument (const OASIS::Pin::Trace & trace)
   {
-    //FIXME if (PIN_IsSignalHandler()) {Sequence_ProcessSignalHandler(head)};
+    // FIXME if (PIN_IsSignalHandler()) {Sequence_ProcessSignalHandler(head)};
 
-    for (OASIS::Pin::Bbl bbl : trace)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Bbl & bbl in trace)
+#else
+    for (OASIS::Pin::Bbl & bbl : trace)
+#endif
     {
       OASIS::Pin::Ins tail = *bbl.end ();
-      
+
       // All memory reads/writes
-      for (OASIS::Pin::Ins ins : bbl)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+      for each (OASIS::Pin::Ins & ins in bbl)
+#else
+      for (OASIS::Pin::Ins & ins : bbl)
+#endif
       {
         bool is_memory_write = ins.is_memory_write ();
         bool is_memory_read = ins.is_memory_read ();
-        
+
         if (is_memory_write || is_memory_read || ins.has_memory_read2 ())
         {
           if (is_memory_write || is_memory_read)
           {
             std::auto_ptr <do_mem> callback (new do_mem (is_memory_write));
             ins.insert_call (IPOINT_BEFORE, callback.get ());
-            
+
             this->do_mems_.push_back (callback.release ());
           }
           else
@@ -364,14 +372,14 @@ public:
         if (ins != tail)
         {
           ins.insert_call (IPOINT_BEFORE, &this->process_inst_);
-          
+
           if (ins.opcode () == XED_ICLASS_PUSH)
             RecordPush (ins);
         }
 #endif
       }
-      
-      
+
+
       // All calls and returns
       if (tail.is_syscall ())
       {
@@ -385,7 +393,7 @@ public:
           {
             ADDRINT target = tail.direct_branch_or_call_target_address ();
             std::auto_ptr <process_directcall> callback (new process_directcall (target));
-            
+
             tail.insert_predicated_call (IPOINT_BEFORE, callback.get (), REG_STACK_PTR);
             this->direct_calls_.push_back (callback.release ());
           }
@@ -396,38 +404,46 @@ public:
                               REG_STACK_PTR);
           }
         }
-        
+
         if (IsPLT (trace))
           tail.insert_call (IPOINT_BEFORE, &this->process_stub_, REG_STACK_PTR);
-        
+
         if (tail.is_return ())
           tail.insert_predicated_call (IPOINT_BEFORE, &this->process_return_, REG_STACK_PTR);
       }
     }
   }
-  
+
   ~trace (void)
   {
     // Make sure we delete all allocated direct calls.
-    for (auto callback : this->direct_calls_)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (auto & callback in this->direct_calls_)
+#else
+    for (auto & callback : this->direct_calls_)
+#endif
       delete callback;
-    
-    for (auto callback : this->do_mems_)
+
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (auto & callback in this->do_mems_)
+#else
+    for (auto & callback : this->do_mems_)
+#endif
       delete callback;
   }
-  
-  
+
+
 private:
   process_inst process_inst_;
-  
+
   //process_syscall process_syscall_;
-  
+
   process_indirect_call process_indirect_call_;
-  
+
   process_stub process_stub_;
-  
+
   process_return process_return_;
-  
+
   // TODO Update to a std::shared_ptr object.
   std::vector < process_directcall * > direct_calls_;
   std::vector < do_mem * > do_mems_;
@@ -442,9 +458,9 @@ public:
   image_load (void)
     : main_rtn_instrumented_ (false)
   {
-    
+
   }
-  
+
   void handle_instrument (const OASIS::Pin::Image & img)
   {
     if (!this->main_rtn_instrumented_)
@@ -459,21 +475,25 @@ public:
       {
         this->main_rtn_instrumented_ = true;
         OASIS::Pin::Routine_Guard guard (rtn);
-        
+
         this->enter_main_image_.target (rtn.address ());
         rtn.insert_call (IPOINT_BEFORE, &this->enter_main_image_, REG_STACK_PTR);
       }
     }
-    
-    for (OASIS::Pin::Symbol sym : img.symbols ())
+
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Symbol & sym in img.symbols ())
+#else
+    for (OASIS::Pin::Symbol & sym : img.symbols ())
+#endif
     {
       std::string name = sym.name ();
-      
+
       if (strstr (name.c_str (), "MAID_register_address"))
       {
         OASIS::Pin::Routine rtn = img.find_routine (name);
         ASSERTX (rtn.valid ());
-        
+
         OASIS::Pin::Routine_Guard guard (rtn);
         rtn.insert_call (IPOINT_BEFORE, &this->register_addr_, 0);
       }
@@ -481,17 +501,17 @@ public:
       {
         OASIS::Pin::Routine rtn = img.find_routine (name);
         ASSERTX (rtn.valid ());
-        
+
         OASIS::Pin::Routine_Guard guard (rtn);
         rtn.insert_call (IPOINT_BEFORE, &this->unregister_addr_, 0);
       }
     }
   }
-  
+
 private:
   bool main_rtn_instrumented_;
   enter_main_image enter_main_image_;
-  
+
   register_addr register_addr_;
   unregister_addr unregister_addr_;
 };
@@ -521,34 +541,34 @@ public:
     {
       std::string s;
       std::ifstream infile (addrfile_.Value ().c_str ());
- 
+
       if (!infile)
       {
         perror(s.c_str());
         exit(1);
       }
-      
+
       infile >> hex;
-      
+
       while (!infile.eof ())
       {
         static void *addr;
         infile >> addr;
-        
+
         addrsToDump.insert((void *)addr);
       }
     }
   }
-  
+
 private:
   /// @{ Instruments
   image_load img_load_;
   trace trace_;
   /// @}
-  
+
   bool delete_outfile_;
   std::ostream * out_;
-  
+
   /// @{ KNOBS
   static KNOB <string> addrfile_;
   static KNOB <string> outfile_;

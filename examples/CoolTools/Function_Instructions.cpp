@@ -35,18 +35,28 @@ public:
       std::setw (80) << "--------------------" << std::endl;
 
 
-    for (OASIS::Pin::Section section : img)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Section & section in img)
+#else
+    for (OASIS::Pin::Section & section : img)
+#endif
     {
-      for (OASIS::Pin::Routine rtn : section)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+      for each (OASIS::Pin::Routine & rtn in section)
+#else
+      for (OASIS::Pin::Routine & rtn : section)
+#endif
       {
         int count = 0;
 
         OASIS::Pin::Routine_Guard guard (rtn);
 
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+        for each (OASIS::Pin::Ins & ins in rtn)
+#else
         for (OASIS::Pin::Ins ins : rtn)
-        {
+#endif
           ++ count;
-        }
 
         std::cout << std::setw (60) << rtn.name () << std::setw (80) << count << std::endl;
       }

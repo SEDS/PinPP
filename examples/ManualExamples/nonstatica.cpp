@@ -20,9 +20,17 @@ class Instrument : public OASIS::Pin::Image_Instrument <Instrument>
 public:
   void handle_instrument (const OASIS::Pin::Image & img)
   {
-    for (OASIS::Pin::Section section : img)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Section & section in img)
+#else
+    for (OASIS::Pin::Section & section : img)
+#endif
     {
-      for (OASIS::Pin::Routine rtn : section)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+      for each (OASIS::Pin::Routine & rtn in section)
+#else
+      for (OASIS::Pin::Routine & rtn : section)
+#endif
       {
         OASIS::Pin::Routine_Guard guard (rtn);
 

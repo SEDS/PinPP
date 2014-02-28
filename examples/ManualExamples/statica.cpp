@@ -36,11 +36,19 @@ public:
     std::cout << hex;
     rtn_internal_range_list.clear ();
 
-    for (OASIS::Pin::Section section : img)
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+   for each (OASIS::Pin::Section & section in img)
+#else
+   for (OASIS::Pin::Section & section : img)
+#endif
     {
       std::cout << "Section: " << std::setw (8) << section.address () << " " << section.name () << std::endl;
 
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+      for each (OASIS::Pin::Routine & rtn in section)
+#else
       for (OASIS::Pin::Routine rtn : section)
+#endif
       {
         std::cout << "  Rtn: " << std::setw (8) << hex << rtn.address () << " " << rtn.name () << endl;
 
@@ -54,7 +62,7 @@ public:
 
         using OASIS::Pin::Ins;
         OASIS::Pin::Routine_Guard guard (rtn);
-        
+
         Ins::iterator_type ins_iter = rtn.begin ();
 
         if (!ins_iter->is_valid ())

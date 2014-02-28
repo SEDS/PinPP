@@ -4,11 +4,10 @@ project {
   after += pin++
   libs  += pin++
 
-  includes += $(OASIS_ROOT)
-  libpaths += $(OASIS_ROOT)/lib
+  includes += $(PINPP_ROOT)
+  libpaths += $(PINPP_ROOT)/lib
 
   specific (prop:windows) {
     macros += OASIS_PIN_HAS_DLL=0
   }
 }
-
