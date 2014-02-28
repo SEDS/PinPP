@@ -6,6 +6,9 @@ A C++ template meta-programmable framework for authoring Pintools
 System Requirements
 -------------------------
 
+The following is the minumum system requirements needed to build and
+use Pin++:
+
 * Perl, on Windows we suggest [ActivePerl](http://www.activestate.com/activeperl)
 * [GIT] (http://git-scm.com/downloads)
 * [Pin](http://software.intel.com/en-us/articles/pintool) (ver 2.13, or greater) 
