@@ -17,8 +17,13 @@ To build the examples:
 
 ### Tested Compilers
 
+We have physically tested Pin++ with the following compilers:
+
 * Clang 5.0
 * Visual Studio 2008, 2010
+
+If a compiler you use is not on the list above and Pin++ compiles
+correctly, please let us know so we can update the list.
 
 Environment Setup
 -------------------
