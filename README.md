@@ -18,6 +18,7 @@ To build the examples:
 ### Tested Compilers
 
 * Clang 5.0, or greater
+* Visual Studio 2008, 2010
 
 Environment Setup
 -------------------
