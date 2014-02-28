@@ -53,6 +53,9 @@ of Pin. Next, clone the Pin++ repo and configure the environment variables:
     export PATH=$PATH:$PINPP_ROOT/bin
     export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$PINPP_ROOT/lib
 
+Quick Build
+----------------
+
 Generate the Pin++ workspace: 
 
     cd $PINPP_ROOT
