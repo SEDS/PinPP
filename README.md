@@ -33,13 +33,13 @@ of Pin. Next, clone the Pin++ repo and configure the environment variables:
 
 **Linux**
 
-    export PINPP_ROOT=[location of OASIS]
+    export PINPP_ROOT=[location of Pin++]
     export PATH=$PATH:$PINPP_ROOT/bin
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PINPP_ROOT/lib
 
 **MacOS X**
 
-    export PINPP_ROOT=[location of OASIS]
+    export PINPP_ROOT=[location of Pin++]
     export PATH=$PATH:$PINPP_ROOT/bin
     export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$PINPP_ROOT/lib
 
