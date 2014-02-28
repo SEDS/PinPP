@@ -23,7 +23,8 @@ We have physically tested Pin++ with the following compilers:
 * Visual Studio 2008, 2010
 
 If a compiler you use is not on the list above and Pin++ compiles
-correctly, please let us know so we can update the list.
+correctly, please let us know so we can update the list with the compiler
+you have tested and/or are using.
 
 Environment Setup
 -------------------
