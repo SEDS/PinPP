@@ -1,34 +1,3 @@
-/*BEGIN_LEGAL
-Intel Open Source License
-
-Copyright (c) 2002-2013 Intel Corporation. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-Redistributions of source code must retain the above copyright notice,
-this list of conditions and the following disclaimer.  Redistributions
-in binary form must reproduce the above copyright notice, this list of
-conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.  Neither the name of
-the Intel Corporation nor the names of its contributors may be used to
-endorse or promote products derived from this software without
-specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE INTEL OR
-ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-END_LEGAL */
-
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -47,6 +16,7 @@ END_LEGAL */
 #include <set>
 #include <string>
 #include <iomanip>
+#include <memory>
 
 #include "pin.H"
 #include "pin_isa.H"
@@ -355,10 +325,10 @@ public:
         {
           if (is_memory_write || is_memory_read)
           {
-            std::auto_ptr <do_mem> callback (new do_mem (is_memory_write));
+            std::shared_ptr <do_mem> callback (new do_mem (is_memory_write));
             ins.insert_call (IPOINT_BEFORE, callback.get ());
 
-            this->do_mems_.push_back (callback.release ());
+            this->do_mems_.push_back (callback);
           }
           else
             ; //ins.insert_call (IPOINT_BEFORE, new do_mem2 (is_memory_write));
@@ -392,10 +362,10 @@ public:
           if (tail.is_direct_branch_or_call ())
           {
             ADDRINT target = tail.direct_branch_or_call_target_address ();
-            std::auto_ptr <process_directcall> callback (new process_directcall (target));
+            std::shared_ptr <process_directcall> callback (new process_directcall (target));
 
             tail.insert_predicated_call (IPOINT_BEFORE, callback.get (), REG_STACK_PTR);
-            this->direct_calls_.push_back (callback.release ());
+            this->direct_calls_.push_back (callback);
           }
           else if (!IsPLT (trace))
           {
@@ -414,25 +384,6 @@ public:
     }
   }
 
-  ~trace (void)
-  {
-    // Make sure we delete all allocated direct calls.
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-    for each (auto & callback in this->direct_calls_)
-#else
-    for (auto & callback : this->direct_calls_)
-#endif
-      delete callback;
-
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-    for each (auto & callback in this->do_mems_)
-#else
-    for (auto & callback : this->do_mems_)
-#endif
-      delete callback;
-  }
-
-
 private:
   process_inst process_inst_;
 
@@ -445,8 +396,8 @@ private:
   process_return process_return_;
 
   // TODO Update to a std::shared_ptr object.
-  std::vector < process_directcall * > direct_calls_;
-  std::vector < do_mem * > do_mems_;
+  std::vector < std::shared_ptr <process_directcall> > direct_calls_;
+  std::vector < std::shared_ptr <do_mem> > do_mems_;
 };
 
 /**
