@@ -24,11 +24,13 @@ We have physically tested Pin++ with the following compilers:
 
 * Clang 5.0
 * GCC 4.6
-* Visual Studio 2008 (vc9), 2010 (vc10), 2012 (vc11)
+* Visual Studio 2008* (vc9), 2010 (vc10), 2012 (vc11)
 
 If a compiler you use is not on the list above and Pin++ compiles
 correctly, please let us know so we can update the list with the compiler
 you have tested and/or are using.
+
+\* Does not support compiling the examples.
 
 Environment Setup
 -------------------
