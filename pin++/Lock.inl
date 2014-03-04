@@ -9,7 +9,7 @@ namespace Pin
 inline
 Lock::Lock (void)
 {
-#if (PIN_PRODUCT_VERSION_MAJOR <= 2) && (PIN_PRODUCT_VERSION_MINOR < 13)
+#if (PIN_BUILD_NUMBER < 61206)
   InitLock (&this->lock_);
 #else
   PIN_InitLock (&this->lock_);
@@ -39,7 +39,7 @@ const Lock & Lock::operator = (const Lock & lock)
 inline
 void Lock::acquire (int owner)
 {
-#if (PIN_PRODUCT_VERSION_MAJOR <= 2) && (PIN_PRODUCT_VERSION_MINOR < 13)
+#if (PIN_BUILD_NUMBER < 61206)
   GetLock (&this->lock_, owner);
 #else
   PIN_GetLock (&this->lock_, owner);
@@ -49,7 +49,7 @@ void Lock::acquire (int owner)
 inline
 void Lock::release (void)
 {
-#if (PIN_PRODUCT_VERSION_MAJOR <= 2) && (PIN_PRODUCT_VERSION_MINOR < 13)
+#if (PIN_BUILD_NUMBER < 61206)
   ReleaseLock (&this->lock_);
 #else
   PIN_ReleaseLock (&this->lock_);
