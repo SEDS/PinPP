@@ -71,4 +71,10 @@ then select ```intel64=1```. You can not set both features to 1.
 Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```) 
 will be placed in ```$PINPP_ROOT/lib```.
 
+Contact
+-----------------
+
+Send all questions to [hillj@cs.iupui.edu](mailto:hillj@cs.iupui.edu). Please make
+sure to include ```Pin++``` in the subject.
+
 Happy Coding!
