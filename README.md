@@ -37,7 +37,9 @@ Environment Setup
 
 Set ```PIN_ROOT``` environment variable to the location of Pin
 since we will be building Pintools outside of the normal distribution 
-of Pin. Next, clone the Pin++ repo and configure the environment variables:
+of Pin. We also assume that you have your PATH (and LD_LIBRARY_PATH
+or DYLD_LIBRARY_PATH) configured correctly for Pin. Next, clone the 
+Pin++ repo and configure the environment variables:
 
 **Windows**
 
