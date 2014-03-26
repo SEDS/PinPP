@@ -3,8 +3,16 @@
 project (Function_Instructions) : oasis_pintool_static {
   exename = Function_Instructions
   install = .
-  
+
   Source_Files {
-    Function_Instructions.cpp
+    Function_Instructions.cpp    
+  }
+}
+
+project (callrate) : oasis_pintool {
+  sharedname = callrate
+
+  Source_Files {
+    callrate.cpp    
   }
 }
