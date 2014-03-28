@@ -1,5 +1,5 @@
 project {
   specific (gnuace, make) {
-    compile_flags += -std=c++0x
+    compile_flags += -std=c++11 -stdlib=libc++
   }
 }
