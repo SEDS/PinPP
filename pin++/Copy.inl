@@ -35,7 +35,7 @@ template <typename T>
 inline
 void Copy <T>::perform_copy (const VOID * src)
 {
-  PIN_SafeCopy (&this->value_, static_cast <T *> (src), sizeof (T));
+  PIN_SafeCopy (&this->value_, src, sizeof (T));
 }
 
 }

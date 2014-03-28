@@ -4,8 +4,10 @@
 #include "pin++/Instruction_Instrument.h"
 #include "pin++/Pintool.h"
 #include "pin++/Copy.h"
+#include "pin++/Operand.h"
 
-#include <iostream>
+#include <fstream>
+#include <memory>
 
 class do_load : public OASIS::Pin::Callback < do_load (OASIS::Pin::ARG_MEMORYREAD_EA) >
 {
@@ -16,10 +18,10 @@ public:
   {
   }
   
-  void handle_analyze (ADDRINT * addr)
+  void handle_analyze (ADDRINT addr)
   {
     this->fout_ << "Emulate loading from addr " << addr << " to " << REG_StringShort (this->reg_) << std::endl;
-    OASIS::Pin::Copy <ADDRINT> value (addr);
+    OASIS::Pin::Copy <ADDRINT> value ((VOID *)addr);
     
     // TODO Add support for return value from analysis function.
     
@@ -48,7 +50,7 @@ public:
         ins.operand (1).is_memory ())
     {
       // Allocate a new callback for the instruction.
-      auto callback = new std::shared_ptr <do_load> (this->fout_, ins.operand (0).reg ());
+      auto callback = std::shared_ptr <do_load> (new do_load (this->fout_, ins.operand (0).reg ()));
       ins.insert_call (IPOINT_BEFORE, callback.get ());
       
       // Save the callback.
@@ -97,7 +99,7 @@ public:
   
 private:
   std::ofstream fout_;
-  Emulate_Load emulate_load_
+  Emulate_Load emulate_load_;
 };
 
 DECLARE_PINTOOL (safecopy);
