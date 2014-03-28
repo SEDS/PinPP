@@ -17,6 +17,7 @@ project (pin++) : pin {
     Arg_Traits.h
     Callback.h
     Context.h
+    Copy.h
     Exception.h
     Guard.h
     Insert_T.h
@@ -45,16 +46,11 @@ project (pin++) : pin {
     Trace.cpp
   }
 
-  Header_Files {
-    Context.h
-    If.h
-    Switch.h
-  }
-
   Inline_Files {
     Exception.inl
     Callback.inl
     Context.inl
+    Copy.inl
     Guard.inl
     Lock.inl
     Mutex.inl
