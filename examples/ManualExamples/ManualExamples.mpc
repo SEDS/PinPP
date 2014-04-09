@@ -226,3 +226,12 @@ project (emudiv) : oasis_pintool {
     emudiv.cpp
   }
 }
+
+project (safecopy) : oasis_pintool {
+  sharedname = safecopy
+  
+  Source_Files {
+    safecopy.cpp
+  }
+}
+
