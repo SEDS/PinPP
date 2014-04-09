@@ -1,10 +1,15 @@
 /**
- *
  * A pintool that calculates the call rate of each function in an executable
  *
  * File: callrate.cpp
  *
  */
+
+
+
+/*******************************
+ * Dependencies
+ *******************************/
 
 #include "pin++/Image_Instrument.h"
 #include "pin++/Pintool.h"
@@ -18,11 +23,15 @@
 #include <list>
 #include <algorithm>
 #include <hash_map>
-#include <ctime>
+
+
+
+/*******************************
+ * Callback
+ *******************************/
 
 /**
- * Process function calls and calculate call rate
- *
+ * Callback class that processes function calls and calculate call rate.
  */
 class Call_Rate : public OASIS::Pin::Callback <Call_Rate (void)>
 {
@@ -38,16 +47,15 @@ public:
   }
 
   /**
-   * Call back procedure.
-   *
+   * Call back analysis routine.
    */
   void handle_analyze (void)
   {
-    ++rtn_count_;
+    ++this->rtn_count_;
   }
 
   /**
-   * Get the routine name.
+   * Getter for the routine name.
    *
    * @return      returns the name of the routine
    */
@@ -57,7 +65,7 @@ public:
   }
 
   /**
-   * Register the routine name.
+   * Setter for the routine name.
    */
   void rtn_register (std::string rtn_name)
   {
@@ -65,7 +73,7 @@ public:
   }
 
   /**
-   * Get the routine count.
+   * Getter the routine count.
    *
    * @return      returns the count of the routine.
    */
@@ -80,15 +88,19 @@ private:
 };
 
 
+
+/*******************************
+ * Instrument
+ *******************************/
+
 /**
- * Instrument at image level
- *
+ * Image level instrument class.
  */
 class Image : public OASIS::Pin::Image_Instrument <Image>
 {
 public:
   /**
-   * Instrument.
+   * Instrument routine.
    */
   void handle_instrument (const OASIS::Pin::Image & img)
   {
@@ -121,7 +133,7 @@ public:
            rtn_iter != rtn_iter_end;
            ++ rtn_iter)
       {
-        // automatically open and close the rtn for rtn_iter
+        // guard automatically open and close the rtn for rtn_iter
         OASIS::Pin::Routine_Guard guard (*rtn_iter);
         callback->rtn_register (OASIS::Pin::Symbol::undecorate(rtn_iter->name(), UNDECORATION_NAME_ONLY));
         rtn_iter->insert_call (IPOINT_BEFORE, callback);
@@ -137,7 +149,6 @@ public:
    * Calculate the total number of routine calls from all the images
    *
    * @return    total number of routine calls
-   *
    */
   UINT64 total_count (void) const
   {
@@ -160,8 +171,8 @@ public:
   }
 
   /**
-   * Generate an output of function call rate into a file.
-   * The output format is: <routine name> : <callrate as double>.
+   * Generate an output of function call rate into a file by sorting.
+   * The output format is: <routine name> : <routine call counts>, <total routine calls>, <callrate>
    *
    * Each routine - count pair is pushed into a vector; the vector is sorted,
    * and the counts for the same routine are combined for output.
@@ -170,7 +181,7 @@ public:
    */
   void output_to_file_by_sorting (std::ofstream & fout)
   {
-    UINT64 total_rtn_count = this->total_count();
+    UINT64 total_rtn_count = this->total_count ();
 
     list_type::const_iterator iter = this->img_rtn_buffer_.begin ();
     list_type::const_iterator iter_end = this->img_rtn_buffer_.end ();
@@ -193,7 +204,7 @@ public:
       }
     }
     
-    // sort the vector so that same routine can be easily combined
+    // sort the vector so that the counts for the same routine can be combined
     std::sort(pair_list.begin(), pair_list.end());
     size_t len = pair_list.size();
 
@@ -207,13 +218,13 @@ public:
         ++i;
         rtn_count += pair_list.at(i).second;
       }
-      double call_rate = double(rtn_count) / double(total_rtn_count);
+      double call_rate = double (rtn_count) / double (total_rtn_count);
       fout << rtn_name << " : " << rtn_count << ", " << total_rtn_count << ", " << call_rate << std::endl;
     }
   }
 
   /**
-   * Generate an output of function call rate into a file.
+   * Generate an output of function call rate into a file by hashing.
    * The output format is: <routine name> : <callrate as double>.
    *
    * Each routine - count is pushed into a hashmap. This hashmap is traversed for output.
@@ -271,15 +282,19 @@ public:
   }
 
 private:
-  typedef OASIS::Pin::Buffer <Call_Rate> item_type;
-  typedef std::list <item_type> list_type;
+  typedef OASIS::Pin::Buffer <Call_Rate> item_type;      // a buffer for callback
+  typedef std::list <item_type> list_type;               // a list of buffers
   list_type img_rtn_buffer_;
 };
 
 
+
+/*******************************
+ * Tool
+ *******************************/
+
 /**
- * Tool for call rate
- *
+ * Tool class for call rate.
  */
 class callrate : public OASIS::Pin::Tool <callrate>
 {
@@ -292,32 +307,31 @@ public:
     this->init_symbols();
     this->enable_fini_callback();
   }
-    
+
   /**
    * Process after program execution.
    */
   void handle_fini (INT32 code)
   {
-    std::string choice = "sort";
+    // select between HASH and SORT for the implementation
+    // sort: maybe slower for large program, but the result will be sorted
+    // hash: maybe faster for large program, the result is not sorted
+    enum choice_type {SORT, HASH};
+    choice_type choice = SORT;
 
     // file output
     std::ofstream fout (outfile_.Value ().c_str ());
     fout.setf (ios::showbase);
-    
-    // std::clock_t start = std::clock();
 
-    if (choice == "sort")
+    switch (choice)
     {
+    case SORT:
       this->image_.output_to_file_by_sorting (fout);
-    }
-    else if (choice == "hash")
-    {
+      break;
+    default:
       this->image_.output_to_file_by_hashmap (fout);
+      break;
     }
-
-    // std::clock_t end = std::clock();
-    // std::cout << "Time used by " << choice << ": "
-    //           << 1000.0 * (end - start) / CLOCKS_PER_SEC << " ms." << std::endl;
   }
 
 private:
@@ -325,9 +339,14 @@ private:
   static KNOB <string> outfile_;      // output file handler
 };
 
+
+
 KNOB <string> callrate::outfile_ (KNOB_MODE_WRITEONCE, "pintool", "o", "callrate.out", "specify output file name");
 
-/**************************
- * Tool registration
- **************************/
+
+
+/*******************************
+ * Tool declaration
+ *******************************/
+
 DECLARE_PINTOOL (callrate);
