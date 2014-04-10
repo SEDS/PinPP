@@ -40,7 +40,7 @@ public:
    * Constructor.
    */
   Call_Rate (void)
-    : rtn_name_ (""),
+    : rtn_name_ (),
       rtn_count_ (0)
   {
 
@@ -107,13 +107,9 @@ public:
     // first iteration
     // count total number of routines in the image
     UINT64 total_rtn_in_img = 0;
-    for (OASIS::Pin::Section::iterator_type sec_iter = img.section_head (), sec_iter_end = sec_iter.make_end ();
-         sec_iter != sec_iter_end;
-         ++ sec_iter)
+    for (auto sec : img)
     {
-      for (OASIS::Pin::Routine::iterator_type rtn_iter = sec_iter->routine_head (), rtn_iter_end = rtn_iter.make_end ();
-           rtn_iter != rtn_iter_end;
-           ++ rtn_iter)
+      for (auto rtn : sec)
       {
         ++total_rtn_in_img;
       }
@@ -125,24 +121,20 @@ public:
     item_type item ((size_t) total_rtn_in_img);
     item_type::iterator callback = item.begin ();
     
-    for (OASIS::Pin::Section::iterator_type sec_iter = img.section_head (), sec_iter_end = sec_iter.make_end ();
-         sec_iter != sec_iter_end;
-         ++ sec_iter)
+    for (auto sec : img)
     {
-      for (OASIS::Pin::Routine::iterator_type rtn_iter = sec_iter->routine_head (), rtn_iter_end = rtn_iter.make_end ();
-           rtn_iter != rtn_iter_end;
-           ++ rtn_iter)
+      for (auto rtn : sec)
       {
         // guard automatically open and close the rtn for rtn_iter
-        OASIS::Pin::Routine_Guard guard (*rtn_iter);
-        callback->rtn_register (OASIS::Pin::Symbol::undecorate(rtn_iter->name(), UNDECORATION_NAME_ONLY));
-        rtn_iter->insert_call (IPOINT_BEFORE, callback);
+        OASIS::Pin::Routine_Guard guard (rtn);
+        callback->rtn_register (OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_NAME_ONLY));
+        rtn.insert_call (IPOINT_BEFORE, callback);
         ++callback;
       }
     }
     
     // the buffer list contains one buffer for each image
-    this->img_rtn_buffer_.push_back (item);
+    this->rtn_buffer_list_.push_back (item);
   }
 
   /**
@@ -152,18 +144,13 @@ public:
    */
   UINT64 total_count (void) const
   {
-    list_type::const_iterator iter = this->img_rtn_buffer_.begin ();
-    list_type::const_iterator iter_end = this->img_rtn_buffer_.end ();
-
     UINT64 total_rtn_count = 0;
 
-    for (; iter != iter_end; ++ iter)
+    for (auto buffer : this->rtn_buffer_list_)
     {
-      for (item_type::const_iterator item_iter = iter->begin (), item_iter_end = iter->end ();
-           item_iter != item_iter_end;
-           ++ item_iter)
+      for (auto item : buffer)
       {
-        total_rtn_count += item_iter->count ();
+        total_rtn_count += item.count ();
       }
     }
 
@@ -183,40 +170,38 @@ public:
   {
     UINT64 total_rtn_count = this->total_count ();
 
-    list_type::const_iterator iter = this->img_rtn_buffer_.begin ();
-    list_type::const_iterator iter_end = this->img_rtn_buffer_.end ();
+    list_type::const_iterator iter = this->rtn_buffer_list_.begin ();
+    list_type::const_iterator iter_end = this->rtn_buffer_list_.end ();
 
     // a vector of string - UINT64 pair
     typedef std::vector<std::pair<std::string, UINT64>> pair_vector;
     pair_vector pair_list;
 
     // iterate through the buffer and put the result into the vector
-    for (; iter != iter_end; ++ iter)
+    for (auto buffer : this->rtn_buffer_list_)
     {
-      for (item_type::const_iterator item_iter = iter->begin (), item_iter_end = iter->end ();
-           item_iter != item_iter_end;
-           ++ item_iter)
+      for (auto item : buffer)
       {
-        if (item_iter->count() > 0)
+        if (item.count () > 0)
         {
-          pair_list.push_back( std::pair<std::string, UINT64>( item_iter->rtn_name(), item_iter->count() ) );
+          pair_list.push_back (std::make_pair (item.rtn_name (), item.count ()));          
         }
       }
     }
     
     // sort the vector so that the counts for the same routine can be combined
-    std::sort(pair_list.begin(), pair_list.end());
-    size_t len = pair_list.size();
+    std::sort (pair_list.begin (), pair_list.end ());
+    size_t len = pair_list.size ();
 
     // combine the count for the same routine and output the result to fout
     for (size_t i = 0; i < len; ++i)
     {
-      std::string rtn_name = pair_list.at(i).first;
-      UINT64 rtn_count = pair_list.at(i).second;
-      while (i+1 < len && pair_list.at(i+1).first == rtn_name)
+      std::string rtn_name = pair_list.at (i).first;
+      UINT64 rtn_count = pair_list.at (i).second;
+      while (i+1 < len && pair_list.at (i+1).first == rtn_name)
       {
         ++i;
-        rtn_count += pair_list.at(i).second;
+        rtn_count += pair_list.at (i).second;
       }
       double call_rate = double (rtn_count) / double (total_rtn_count);
       fout << rtn_name << " : " << rtn_count << ", " << total_rtn_count << ", " << call_rate << std::endl;
@@ -235,30 +220,30 @@ public:
   {
     UINT64 total_rtn_count = 0;
 
-    list_type::const_iterator iter = this->img_rtn_buffer_.begin ();
-    list_type::const_iterator iter_end = this->img_rtn_buffer_.end ();
+    list_type::const_iterator iter = this->rtn_buffer_list_.begin ();
+    list_type::const_iterator iter_end = this->rtn_buffer_list_.end ();
 
     // a hashmap of string - UINT64
     stdext::hash_map<std::string, UINT64> map;
 
     std::string curr_name = "";
-    UINT64 curr_count = 0;     
+    UINT64 curr_count = 0;
 
     // iterate through the buffer and put the result into the hashmap
-    for (; iter != iter_end; ++ iter)
+    for (auto buffer : this->rtn_buffer_list_)
     {
-      for (item_type::const_iterator item_iter = iter->begin (), item_iter_end = iter->end ();
-           item_iter != item_iter_end;
-           ++ item_iter)
+      for (auto item : buffer)
       {
-        curr_count = item_iter->count();
+        curr_count = item.count ();
+
         if (curr_count > 0)
         {
-          curr_name = item_iter->rtn_name();
-          if ( map.count(curr_name) == 1 )
+          curr_name = item.rtn_name ();
+
+          if ( map.count (curr_name) == 1 )
           {
             // routine already in the map, update the count
-            stdext::hash_map<std::string, UINT64>::iterator it = map.find(curr_name);
+            stdext::hash_map<std::string, UINT64>::iterator it = map.find (curr_name);
             map[curr_name] = it->second + curr_count;            
           }
           else
@@ -269,22 +254,23 @@ public:
           
           total_rtn_count = total_rtn_count + curr_count;
         }
+
       }
     }
     
     double call_rate = 0.0;
 
-    for (stdext::hash_map<std::string, UINT64>::iterator it = map.begin(); it != map.end(); ++it)
+    for (auto item : map)
     {
-      call_rate = double(it->second) / double(total_rtn_count);
-      fout << it->first << " : " << it->second << ", " << total_rtn_count << ", " << call_rate << std::endl;
+      call_rate = double (item.second) / double (total_rtn_count);
+      fout << item.first << " : " << item.second << ", " << total_rtn_count << ", " << call_rate << std::endl;
     }
   }
 
 private:
-  typedef OASIS::Pin::Buffer <Call_Rate> item_type;      // a buffer for callback
-  typedef std::list <item_type> list_type;               // a list of buffers
-  list_type img_rtn_buffer_;
+  typedef OASIS::Pin::Buffer <Call_Rate> item_type;      // buffer type for a buffer of callback
+  typedef std::list <item_type> list_type;               // list type of a list of buffers
+  list_type rtn_buffer_list_;
 };
 
 
@@ -304,8 +290,8 @@ public:
    */
   callrate (void)
   {
-    this->init_symbols();
-    this->enable_fini_callback();
+    this->init_symbols ();
+    this->enable_fini_callback ();
   }
 
   /**
