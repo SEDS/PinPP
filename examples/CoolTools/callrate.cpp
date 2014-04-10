@@ -170,9 +170,6 @@ public:
   {
     UINT64 total_rtn_count = this->total_count ();
 
-    list_type::const_iterator iter = this->rtn_buffer_list_.begin ();
-    list_type::const_iterator iter_end = this->rtn_buffer_list_.end ();
-
     // a vector of string - UINT64 pair
     typedef std::vector<std::pair<std::string, UINT64>> pair_vector;
     pair_vector pair_list;
@@ -219,9 +216,6 @@ public:
   void output_to_file_by_hashmap (std::ofstream & fout)
   {
     UINT64 total_rtn_count = 0;
-
-    list_type::const_iterator iter = this->rtn_buffer_list_.begin ();
-    list_type::const_iterator iter_end = this->rtn_buffer_list_.end ();
 
     // a hashmap of string - UINT64
     stdext::hash_map<std::string, UINT64> map;
