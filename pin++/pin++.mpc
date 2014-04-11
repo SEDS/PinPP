@@ -31,6 +31,7 @@ project (pin++) : pin {
     Replacement_Routine.h
     Routine.h
     Switch.h
+    Thread.h
     TLS.h
     Trace.h
     Xarg_Select.h
@@ -59,6 +60,7 @@ project (pin++) : pin {
     Prototype.inl
     Replacement_Routine.inl
     Routine.inl
+    Thread.inl
     TLS.inl
     Trace.inl
     Operand.inl
