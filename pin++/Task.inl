@@ -17,9 +17,9 @@ Task <T>::~Task (void)
 
 template <typename T>
 inline
-std::list <PIN_THREAD_UID> Task <T>::threads (void)
+const std::list <PIN_THREAD_UID> & Task <T>::threads (void) const
 {
-	return ids_;
+	return this-> &ids_;
 }
 
 } // namespace OASIS

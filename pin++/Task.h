@@ -3,6 +3,8 @@
 
 #include "pin.H"
 #include "Thread.h"
+#include "Guard.h"
+#include "RW_Mutex.h"
 #include <list>
 
 namespace OASIS
@@ -16,30 +18,38 @@ class Task
 public:
 	typedef T type;
 
-	/// Default constructor
+	/// Default constructor.
 	Task (void);
 
-	/// Destructor
+	/// Destructor.
 	~Task (void);
 
 	/**
 	 * Create a new tool internal thread in the current process.
 	 *
-	 * @param[out]      thr_id        The id of the thread created
+	 * @param[out]      thr_id        The id of the thread created.
 	 */
 	THREADID run (PIN_THREAD_UID *thr_id = 0);
 
-	/// Wait until all threads created by this task have terminated
-	void wait (void);
+	/**
+	 * Wait until all threads created by this task have terminated.
+	 * 
+	 * @param[in]       timeout        The maximum amout of time, in milliseconds, to wait for any one thread to terminate.
+	 * @return  TRUE if all threads terminated, FALSE if the timeout time elapsed.
+	 */
+	bool wait (UINT32 timeout = PIN_INFINITE_TIMEOUT);
 
 	/// Get a list of the unique thread IDs of all currently running threads created by this task
-	std::list<PIN_THREAD_UID> threads (void) const;
+	const std::list <PIN_THREAD_UID> & threads (void) const;
 
 private:
+	
+	std::list <PIN_THREAD_UID> ids_;
+
+	RW_Mutex lock_;
 
 	static void __run_svc (void * arg);
 
-	std::list <PIN_THREAD_UID> ids_;
 };
 
 #include "Task.cpp"
