@@ -16,13 +16,13 @@ Thread::~Thread (void)
 }
 
 inline
-THREADID Thread::thread_id (void)
+THREADID Thread::id (void)
 {
 	return PIN_ThreadId ();
 }
 
 inline
-PIN_THREAD_UID Thread::thread_uid (void)
+PIN_THREAD_UID Thread::uid (void)
 {
 	return PIN_ThreadUid ();
 }

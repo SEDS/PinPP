@@ -21,10 +21,10 @@ public:
 	~Thread (void);
 
 	/// Get identifier of the current thread in Pin. 
-	static THREADID thread_id (void);
+	static THREADID id (void);
 
 	/// Get unique identifier of the current thread in Pin. 
-	static PIN_THREAD_UID thread_uid (void);
+	static PIN_THREAD_UID uid (void);
 
 	/// Get system identifier of the parent thread, if known. 
 	static OS_THREAD_ID parent_id (void);
