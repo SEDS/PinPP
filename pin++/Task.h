@@ -43,17 +43,19 @@ public:
 	const std::list <PIN_THREAD_UID> & threads (void) const;
 
 private:
-	
+	/// PIN thread hook
+	static void __run_svc (void * arg);
+
+	/// A list of the IDs of all currently running threads created by this task
 	std::list <PIN_THREAD_UID> ids_;
 
+	/// Controls access to ids_
 	RW_Mutex lock_;
-
-	static void __run_svc (void * arg);
 
 };
 
-#include "Task.cpp"
 #include "Task.inl"
+#include "Task.cpp"
 
 } // namespace OASIS
 } // namespace Pin
