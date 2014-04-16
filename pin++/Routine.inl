@@ -14,6 +14,7 @@ namespace Pin
 inline
 Routine::Routine (RTN rtn)
 : rtn_ (rtn),
+  sym_ (Symbol::invalid),
   symbol_ (sym_)
 {
 
