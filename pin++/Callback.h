@@ -15,6 +15,7 @@
 
 #include "pin.H"
 #include "Arg_List.h"
+#include "Insert_T.h"
 
 namespace OASIS
 {
