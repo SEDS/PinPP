@@ -79,58 +79,6 @@ public:
 
   /// Pointer to INS_InsertCall
   static const Insert_Call_T <Bbl>::funcptr_type __insert_call;
-
-  /// @}
-
-  /// @{ Insert Call Methods
-  template <typename CALLBACK>
-  void insert_call (IPOINT location, CALLBACK * callback) const;
-
-  template <typename CALLBACK, typename XARG1>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
-  /// @}
-
-  /// @{ Insert If Call Methods
-  template <typename CALLBACK>
-  void insert_if_call (IPOINT location, CALLBACK * callback) const;
-
-  template <typename CALLBACK, typename XARG1>
-  void insert_if_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2>
-  void insert_if_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3>
-  void insert_if_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void insert_if_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
-  /// @}
-
-  /// @{ Insert Then Call Methods
-  template <typename CALLBACK>
-  void insert_then_call (IPOINT location, CALLBACK * callback) const;
-
-  template <typename CALLBACK, typename XARG1>
-  void insert_then_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2>
-  void insert_then_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3>
-  void insert_then_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void insert_then_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
   /// @}
 
 private:

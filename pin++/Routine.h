@@ -148,40 +148,6 @@ public:
   INT32 code_ranges_probed (INT32 num, PIN_CODE_RANGE *buffer);
   /// @}
 
-  /// @{ Insert Call Methods
-  template <typename CALLBACK>
-  void insert_call (IPOINT location, CALLBACK * callback) const;
-
-  template <typename CALLBACK, typename XARG1>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
-  /// @}
-
-  /// @{ Insert Call Probed Methods
-  template <typename CALLBACK>
-  void insert_call_probed (IPOINT location, CALLBACK * callback) const;
-
-  template <typename CALLBACK, typename XARG1>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
-  /// @}
-
 private:
   RTN rtn_;
   
