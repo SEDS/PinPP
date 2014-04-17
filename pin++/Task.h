@@ -32,33 +32,39 @@ public:
 	THREADID run (PIN_THREAD_UID *thr_id = 0);
 
 	/**
-	 * Wait until all threads created by this task have terminated.
+	 * Wait until all threads created using a task have terminated.
 	 * 
 	 * @param[in]       timeout        The maximum amout of time, in milliseconds, to wait for any one thread to terminate.
 	 * @return  TRUE if all threads terminated, FALSE if the timeout time elapsed.
 	 */
 	bool wait (UINT32 timeout = PIN_INFINITE_TIMEOUT);
 
-	/// Get a list of the unique thread IDs of all currently running threads created by this task
+	/// Get a list of the unique thread IDs of all currently running threads created using a task
 	const std::list <PIN_THREAD_UID> & threads (void) const;
 
 private:
 	/// PIN thread hook
 	static void __run_svc (void * arg);
 
-	/// A list of the IDs of all currently running threads created by this task
-	std::list <PIN_THREAD_UID> ids_;
+	/// A list of the IDs of all currently running threads created using a task
+	static std::list <PIN_THREAD_UID> ids_;
 
 	/// Controls access to ids_
-	RW_Mutex lock_;
-
+	static RW_Mutex lock_;
 };
 
-#include "Task.inl"
-#include "Task.cpp"
+// definition of ids_
+template <typename T>
+std::list <PIN_THREAD_UID> Task <T>::ids_;
+
+// definition of lock_
+template <typename T>
+RW_Mutex Task <T>::lock_;
 
 } // namespace OASIS
 } // namespace Pin
 
+#include "Task.inl"
+#include "Task.cpp"
 
 #endif // _OASIS_PIN_TASK_H_

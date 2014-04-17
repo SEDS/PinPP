@@ -4,7 +4,6 @@ namespace Pin
 {
 
 template <typename T>
-inline
 THREADID Task <T>::run (PIN_THREAD_UID *threadUid)
 {
 	return PIN_SpawnInternalThread (&Task::__run_svc, this, 0, threadUid);
@@ -16,8 +15,8 @@ void Task <T>::__run_svc (void * arg)
 	// add the ID of this thread to the list
 	do
 	{
-		Guard <RW_Mutex> guard (&lock_, WRITE);
-		this->ids_.insert (get_uid);
+		Guard <RW_Mutex> guard (Task::lock_, Guard <RW_Mutex>::Lock_Type::WRITE);
+		Task::ids_.insert (Task::ids_.begin (), Thread::uid ());
 	} while (false);
 
 	reinterpret_cast <T *> (arg)->run_svc ();
@@ -25,24 +24,24 @@ void Task <T>::__run_svc (void * arg)
 	// remove the ID of this thread from the list
 	do
 	{
-		Guard <RW_Mutex> guard (&lock_, WRITE);
-		this->ids_.remove (get_uid);
+		Guard <RW_Mutex> guard (Task::lock_, Guard <RW_Mutex>::Lock_Type::WRITE);
+		Task::ids_.remove (Thread::uid ());
 	} while (false);
 }
 
 template <typename T>
 bool Task <T>::wait (UINT32 timeout)
 {
-	while (! this->ids_.empty ())
+	while (! Task::ids_.empty ())
 	{
 
 		do
 		{
-			Guard <RW_Mutex> guard (&lock_, READ);
+			Guard <RW_Mutex> guard (Task::lock_, Guard <RW_Mutex>::Lock_Type::READ);
 
-			if (! this->ids_.empty ())
+			if (! Task::ids_.empty ())
 			{
-				bool terminated = Thread::wait (this->ids_.front (), timeout, 0);
+				bool terminated = Thread::wait (Task::ids_.front (), timeout, 0);
 
 				// if the timeout time elapsed
 				if (terminated == false && timeout != PIN_INFINITE_TIMEOUT)
