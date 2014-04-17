@@ -31,7 +31,7 @@ class Instruction : public OASIS::Pin::Instruction_Instrument <Instruction>
 public:
   void handle_instrument (const OASIS::Pin::Ins & ins)
   {
-    ins.insert_call (IPOINT_BEFORE, &this->callback_);
+    this->callback_.insert (IPOINT_BEFORE, ins);
   }
 
   UINT64 count (void) const

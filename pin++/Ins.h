@@ -15,6 +15,7 @@
 
 #include "pin.H"
 #include "Iterator.h"
+#include "Insert_T.h"
 
 #include "Pin_export.h"
 
@@ -49,6 +50,13 @@ public:
   static std::string opcode_string_short (UINT32 opcode);
   static std::string category_string_short (UINT32 num);
   static std::string extension_string_short (UINT32 num);
+
+  /// @{ Insert Pointers
+
+  /// Pointer to INS_InsertCall
+  static const Insert_Call_T <Ins>::funcptr_type __insert_call;
+
+  /// @}
 
   /**
    * Initializing cosntructor

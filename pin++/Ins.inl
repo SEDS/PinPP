@@ -644,8 +644,7 @@ void Ins::set_xed_syntax (void)
 inline
 void Ins::insert_version_case (REG reg, INT32 case_value, ADDRINT new_version, CALL_ORDER order) const
 {
-  INS_InsertVersionCase (this->ins_, reg, case_value, new_version,
-                         IARG_CALL_ORDER, order, IARG_END);
+  INS_InsertVersionCase (this->ins_, reg, case_value, new_version, IARG_CALL_ORDER, order, IARG_END);
 }
 
 inline

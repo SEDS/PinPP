@@ -8,29 +8,55 @@ namespace OASIS
 namespace Pin
 {
 
+template <typename T>
+struct Insert_Call_T
+{
+  /// Type definition of the Pin type.
+  typedef typename T::pin_type pin_type;
+
+  /// Type definition of the function pointer to *_InsertCall.
+  typedef VOID (* funcptr_type) (pin_type, IPOINT, AFUNPTR, ...);
+};
+
 /**
  * @struct Insert_T
  *
- * Wrapper class for executing an InsertCall function.
+ * Functor executing an InsertCall function.
  */
-template <typename S, typename CALLBACK, void (*F) (S, IPOINT, AFUNPTR, ...), int N = Length <typename CALLBACK::arglist_type>::RET>
+template <typename S, typename CALLBACK, int N = Length <typename CALLBACK::arglist_type>::RET>
 struct Insert_T;
 
 // 0 arguments
 
-template <typename S, typename CALLBACK, void (*F) (S, IPOINT, AFUNPTR, ...)>
-struct Insert_T <S, CALLBACK, F, 0>
+template <typename S, typename CALLBACK>
+struct Insert_T <S, CALLBACK, 0>
 {
+  /// Type definition of the Pin type.
+  typedef typename S::pin_type pin_type;
+ 
+  /// Type definition of the function pointer.
+  typedef typename Insert_Call_T <S>::funcptr_type funcptr_type;
+
+  Insert_T (funcptr_type funcptr)
+    : insert_ (funcptr) { }
+
   template <typename A>
-  inline static void execute (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  inline void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
   {
-    F (scope, location, (AFUNPTR)analyze,
-       IARG_FAST_ANALYSIS_CALL,
-       IARG_PTR, callback,
-       IARG_END);
+    this->insert_ (scope, 
+                   location, 
+                   (AFUNPTR)analyze, 
+                   IARG_FAST_ANALYSIS_CALL,
+                   IARG_PTR, 
+                   callback,
+                   IARG_END);
   }
+
+private:
+  funcptr_type insert_;
 };
 
+/*
 // 1 argument
 
 template <typename S, typename CALLBACK, void (*F) (S, IPOINT, AFUNPTR, ...)>
@@ -1266,6 +1292,7 @@ struct Insert_T <S, CALLBACK, F, 9>
          IARG_END);
     }
   };
+*/
 
 }
 }

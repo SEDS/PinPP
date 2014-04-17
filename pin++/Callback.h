@@ -21,11 +21,20 @@ namespace OASIS
 namespace Pin
 {
     
+// Forward decl.
+class Ins;
+
+// Forward decl.
+class Bbl;
+
+// Forward decl.
+class Routine;
+
 /**
- * @class Callback
+ * @class Callback_Base
  *
- * Base class for all callbacks. The callbacks are where the
- * analysis code resides.
+ * Base class for all callbacks. The callbacks are where the analysis code 
+ * resides.
  */
 template <typename T, typename List>
 class Callback_Base
@@ -38,15 +47,118 @@ public:
   static const int arglist_length = Length <List>::RET;
   /// @}
 
+  /// @{ InsertCall
+
+  /**
+   * Instrument the object with this analysis routine. The analysis routine
+   * is inserted at \a location in relation to the object being instrumented.
+   * Valid locations are:
+   * 
+   * = \a IPOINT_BEFORE
+   * = \a IPOINT_AFTER
+   * = \a IPOINT_ANYWHERE
+   *
+   * The \a obj is the object being instrumented. Based on Pin, the following
+   * are acceptable objects types (or scopes):
+   *
+   *  = Ins
+   *  = Bbl
+   *  = Trace
+   *  = Routine
+   *
+   * If the callback has parameters that require additional arguments, then the
+   * additional arguments must come after the object being instrumented. The 
+   * framework will take care of forming the correct argument list for you.
+   *
+   * @param[in]       location      Location to insert instrument
+   * @param[in]       obj         Object to instrument
+   */
+  template <typename S>
+  void insert (IPOINT location, const S & obj)
+  {
+    Insert_T <S, T> insert (S::__insert_call);
+    insert (obj, location, (T *) this, &T::__analyze);
+  }
+
+  /**
+   * @overload
+   */
+  template <typename S, typename XARG1>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1) 
+  {
+    Insert_T <S, T> insert (S::__insert_call);
+    insert (obj, location, (T *) this, &T::__analyze, xarg1);
+  }
+
+  /**
+   * @overload
+   */
+  template <typename S, typename XARG1, typename XARG2>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2)
+  {
+    Insert_T <S, T> insert (S::__insert_call);
+    insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2);
+  }
+
+  /**
+   * @overload
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3)
+  {
+    Insert_T <S, T> insert (S::__insert_call);
+    insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3);
+  }
+
+  /**
+   * @overload
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4)
+  {
+    Insert_T <S, T> insert (S::__insert_call);
+    insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3, xarg4);
+  }
+
+  /**
+   * @overload
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5)
+  {
+    Insert_T <S, T> insert (S::__insert_call);
+    insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5);
+  }
+
+  /**
+   * @overload
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5, XARG6 xarg6)
+  {
+    Insert_T <S, T> insert (S::__insert_call);
+    insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5, xarg6);
+  }
+
+  /// @}
+
+  /// {@ InsertCallPredicated
+
+  ///
+
 private:
   /// Argument list for the callback.
   List arglist_;
 };
   
+///////////////////////////////////////////////////////////////////////////////
+// Callback
+
+// Forward decl.
 template <typename T> class Callback;
-    
+
 /**
- * @class Callback0
+ * @class Callback
  *
  * Callback for passing 0 arguments to the analysis routine.
  */

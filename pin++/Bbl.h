@@ -75,6 +75,13 @@ public:
   USIZE code_cache_size (void) const;
   /// @}
 
+  /// @{ Insert Pointers
+
+  /// Pointer to INS_InsertCall
+  static const Insert_Call_T <Bbl>::funcptr_type __insert_call;
+
+  /// @}
+
   /// @{ Insert Call Methods
   template <typename CALLBACK>
   void insert_call (IPOINT location, CALLBACK * callback) const;

@@ -50,11 +50,13 @@ public:
 #if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
    for each (OASIS::Pin::Bbl & bbl in trace)
 #else
-   for (OASIS::Pin::Bbl & bbl : trace)
+   for (const OASIS::Pin::Bbl & bbl : trace)
 #endif
     {
       callback->increment (bbl.ins_count ());
-      bbl.insert_call (IPOINT_BEFORE, callback ++);
+      callback->insert (IPOINT_BEFORE, bbl);
+
+      ++ callback;
     }
 
     this->traces_.push_back (item);

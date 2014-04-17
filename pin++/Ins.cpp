@@ -9,6 +9,8 @@ namespace OASIS
 namespace Pin
 {
 
+const Insert_Call_T <Ins>::funcptr_type Ins::__insert_call = &INS_InsertCall;
+
 const INS Ins::invalid = INS_Invalid ();
 
 Routine Ins::routine (void) const
