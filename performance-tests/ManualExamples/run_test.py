@@ -16,7 +16,7 @@ def parse_args ():
   parser = argparse.ArgumentParser (description='Gathers performance metrics of pin++ vs native pin')
 
   parser.add_argument ('--outfile', default='results.csv', type=str, help='Output file. Defaults to results.csv')
-  parser.add_argument ('--pinppdir', default=os.environ['OASIS_ROOT'] + '/examples/pintools', type=str, help='Pin++ pintool directory. Defaults to $OASIS_ROOT/examples/pintools')
+  parser.add_argument ('--pinppdir', default=os.environ['PINPP_ROOT'] + '/lib', type=str, help='Pin++ pintool directory. Defaults to $PINPP_ROOT/lib')
   parser.add_argument ('--pindir', default=os.environ['PIN_ROOT'] + '/source/tools', type=str, help='Native pintool directory.  Defaults to $PIN_ROOT/source/tools')
   parser.add_argument ('--binary', default=None, type=str, help='Binary to test')
   parser.add_argument ('--binary_file', default=None, type=str, help='File with one binary per line to test')
