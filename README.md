@@ -23,7 +23,7 @@ To build the examples:
 We have physically tested Pin++ with the following compilers:
 
 * Clang 5.0
-* GCC 4.7
+* GCC 4.6*, 4.7
 * Visual Studio 2008* (vc9), 2010 (vc10), 2012 (vc11)
 
 If a compiler you use is not on the list above and Pin++ compiles
