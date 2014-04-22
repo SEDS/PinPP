@@ -66,6 +66,7 @@ inline
 const Routine & Routine::operator = (const RTN & rtn)
 {
   this->rtn_ = rtn;
+  this->sym_ = Symbol::invalid;
   return *this;
 }
 
