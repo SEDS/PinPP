@@ -9,26 +9,28 @@
 
 /**
  * @class countdown
+ *
+ * This is a conditional callback that controls when an analysis routine 
+ * will fire. This conditional callback fires after N calls.
  */
 class countdown : public OASIS::Pin::Conditional_Callback < countdown (void) >
 {
 public:
-  countdown (INT32 & counter)
-    : counter_ (counter)  { }
+  countdown (void)
+    : counter_ (1) { }
 
-  ADDRINT do_next (void)
+  void reset_counter (INT32 counter)
   {
-    std::cerr << "current count: " << this->counter_ << std::endl;
-    return -- this->counter_;
+    this->counter_ = counter;
   }
 
-  static ADDRINT __do_next (VOID * arg)
+  bool do_next (void)
   {
-    return reinterpret_cast <countdown *> (arg)->do_next ();
+    return (-- this->counter_ == 0);
   }
 
 private:
-  INT32 & counter_;
+  INT32 counter_;
 };
 
 /**
@@ -40,47 +42,39 @@ public:
   static const INT32 N = 100000;
   static const INT32 M =  50000;
 
-  printip (FILE * file, INT32 & counter)
+  printip (FILE * file, countdown & countdown)
     : file_ (file),
-      counter_ (counter)
+      countdown_ (countdown)
   {
-    this->counter_ = N;
+    this->countdown_.reset_counter (N);
   }
 
   void handle_analyze (ADDRINT addr)
   {
-    //::fprintf (this->file_, "0x%p\n", addr);
-
-    // Reset the counter.
-    this->counter_ = N + (rand () % M);
+    ::fprintf (this->file_, "0x%p\n", addr);
+    this->countdown_.reset_counter (N + (rand () % M));
   }
 
 private:
   FILE * file_;
-  INT32 & counter_;
+  countdown & countdown_;
 };
 
 class Instrument : public OASIS::Pin::Instruction_Instrument <Instrument>
 {
 public:
   Instrument (FILE * file)
-    : counter_ (50000),
-      countdown_ (counter_),
-      printip_ (file, counter_)
+    : printip_ (file, countdown_)
   {
 
   }
 
   void handle_instrument (const OASIS::Pin::Ins & ins)
   {
-    //std::cerr << "instrumenting the instruction" << std::endl;
-    //this->printip_[this->countdown_].insert (IPOINT_BEFORE, ins);
+    this->printip_[this->countdown_].insert (IPOINT_BEFORE, ins);
   }
 
 private:
-  /// Number of instruction to count.
-  INT32 counter_;
-  
   /// The countdown guard protecting \a printip_.
   countdown countdown_;
 
@@ -92,10 +86,9 @@ class isampling : public OASIS::Pin::Tool <isampling>
 {
 public:
   isampling (void)
-    : file_ (0),
+    : file_ (fopen ("isampling.out", "w")),
       inst_ (file_)
   {
-    std::cout << "creating isampling" << std::endl;
     this->enable_fini_callback ();
   }
 

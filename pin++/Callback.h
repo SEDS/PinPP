@@ -143,7 +143,7 @@ public:
   template <typename S>
   void insert (IPOINT location, const S & obj)
   {
-    Insert_T <S, T, arglist_length> insert (S::__insert_call, (T *)this);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call, (T &)*this);
     insert (obj, location, &T::__analyze);
   }
 
@@ -467,7 +467,7 @@ public:
 
   static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * callback)
   {
-    return reinterpret_cast <T *> (callback)->do_next ();
+    return (ADDRINT) reinterpret_cast <T *> (callback)->do_next ();
   }
 };
  

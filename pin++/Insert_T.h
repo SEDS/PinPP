@@ -43,7 +43,7 @@ struct Insert_T <S, CALLBACK, 0>
   /// Type definition of the function pointer.
   typedef typename Insert_Call_T <S>::funcptr_type funcptr_type;
 
-  Insert_T (funcptr_type insert, CALLBACK * callback)
+  Insert_T (funcptr_type insert, CALLBACK & callback)
     : insert_ (insert),
       callback_ (callback) { }
 
@@ -55,13 +55,13 @@ struct Insert_T <S, CALLBACK, 0>
                    (AFUNPTR)analyze, 
                    IARG_FAST_ANALYSIS_CALL,
                    IARG_PTR, 
-                   this->callback_,
+                   &this->callback_,
                    IARG_END);
   }
 
 private:
   funcptr_type insert_;
-  CALLBACK * callback_;
+  CALLBACK & callback_;
 };
 
 // 1 argument
@@ -75,7 +75,7 @@ struct Insert_T <S, CALLBACK, 1>
   /// Type definition of the function pointer.
   typedef typename Insert_Call_T <S>::funcptr_type funcptr_type;
 
-  Insert_T (funcptr_type insert, CALLBACK * callback)
+  Insert_T (funcptr_type insert, CALLBACK & callback)
     : insert_ (insert),
       callback_ (callback) { }
 
@@ -87,14 +87,14 @@ struct Insert_T <S, CALLBACK, 1>
                    (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
                    IARG_PTR, 
-                   this->callback_,
+                   &this->callback_,
                    Arg_List <CALLBACK>::template get_arg <0> (),
                    IARG_END);
   }
 
 private:
   funcptr_type insert_;
-  CALLBACK * callback_;
+  CALLBACK & callback_;
 };
 
 /*
