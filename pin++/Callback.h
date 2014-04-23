@@ -15,12 +15,13 @@
 
 #include "pin.H"
 #include "Arg_List.h"
+#include "Insert_T.h"
 
 namespace OASIS
 {
 namespace Pin
 {
-    
+
 // Forward decl.
 class Ins;
 
@@ -29,6 +30,70 @@ class Bbl;
 
 // Forward decl.
 class Routine;
+
+///////////////////////////////////////////////////////////////////////////////
+// class Callback_Guard
+
+/**
+ * @class Callback_Guard
+ *
+ * Wrapper class that handles executing _InsertIfCall and _InsertThenCall
+ * for the sampling callback and the analysis callback. The wrapper ensures
+ * that the same object and location is applied to either callback object. 
+ * This is necessary per the Pin specification.
+ */
+template <typename GUARD, typename CALLBACK>
+class Callback_Guard
+{
+public:
+  /// Type definition of the guard type.
+  typedef GUARD guard_type;
+
+  /// Type definition of the callback type.
+  typedef CALLBACK callback_type;
+
+  Callback_Guard (GUARD & guard, CALLBACK & callback)
+    : guard_ (guard),
+      callback_ (callback)
+  {
+
+  }
+
+  Callback_Guard (const Callback_Guard & src)
+    : guard_ (src.guard_),
+      callback_ (src.callback_)
+  {
+
+  }
+
+  const Callback_Guard & operator = (const Callback_Guard & rhs)
+  {
+    this->guard_ = rhs.guard_;
+    this->callback_ = rhs.callback_;
+
+    return *this;
+  }
+
+  template <typename S>
+  void insert (IPOINT location, const S & obj)
+  {
+    Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
+    __if (obj, location, &GUARD::__do_next);
+
+    Insert_T <S, CALLBACK, CALLBACK::arglist_length> __then (S::__insert_then_call, this->callback_);
+    __then (obj, location, &CALLBACK::__analyze);
+  }
+
+private:
+  /// Guard object that determine when the callback is called.
+  GUARD & guard_;
+
+  /// Target callback object.
+  CALLBACK & callback_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// class Callback_Base
 
 /**
  * @class Callback_Base
@@ -40,12 +105,14 @@ template <typename T, typename List>
 class Callback_Base
 {
 public:
+  /// Type definition of the callback.
   typedef T type;
 
-  /// @{ Argument List Definitions
+  /// Type definition of the callback argument list.
   typedef List arglist_type;
-  static const int arglist_length = Length <List>::RET;
-  /// @}
+
+  /// The number of arguments expected by the insert method.
+  static const int arglist_length = Length <arglist_type>::RET;
 
   /// @{ InsertCall
 
@@ -71,13 +138,13 @@ public:
    * framework will take care of forming the correct argument list for you.
    *
    * @param[in]       location      Location to insert instrument
-   * @param[in]       obj         Object to instrument
+   * @param[in]       obj           Object to instrument
    */
   template <typename S>
   void insert (IPOINT location, const S & obj)
   {
-    Insert_T <S, T> insert (S::__insert_call);
-    insert (obj, location, (T *) this, &T::__analyze);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call, (T *)this);
+    insert (obj, location, &T::__analyze);
   }
 
   /**
@@ -86,7 +153,7 @@ public:
   template <typename S, typename XARG1>
   void insert (IPOINT location, const S & obj, XARG1 xarg1) 
   {
-    Insert_T <S, T> insert (S::__insert_call);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call);
     insert (obj, location, (T *) this, &T::__analyze, xarg1);
   }
 
@@ -96,7 +163,7 @@ public:
   template <typename S, typename XARG1, typename XARG2>
   void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2)
   {
-    Insert_T <S, T> insert (S::__insert_call);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call);
     insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2);
   }
 
@@ -106,7 +173,7 @@ public:
   template <typename S, typename XARG1, typename XARG2, typename XARG3>
   void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3)
   {
-    Insert_T <S, T> insert (S::__insert_call);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call);
     insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3);
   }
 
@@ -116,7 +183,7 @@ public:
   template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
   void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4)
   {
-    Insert_T <S, T> insert (S::__insert_call);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call);
     insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3, xarg4);
   }
 
@@ -126,7 +193,7 @@ public:
   template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
   void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5)
   {
-    Insert_T <S, T> insert (S::__insert_call);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call);
     insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5);
   }
 
@@ -136,19 +203,16 @@ public:
   template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
   void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5, XARG6 xarg6)
   {
-    Insert_T <S, T> insert (S::__insert_call);
+    Insert_T <S, T, arglist_length> insert (S::__insert_call);
     insert (obj, location, (T *) this, &T::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5, xarg6);
   }
 
-  /// @}
-
-  /// {@ InsertCallPredicated
-
   ///
-
-private:
-  /// Argument list for the callback.
-  List arglist_;
+  template <typename GUARD>
+  Callback_Guard <GUARD, T> operator [] (GUARD & guard)
+  {
+    return Callback_Guard <GUARD, T> (guard, (T &)*this);
+  }
 };
   
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,11 +230,7 @@ template <typename T>
 class Callback <T (void)> : public Callback_Base <T, End>
 {
 public:
-  /// @{ Analysis Methods
   static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback);
-  static ADDRINT PIN_FAST_ANALYSIS_CALL __analyze_if (void * callback);
-  static void PIN_FAST_ANALYSIS_CALL __analyze_then (void * callback);
-  /// @}
 };
 
 template <typename T, typename A1>
@@ -388,6 +448,29 @@ public:
   static void PIN_FAST_ANALYSIS_CALL __analyze_then (void * callback, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5, param_type6 p6, param_type7 p7, param_type8 p8);
   /// @}
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// Conditional_Callback
+
+template <typename T> class Conditional_Callback;
+
+template <typename T>
+class Conditional_Callback <T (void)>
+{
+public:
+  typedef T type;
+
+  typedef End arglist_type;
+
+  /// The number of arguments expected by the insert method.
+  static const int arglist_length = Length <arglist_type>::RET;
+
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * callback)
+  {
+    return reinterpret_cast <T *> (callback)->do_next ();
+  }
+};
+ 
 
 } // namespace OASIS
 } // namespace Pin

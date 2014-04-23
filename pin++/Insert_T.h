@@ -21,9 +21,15 @@ struct Insert_Call_T
 /**
  * @struct Insert_T
  *
- * Functor executing an InsertCall function.
+ * Functor executing an InsertCall function. The \a S template parameter
+ * is the scope of the insert (i.e., Ins, Bbl, Trace, or Routine). The
+ * \a CALLBACK template parameter is the callback object we are inserting
+ * into the binary. The \a CALLBACK object will recieve notifications when
+ * it needs to perform analysis. The \a N template parameter is the number
+ * of arguments need to perform the insert.
+ * is the 
  */
-template <typename S, typename CALLBACK, int N = Length <typename CALLBACK::arglist_type>::RET>
+template <typename S, typename CALLBACK, int N>
 struct Insert_T;
 
 // 0 arguments
@@ -37,41 +43,61 @@ struct Insert_T <S, CALLBACK, 0>
   /// Type definition of the function pointer.
   typedef typename Insert_Call_T <S>::funcptr_type funcptr_type;
 
-  Insert_T (funcptr_type funcptr)
-    : insert_ (funcptr) { }
+  Insert_T (funcptr_type insert, CALLBACK * callback)
+    : insert_ (insert),
+      callback_ (callback) { }
 
   template <typename A>
-  inline void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (const S & scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, 
                    location, 
                    (AFUNPTR)analyze, 
                    IARG_FAST_ANALYSIS_CALL,
                    IARG_PTR, 
-                   callback,
+                   this->callback_,
                    IARG_END);
   }
 
 private:
   funcptr_type insert_;
+  CALLBACK * callback_;
+};
+
+// 1 argument
+
+template <typename S, typename CALLBACK>
+struct Insert_T <S, CALLBACK, 1>
+{
+  /// Type definition of the Pin type.
+  typedef typename S::pin_type pin_type;
+ 
+  /// Type definition of the function pointer.
+  typedef typename Insert_Call_T <S>::funcptr_type funcptr_type;
+
+  Insert_T (funcptr_type insert, CALLBACK * callback)
+    : insert_ (insert),
+      callback_ (callback) { }
+
+  template <typename A>
+  void operator () (const S & scope, IPOINT location, A analyze)
+  {
+    this->insert_ (scope, 
+                   location, 
+                   (AFUNPTR)analyze,
+                   IARG_FAST_ANALYSIS_CALL,
+                   IARG_PTR, 
+                   this->callback_,
+                   Arg_List <CALLBACK>::template get_arg <0> (),
+                   IARG_END);
+  }
+
+private:
+  funcptr_type insert_;
+  CALLBACK * callback_;
 };
 
 /*
-// 1 argument
-
-template <typename S, typename CALLBACK, void (*F) (S, IPOINT, AFUNPTR, ...)>
-struct Insert_T <S, CALLBACK, F, 1>
-{
-  template <typename A>
-  inline static void execute (S scope, IPOINT location, CALLBACK * callback, A analyze)
-  {
-    F (scope, location, (AFUNPTR)analyze,
-       IARG_FAST_ANALYSIS_CALL,
-       IARG_PTR, callback,
-       Arg_List <CALLBACK>::template get_arg <0> (),
-       IARG_END);
-  }
-};
 
 // 2 arguments
 

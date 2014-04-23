@@ -15,20 +15,6 @@ void PIN_FAST_ANALYSIS_CALL Callback <T (void)>::__analyze (void * callback)
   reinterpret_cast <T *> (callback)->handle_analyze ();
 }
 
-template <typename T>
-inline
-ADDRINT PIN_FAST_ANALYSIS_CALL Callback <T (void)>::__analyze_if (void * callback)
-{
-  return reinterpret_cast <T *> (callback)->handle_analyze_if ();
-}
-
-template <typename T>
-inline
-void PIN_FAST_ANALYSIS_CALL Callback <T (void)>::__analyze_then (void * callback)
-{
-  reinterpret_cast <T *> (callback)->handle_analyze_then ();
-}
-
 template <typename T, typename A1>
 inline
 void PIN_FAST_ANALYSIS_CALL Callback <T (A1)>::__analyze (void * callback, param_type1 p1)

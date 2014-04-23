@@ -55,7 +55,8 @@ public:
 
   /// Pointer to INS_InsertCall
   static const Insert_Call_T <Ins>::funcptr_type __insert_call;
-
+  static const Insert_Call_T <Ins>::funcptr_type __insert_if_call;
+  static const Insert_Call_T <Ins>::funcptr_type __insert_then_call;
   /// @}
 
   /**
