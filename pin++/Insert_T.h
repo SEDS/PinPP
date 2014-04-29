@@ -155,7 +155,7 @@ struct Insert_T <S, CALLBACK, 3> : public Insert_Base_T <S, CALLBACK>
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
-                   IARG_PTR, &this->callback,
+                   IARG_PTR, &this->callback_,
                    Arg_List <CALLBACK>::template get_arg <0> (),
                    Arg_List <CALLBACK>::template get_arg <1> (),
                    Arg_List <CALLBACK>::template get_arg <2> (),
