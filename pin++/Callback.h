@@ -97,6 +97,84 @@ public:
     __then (obj, location, &CALLBACK::__analyze);
   }
 
+  /**
+   * @overloaded
+   */
+  template <typename S, typename XARG1>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1)
+  {
+    Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
+    __if (obj, location, &GUARD::__do_next);
+
+    Insert_T <S, CALLBACK, CALLBACK::arglist_length> __then (S::__insert_then_call, this->callback_);
+    __then (obj, location, &CALLBACK::__analyze, xarg1);
+  }
+
+  /**
+   * @overloaded
+   */
+  template <typename S, typename XARG1, typename XARG2>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2)
+  {
+    Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
+    __if (obj, location, &GUARD::__do_next);
+
+    Insert_T <S, CALLBACK, CALLBACK::arglist_length> __then (S::__insert_then_call, this->callback_);
+    __then (obj, location, &CALLBACK::__analyze, xarg1, xarg2);
+  }
+
+  /**
+   * @overloaded
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3)
+  {
+    Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
+    __if (obj, location, &GUARD::__do_next);
+
+    Insert_T <S, CALLBACK, CALLBACK::arglist_length> __then (S::__insert_then_call, this->callback_);
+    __then (obj, location, &CALLBACK::__analyze, xarg1, xarg2, xarg3);
+  }
+
+  /**
+   * @overloaded
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4)
+  {
+    Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
+    __if (obj, location, &GUARD::__do_next);
+
+    Insert_T <S, CALLBACK, CALLBACK::arglist_length> __then (S::__insert_then_call, this->callback_);
+    __then (obj, location, &CALLBACK::__analyze, xarg1, xarg2, xarg3, xarg4);
+  }
+
+  /**
+   * @overloaded
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5)
+  {
+    Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
+    __if (obj, location, &GUARD::__do_next);
+
+    Insert_T <S, CALLBACK, CALLBACK::arglist_length> __then (S::__insert_then_call, this->callback_);
+    __then (obj, location, &CALLBACK::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5);
+  }
+
+  /**
+   * @overloaded
+   */
+  template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5, XARG6 arg6)
+  {
+    Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
+    __if (obj, location, &GUARD::__do_next);
+
+    Insert_T <S, CALLBACK, CALLBACK::arglist_length> __then (S::__insert_then_call, this->callback_);
+    __then (obj, location, &CALLBACK::__analyze, xarg1, xarg2, xarg3, xarg4, xarg5, xarg6);
+  }
+
 private:
   /// Guard object that determine when the _this is called.
   GUARD & guard_;
