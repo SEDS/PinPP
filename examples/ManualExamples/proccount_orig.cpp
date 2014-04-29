@@ -86,14 +86,14 @@ public:
     this->rtn_count_.push_back (rc);
 
     OASIS::Pin::Routine_Guard guard (rtn);
-    rtn.insert_call (IPOINT_BEFORE, rc);
+    rc->insert (IPOINT_BEFORE, rtn);
 
 #if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
    for each (OASIS::Pin::Ins & ins in rtn)
 #else
    for (OASIS::Pin::Ins & ins : rtn)
 #endif
-      ins.insert_call (IPOINT_BEFORE, rc->docount_.get ());
+     rc->docount_->insert (IPOINT_BEFORE, ins);
   }
 
   const list_type & rtn_count (void) const
