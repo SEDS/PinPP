@@ -14,7 +14,6 @@
 #define _OASIS_PIN_BBL_H_
 
 #include "Ins.h"
-#include "Pin_export.h"
 
 namespace OASIS
 {
@@ -79,6 +78,8 @@ public:
 
   /// Pointer to INS_InsertCall
   static const Insert_Call_T <Bbl>::funcptr_type __insert_call;
+  static const Insert_Call_T <Bbl>::funcptr_type __insert_if_call;
+  static const Insert_Call_T <Bbl>::funcptr_type __insert_then_call;
   /// @}
 
 private:

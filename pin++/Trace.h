@@ -30,6 +30,9 @@ class Routine;
 class Trace
 {
 public:
+  /// Type definition for Iterator support.
+  typedef TRACE pin_type;
+
   /// Initializing constructor.
   Trace (TRACE & trace);
 
@@ -67,6 +70,12 @@ public:
   /// {@ Code Cache methods
   ADDRINT code_cache_address (void) const;
   USIZE code_cache_size (void) const;
+  /// @}
+
+  /// Pointer to INS_InsertCall
+  static const Insert_Call_T <Trace>::funcptr_type __insert_call;
+  static const Insert_Call_T <Trace>::funcptr_type __insert_if_call;
+  static const Insert_Call_T <Trace>::funcptr_type __insert_then_call;
   /// @}
 
 private:
