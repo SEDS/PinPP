@@ -52,9 +52,15 @@ public:
   /// Type definition of the _this type.
   typedef CALLBACK callback_type;
 
-  Callback_Guard (GUARD & guard, CALLBACK & _this)
+  /**
+   * Initializing constructor
+   *
+   * @param[in]       guard         Reference to conditional callback object
+   * @param[in]       callback      Callback object being guareded 
+   */
+  Callback_Guard (GUARD & guard, CALLBACK & callback)
     : guard_ (guard),
-      callback_ (_this) { }
+      callback_ (callback) { }
 
   /**
    * Copy constructor.
@@ -75,8 +81,8 @@ public:
   }
 
   /**
-   * Insert the conditional _this and _this into the \a obj at
-   * the specification \a location.
+   * Insert the conditional callback and the regular callback into the 
+   * \a obj at the specification \a location.
    *
    * @param[in]       location        Location to perform insert
    * @param[in]       obj             Target object for insert
