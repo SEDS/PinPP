@@ -98,7 +98,7 @@ public:
     if (rtn.valid ())
     {
       OASIS::Pin::Routine_Guard guard (rtn);
-      this->free_before_.insert (IPOINT_BEFORE, rtn);
+      this->free_before_.insert (IPOINT_BEFORE, rtn, 0);
     }
   }
 
