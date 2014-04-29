@@ -76,7 +76,9 @@ public:
 #endif
     {
       callback->init (this->tls_, bbl.ins_count ());
-      bbl.insert_call (IPOINT_ANYWHERE, callback ++);
+      callback->insert (IPOINT_BEFORE, bbl);
+
+      ++ callback;
     }
 
     this->traces_.push_back (item);
