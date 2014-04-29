@@ -564,25 +564,172 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 // Conditional_Callback
 
-template <typename T> class Conditional_Callback;
 
-template <typename T>
-class Conditional_Callback <T (void)>
+/**
+ * @class Callback_Base
+ *
+ * Base class for all callbacks. The callbacks are where the analysis code 
+ * resides.
+ */
+template <typename T, typename List>
+class Conditional_Callback_Base
 {
 public:
+  /// Type definition of the _this.
   typedef T type;
 
-  typedef End arglist_type;
+  /// Type definition of the _this argument list.
+  typedef List arglist_type;
 
   /// The number of arguments expected by the insert method.
   static const int arglist_length = Length <arglist_type>::RET;
+};
 
-  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this)
+/**
+ * @class Conditional_Callback
+ *
+ * Conditional callback are callback back objects that determine when a 
+ * regular \a Callback object should fire. It therefore acts like a guard
+ * to the callback it is associated with.
+ *
+ * Each conditional callback object is required to implemented do_next ()
+ * method. This is similar to the handle_analyze () method on regular
+ * \a Callback objects. The return type of the method must be bool. If
+ * the return value is \a true, then the traditional callback object will
+ * fire. If it is \a false, then nothing happens. This allows the conditional
+ * callback to have different logic that determines when the traditional
+ * callbakc object should fire.
+
+ * Similar to regular \a Callack objects, the do_next () method can take 
+ * multiple parameters. You just need to define the parameters when defining
+ * the \a T template parameter as done with \a Callback objects.
+ */
+template <typename T> class Conditional_Callback;
+
+/**
+ * @class Conditional_Callback <T (void)>
+ *
+ * Conditional callback with no arguments.
+ */
+template <typename T>
+class Conditional_Callback <T (void)> : 
+  public Conditional_Callback_Base <T, End>
+{
+public:
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this) 
   {
-    return (ADDRINT) reinterpret_cast <T *> (_this)->do_next ();
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next ());
+  }
+};
+
+/**
+ * @class Conditional_Callback <T (A1)>
+ *
+ * Conditional callback with 1 argument.
+ */
+template <typename T, typename A1>
+class Conditional_Callback <T (A1)> :
+  public Conditional_Callback_Base <T, Type_Node <A1> >
+{
+public:
+  /// @{ Argument Type Definitions
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  /// @}
+
+  /// @{ Parameter Type Definitions
+  typedef typename A1::param_type param_type1;
+  /// @}
+
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1)
+  {  
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1));
+  }
+};
+
+/**
+ * @class Conditional_Callback <T (A1, A2)>
+ *
+ * Conditional callback with 2 arguments.
+ */
+template <typename T, typename A1, typename A2>
+class Conditional_Callback <T (A1, A2)> :
+  public Conditional_Callback_Base <T, Type_Node <A1, Type_Node <A2> > >
+{
+public:
+  /// @{ Argument Type Definitions
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  /// @}
+
+  /// @{ Parameter Type Definitions
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  /// @}
+
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1, param_type2 p2)
+  {  
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1, p2));
   }
 };
  
+/**
+ * @class Conditional_Callback <T (A1, A2, A3)>
+ *
+ * Conditional callback with 3 arguments.
+ */
+template <typename T, typename A1, typename A2, typename A3>
+class Conditional_Callback <T (A1, A2, A3)> :
+  public Conditional_Callback_Base <T, Type_Node <A1, Type_Node <A2, Type_Node <A3> > > >
+{
+public:
+  /// @{ Argument Type Definitions
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
+  /// @}
+
+  /// @{ Parameter Type Definitions
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
+  /// @}
+
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1, param_type2 p2, param_type3 p3)
+  {  
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1, p2, p3));
+  }
+};
+
+/**
+ * @class Conditional_Callback <T (A1, A2, A3, A4)>
+ *
+ * Conditional callback with 4 arguments.
+ */
+template <typename T, typename A1, typename A2, typename A3, typename A4>
+class Conditional_Callback <T (A1, A2, A3, A4)> :
+  public Conditional_Callback_Base <T, Type_Node <A1, Type_Node <A2, Type_Node <A3, Type_Node <A4> > > > >
+{
+public:
+  /// @{ Argument Type Definitions
+  static const IARG_TYPE arg_type1 = A1::arg_type;
+  static const IARG_TYPE arg_type2 = A2::arg_type;
+  static const IARG_TYPE arg_type3 = A3::arg_type;
+  static const IARG_TYPE arg_type4 = A4::arg_type;
+  /// @}
+
+  /// @{ Parameter Type Definitions
+  typedef typename A1::param_type param_type1;
+  typedef typename A2::param_type param_type2;
+  typedef typename A3::param_type param_type3;
+  typedef typename A4::param_type param_type4;
+  /// @}
+
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4)
+  {  
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1, p2, p3, p4));
+  }
+};
+
 } // namespace OASIS
 } // namespace Pin
 
