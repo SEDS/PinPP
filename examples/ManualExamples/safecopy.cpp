@@ -51,7 +51,7 @@ public:
     {
       // Allocate a new callback for the instruction.
       auto callback = std::shared_ptr <do_load> (new do_load (this->fout_, ins.operand (0).reg ()));
-      ins.insert_call (IPOINT_BEFORE, callback.get ());
+      callback->insert (IPOINT_BEFORE, ins);
       
       // Save the callback.
       this->callbacks_.push_back (callback);

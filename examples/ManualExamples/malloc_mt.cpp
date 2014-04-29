@@ -57,7 +57,7 @@ public:
       using OASIS::Pin::Routine_Guard;
       Routine_Guard guard (rtn);
 
-      rtn.insert_call (IPOINT_BEFORE, &this->before_malloc_, 0);
+      this->before_malloc_.insert (IPOINT_BEFORE, rtn);
     }
   }
 
