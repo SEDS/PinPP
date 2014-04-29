@@ -117,7 +117,7 @@ struct Insert_T <S, CALLBACK, 2> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -128,7 +128,7 @@ struct Insert_T <S, CALLBACK, 2> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -151,7 +151,7 @@ struct Insert_T <S, CALLBACK, 3> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -163,7 +163,7 @@ struct Insert_T <S, CALLBACK, 3> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -187,7 +187,7 @@ struct Insert_T <S, CALLBACK, 4> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -200,7 +200,7 @@ struct Insert_T <S, CALLBACK, 4> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
        IARG_FAST_ANALYSIS_CALL,
@@ -213,7 +213,7 @@ struct Insert_T <S, CALLBACK, 4> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -238,7 +238,7 @@ struct Insert_T <S, CALLBACK, 5> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -252,7 +252,7 @@ struct Insert_T <S, CALLBACK, 5> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -266,7 +266,7 @@ struct Insert_T <S, CALLBACK, 5> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -292,7 +292,7 @@ struct Insert_T <S, CALLBACK, 6> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -307,7 +307,7 @@ struct Insert_T <S, CALLBACK, 6> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -322,7 +322,7 @@ struct Insert_T <S, CALLBACK, 6> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -337,7 +337,7 @@ struct Insert_T <S, CALLBACK, 6> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -364,7 +364,7 @@ struct Insert_T <S, CALLBACK, 7> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -380,7 +380,7 @@ struct Insert_T <S, CALLBACK, 7> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -396,7 +396,7 @@ struct Insert_T <S, CALLBACK, 7> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -412,7 +412,7 @@ struct Insert_T <S, CALLBACK, 7> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -440,7 +440,7 @@ struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -457,7 +457,7 @@ struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -474,7 +474,7 @@ struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -491,7 +491,7 @@ struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -508,7 +508,7 @@ struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -537,7 +537,7 @@ struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -555,7 +555,7 @@ struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -573,7 +573,7 @@ struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -591,7 +591,7 @@ struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -609,7 +609,7 @@ struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                    IARG_FAST_ANALYSIS_CALL,
@@ -639,7 +639,7 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -658,7 +658,7 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                     IARG_FAST_ANALYSIS_CALL,
@@ -677,7 +677,7 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -696,7 +696,7 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -715,7 +715,7 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -734,7 +734,7 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -765,7 +765,7 @@ struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -785,7 +785,7 @@ struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -805,7 +805,7 @@ struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -825,7 +825,7 @@ struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -845,7 +845,7 @@ struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -865,7 +865,7 @@ struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -897,7 +897,7 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -918,7 +918,7 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -939,7 +939,7 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -960,7 +960,7 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -981,7 +981,7 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1002,7 +1002,7 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1023,7 +1023,7 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1056,7 +1056,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1078,7 +1078,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1100,7 +1100,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1122,7 +1122,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1144,7 +1144,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1166,7 +1166,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1188,7 +1188,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1221,7 +1221,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze)
+  void operator () (S scope, IPOINT location, A analyze)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1244,7 +1244,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1267,7 +1267,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1290,7 +1290,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1313,7 +1313,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1336,7 +1336,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1359,7 +1359,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
     
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
@@ -1381,7 +1381,7 @@ struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
   }
 
   template <typename A, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6, typename XARG7>
-  void operator () (S scope, IPOINT location, CALLBACK * callback, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6, const XARG7 & xarg7)
+  void operator () (S scope, IPOINT location, A analyze, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4, const XARG5 & xarg5, const XARG6 & xarg6, const XARG7 & xarg7)
   {
     this->insert_ (scope, location, (AFUNPTR)analyze,
                   IARG_FAST_ANALYSIS_CALL,
