@@ -88,8 +88,8 @@ public:
       OASIS::Pin::Routine_Guard guard (rtn);
 
       // Instrument malloc () to print the input argument value and the return value.
-      rtn.insert_call (IPOINT_BEFORE, &this->malloc_before_, 0);
-      rtn.insert_call (IPOINT_AFTER, &this->malloc_after_);
+      this->malloc_before_.insert (IPOINT_BEFORE, rtn, 0);
+      this->malloc_after_.insert (IPOINT_AFTER, rtn);
     }
 
     // Find the free () function.
@@ -98,7 +98,7 @@ public:
     if (rtn.valid ())
     {
       OASIS::Pin::Routine_Guard guard (rtn);
-      rtn.insert_call (IPOINT_BEFORE, &this->free_before_, 0);
+      this->free_before_.insert (IPOINT_BEFORE, rtn);
     }
   }
 
