@@ -326,7 +326,7 @@ public:
           if (is_memory_write || is_memory_read)
           {
             std::shared_ptr <do_mem> callback (new do_mem (is_memory_write));
-            ins.insert_call (IPOINT_BEFORE, callback.get ());
+            callback->insert (IPOINT_BEFORE, ins);
 
             this->do_mems_.push_back (callback);
           }
@@ -334,14 +334,14 @@ public:
             ; //ins.insert_call (IPOINT_BEFORE, new do_mem2 (is_memory_write));
         }
 
-#if defined(TARGET_IA32)  && defined (TARGET_WINDOWS)
+#if defined (TARGET_IA32) && defined (TARGET_WINDOWS)
         // on ia-32 windows need to identify
         // push
         // ret
         // in order to process callstack correctly
         if (ins != tail)
         {
-          ins.insert_call (IPOINT_BEFORE, &this->process_inst_);
+          this->process_inst_.insert (IPOINT_BEFORE, ins);
 
           if (ins.opcode () == XED_ICLASS_PUSH)
             RecordPush (ins);
@@ -364,22 +364,18 @@ public:
             ADDRINT target = tail.direct_branch_or_call_target_address ();
             std::shared_ptr <process_directcall> callback (new process_directcall (target));
 
-            tail.insert_predicated_call (IPOINT_BEFORE, callback.get (), REG_STACK_PTR);
+            callback->insert_predicated (IPOINT_BEFORE, tail, REG_STACK_PTR);
             this->direct_calls_.push_back (callback);
           }
           else if (!IsPLT (trace))
-          {
-            tail.insert_call (IPOINT_BEFORE,
-                              &this->process_indirect_call_,
-                              REG_STACK_PTR);
-          }
+            this->process_indirect_call_.insert (IPOINT_BEFORE, tail, REG_STACK_PTR);
         }
 
         if (IsPLT (trace))
-          tail.insert_call (IPOINT_BEFORE, &this->process_stub_, REG_STACK_PTR);
+          this->process_stub_.insert (IPOINT_BEFORE, tail, REG_STACK_PTR);
 
         if (tail.is_return ())
-          tail.insert_predicated_call (IPOINT_BEFORE, &this->process_return_, REG_STACK_PTR);
+          this->process_return_.insert_predicated (IPOINT_BEFORE, tail, REG_STACK_PTR);
       }
     }
   }
@@ -428,7 +424,7 @@ public:
         OASIS::Pin::Routine_Guard guard (rtn);
 
         this->enter_main_image_.target (rtn.address ());
-        rtn.insert_call (IPOINT_BEFORE, &this->enter_main_image_, REG_STACK_PTR);
+        this->enter_main_image_.insert (IPOINT_BEFORE, rtn, REG_STACK_PTR);
       }
     }
 
@@ -446,7 +442,7 @@ public:
         ASSERTX (rtn.valid ());
 
         OASIS::Pin::Routine_Guard guard (rtn);
-        rtn.insert_call (IPOINT_BEFORE, &this->register_addr_, 0);
+        this->register_addr_.insert (IPOINT_BEFORE, rtn, 0);
       }
       else if (strstr (name.c_str (), "MAID_unregister_address"))
       {
@@ -454,7 +450,7 @@ public:
         ASSERTX (rtn.valid ());
 
         OASIS::Pin::Routine_Guard guard (rtn);
-        rtn.insert_call (IPOINT_BEFORE, &this->unregister_addr_, 0);
+        this->unregister_addr_.insert (IPOINT_BEFORE, rtn, 0);
       }
     }
   }

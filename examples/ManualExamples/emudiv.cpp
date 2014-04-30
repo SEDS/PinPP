@@ -104,9 +104,9 @@ public:
     {
       OASIS::Pin::Operand operand (ins, 0);
       if (operand.is_reg ())
-        ins.insert_call (IPOINT_BEFORE, &this->emulate_int_divide_, REG_GDX, REG_GAX, REG (operand.reg ()));
+        this->emulate_int_divide_.insert (IPOINT_BEFORE, ins, REG_GDX, REG_GAX, REG (operand.reg ()));
       else
-        ins.insert_call (IPOINT_BEFORE, &this->emulate_mem_divide_, REG_GDX, REG_GAX);
+        this->emulate_mem_divide_.insert (IPOINT_BEFORE, ins, REG_GDX, REG_GAX);
 
       // Remove the old instruction.
       ins.remove ();

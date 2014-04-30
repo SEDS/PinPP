@@ -29,7 +29,7 @@ public:
   {
     OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, thr_id + 1);
 
-    fprintf (this->file_, "thread %d entered malloc(%d)\n", thr_id, size);
+    fprintf (this->file_, "thread %d entered malloc (%d)\n", thr_id, size);
     fflush (this->file_);
   }
 
@@ -54,10 +54,8 @@ public:
 
     if (rtn.valid ())
     {
-      using OASIS::Pin::Routine_Guard;
-      Routine_Guard guard (rtn);
-
-      rtn.insert_call (IPOINT_BEFORE, &this->before_malloc_, 0);
+      OASIS::Pin::Routine_Guard guard (rtn);
+      this->before_malloc_.insert (IPOINT_BEFORE, rtn, 0);
     }
   }
 

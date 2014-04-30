@@ -10,6 +10,8 @@ namespace Pin
 
 const RTN Routine::invalid = RTN_Invalid ();
 
+const Insert_Call_T <Routine>::funcptr_type Routine::__insert_call = &RTN_InsertCall;
+
 Section Routine::section (void) const
 {
   return RTN_Sec (this->rtn_);

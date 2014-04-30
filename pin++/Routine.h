@@ -40,6 +40,10 @@ public:
   /// Type definition of the iterator type.
   typedef Iterator <Routine, &RTN_Prev, &RTN_Next> iterator_type;
 
+  /// Pointer to INS_InsertCall
+  static const Insert_Call_T <Routine>::funcptr_type __insert_call;
+  /// @}
+
   /// Initializing constructor.
   Routine (RTN rtn);
 
@@ -146,40 +150,6 @@ public:
   void replace_signature_probed (PROBE_MODE mode, CALLINGSTD_TYPE callstd_type = CALLINGSTD_DEFAULT);
 
   INT32 code_ranges_probed (INT32 num, PIN_CODE_RANGE *buffer);
-  /// @}
-
-  /// @{ Insert Call Methods
-  template <typename CALLBACK>
-  void insert_call (IPOINT location, CALLBACK * callback) const;
-
-  template <typename CALLBACK, typename XARG1>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void insert_call (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
-  /// @}
-
-  /// @{ Insert Call Probed Methods
-  template <typename CALLBACK>
-  void insert_call_probed (IPOINT location, CALLBACK * callback) const;
-
-  template <typename CALLBACK, typename XARG1>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3) const;
-
-  template <typename CALLBACK, typename XARG1, typename XARG2, typename XARG3, typename XARG4>
-  void insert_call_probed (IPOINT location, CALLBACK * callback, const XARG1 & xarg1, const XARG2 & xarg2, const XARG3 & xarg3, const XARG4 & xarg4) const;
   /// @}
 
 private:

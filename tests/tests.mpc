@@ -1,0 +1,9 @@
+// $Id: ManualExamples.mpc 2305 2013-10-07 03:23:23Z hillj $
+
+project (Callback_Test) : oasis_pintool, tests_common {
+  sharedname = Callback_Test
+
+  Source_Files {
+    Callback_Test.cpp
+  }
+}

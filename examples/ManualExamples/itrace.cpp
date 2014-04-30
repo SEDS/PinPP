@@ -35,7 +35,7 @@ public:
 
   void handle_instrument (const OASIS::Pin::Ins & ins)
   {
-    ins.insert_call (IPOINT_BEFORE, &this->printip_);
+    this->printip_.insert (IPOINT_BEFORE, ins);
   }
 
 private:

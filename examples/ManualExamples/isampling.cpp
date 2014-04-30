@@ -9,23 +9,28 @@
 
 /**
  * @class countdown
+ *
+ * This is a conditional callback that controls when an analysis routine 
+ * will fire. This conditional callback fires after N calls.
  */
-class countdown : public OASIS::Pin::Callback <countdown (void)>
+class countdown : public OASIS::Pin::Conditional_Callback < countdown (void) >
 {
 public:
-  countdown (INT32 & count)
-    : count_ (count)
-  {
+  countdown (void)
+    : counter_ (1) { }
 
+  void reset_counter (INT32 counter)
+  {
+    this->counter_ = counter;
   }
 
-  ADDRINT handle_analyze_if (void)
+  bool do_next (void)
   {
-     return (-- this->count_ == 0);
+    return (-- this->counter_ == 0);
   }
 
 private:
-  INT32 & count_;
+  INT32 counter_;
 };
 
 /**
@@ -37,47 +42,43 @@ public:
   static const INT32 N = 100000;
   static const INT32 M =  50000;
 
-  printip (FILE * file, INT32 & count)
+  printip (FILE * file, countdown & countdown)
     : file_ (file),
-      count_ (count)
+      countdown_ (countdown)
   {
-    this->count_ = N;
+    this->countdown_.reset_counter (N);
   }
 
-  void handle_analyze_then (ADDRINT addr)
+  void handle_analyze (ADDRINT addr)
   {
     ::fprintf (this->file_, "0x%p\n", addr);
-
-    // random number from N to N + M
-    this->count_ = N + rand () % M;
+    this->countdown_.reset_counter (N + (rand () % M));
   }
 
 private:
   FILE * file_;
-  INT32 & count_;
+  countdown & countdown_;
 };
 
 class Instrument : public OASIS::Pin::Instruction_Instrument <Instrument>
 {
 public:
   Instrument (FILE * file)
-    : count_ (0),
-      countdown_ (count_),
-      printip_ (file, count_)
+    : printip_ (file, countdown_)
   {
 
   }
 
   void handle_instrument (const OASIS::Pin::Ins & ins)
   {
-    ins.insert_if_call (IPOINT_BEFORE, &this->countdown_);
-    ins.insert_then_call (IPOINT_BEFORE, &this->printip_);
+    this->printip_[this->countdown_].insert (IPOINT_BEFORE, ins);
   }
 
 private:
-  INT32 count_;
-
+  /// The countdown guard protecting \a printip_.
   countdown countdown_;
+
+  /// The analysis callback object
   printip printip_;
 };
 
