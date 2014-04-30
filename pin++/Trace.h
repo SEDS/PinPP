@@ -56,7 +56,6 @@ public:
   bool original (void) const;
 
   ADDRINT address (void) const;
-
   USIZE size (void) const;
 
   bool has_fall_through (void) const;

@@ -166,7 +166,7 @@ public:
    * @overloaded
    */
   template <typename S, typename XARG1, typename XARG2, typename XARG3, typename XARG4, typename XARG5, typename XARG6>
-  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5, XARG6 arg6)
+  void insert (IPOINT location, const S & obj, XARG1 xarg1, XARG2 xarg2, XARG3 xarg3, XARG4 xarg4, XARG5 xarg5, XARG6 xarg6)
   {
     Insert_T <S, GUARD, GUARD::arglist_length> __if (S::__insert_if_call, this->guard_);
     __if (obj, location, &GUARD::__do_next);
