@@ -75,7 +75,7 @@ struct Insert_T <S, CALLBACK, 0> : public Insert_Base_T <S, CALLBACK>
   typedef typename base_type::funcptr_type funcptr_type;    
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -105,7 +105,7 @@ struct Insert_T <S, CALLBACK, 1> : public Insert_Base_T <S, CALLBACK>
   typedef typename base_type::funcptr_type funcptr_type;    
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback)
+    : base_type (insert, callback)
   {
 
   }
@@ -137,7 +137,7 @@ struct Insert_T <S, CALLBACK, 2> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback)
+    : base_type (insert, callback)
   {
 
   }
@@ -178,7 +178,7 @@ struct Insert_T <S, CALLBACK, 3> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -221,7 +221,7 @@ struct Insert_T <S, CALLBACK, 4> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -279,7 +279,7 @@ struct Insert_T <S, CALLBACK, 5> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -340,7 +340,7 @@ struct Insert_T <S, CALLBACK, 6> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -419,7 +419,7 @@ struct Insert_T <S, CALLBACK, 7> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -502,7 +502,7 @@ struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -606,7 +606,7 @@ struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S, CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -715,7 +715,7 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S,CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
@@ -1153,7 +1153,7 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
 
 
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T <S,CALLBACK> (insert, callback) 
+    : base_type (insert, callback) 
   {
 
   }
