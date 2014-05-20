@@ -22,8 +22,8 @@
 #include <string>
 #include <list>
 #include <algorithm>
-#include <hash_map>
-
+#include <unordered_map>
+//#include <ext/hash_map>
 
 
 /*******************************
@@ -104,6 +104,7 @@ public:
    */
   void handle_instrument (const OASIS::Pin::Image & img)
   {
+
     // first iteration
     // count total number of routines in the image
     UINT64 total_rtn_in_img = 0;
@@ -128,7 +129,8 @@ public:
         // guard automatically open and close the rtn for rtn_iter
         OASIS::Pin::Routine_Guard guard (rtn);
         callback->rtn_register (OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_NAME_ONLY));
-        rtn.insert_call (IPOINT_BEFORE, callback);
+//        rtn.insert_call (IPOINT_BEFORE, callback);
+        callback->insert (IPOINT_BEFORE, rtn);
         ++callback;
       }
     }
@@ -218,8 +220,9 @@ public:
     UINT64 total_rtn_count = 0;
 
     // a hashmap of string - UINT64
-    stdext::hash_map<std::string, UINT64> map;
-
+    //stdext::hash_map<std::string, UINT64> map;
+    std::unordered_map<std::string, UINT64> map;
+ 
     std::string curr_name = "";
     UINT64 curr_count = 0;
 
@@ -237,7 +240,8 @@ public:
           if ( map.count (curr_name) == 1 )
           {
             // routine already in the map, update the count
-            stdext::hash_map<std::string, UINT64>::iterator it = map.find (curr_name);
+            //stdext::hash_map<std::string, UINT64>::iterator it = map.find (curr_name);
+	    std::unordered_map<std::string, UINT64>::iterator it = map.find (curr_name);
             map[curr_name] = it->second + curr_count;            
           }
           else

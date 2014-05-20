@@ -54,15 +54,28 @@ protected:
  * is the 
  */
 template <typename S, typename CALLBACK, int N>
-struct Insert_T;
+struct Insert_T
+{
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+};
 
 // 0 arguments
 
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 0> : public Insert_Base_T <S, CALLBACK>
-{
+{ 
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -85,8 +98,14 @@ struct Insert_T <S, CALLBACK, 0> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 1> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback)
+    : Insert_Base_T <S, CALLBACK> (insert, callback)
   {
 
   }
@@ -110,8 +129,15 @@ struct Insert_T <S, CALLBACK, 1> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 2> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback)
+    : Insert_Base_T <S, CALLBACK> (insert, callback)
   {
 
   }
@@ -144,8 +170,15 @@ struct Insert_T <S, CALLBACK, 2> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 3> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -180,8 +213,15 @@ struct Insert_T <S, CALLBACK, 3> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 4> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -231,8 +271,15 @@ struct Insert_T <S, CALLBACK, 4> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 5> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -285,8 +332,15 @@ struct Insert_T <S, CALLBACK, 5> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 6> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -357,8 +411,15 @@ struct Insert_T <S, CALLBACK, 6> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 7> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -433,8 +494,15 @@ struct Insert_T <S, CALLBACK, 7> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -530,8 +598,15 @@ struct Insert_T <S, CALLBACK, 8> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -632,8 +707,15 @@ struct Insert_T <S, CALLBACK, 9> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S,CALLBACK> (insert, callback) 
   {
 
   }
@@ -758,8 +840,15 @@ struct Insert_T <S, CALLBACK, 10> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -890,8 +979,15 @@ struct Insert_T <S, CALLBACK, 11> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
@@ -1049,8 +1145,15 @@ struct Insert_T <S, CALLBACK, 12> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S,CALLBACK> (insert, callback) 
   {
 
   }
@@ -1214,8 +1317,15 @@ struct Insert_T <S, CALLBACK, 13> : public Insert_Base_T <S, CALLBACK>
 template <typename S, typename CALLBACK>
 struct Insert_T <S, CALLBACK, 14> : public Insert_Base_T <S, CALLBACK>
 {
+  /// Type definition of the base type
+  typedef Insert_Base_T <S, CALLBACK> base_type;
+
+  /// Type definition of the function pointer type
+  typedef typename base_type::funcptr_type funcptr_type;    
+
+
   Insert_T (funcptr_type insert, CALLBACK & callback)
-    : Insert_Base_T (insert, callback) 
+    : Insert_Base_T <S, CALLBACK> (insert, callback) 
   {
 
   }
