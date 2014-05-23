@@ -22,8 +22,12 @@
 #include <string>
 #include <list>
 #include <algorithm>
+#if defined (__GNUC__)
 #include <unordered_map>
-//#include <ext/hash_map>
+#else
+#include <hash_map>
+#endif
+
 
 
 /*******************************
@@ -220,9 +224,13 @@ public:
     UINT64 total_rtn_count = 0;
 
     // a hashmap of string - UINT64
-    //stdext::hash_map<std::string, UINT64> map;
+    // Use unordered map instead of hash map for gcc versions  
+    #if defined (__GNUC__) 
     std::unordered_map<std::string, UINT64> map;
- 
+    #else
+    stdext::hash_map<std::string, UINT64> map;
+    #endif
+
     std::string curr_name = "";
     UINT64 curr_count = 0;
 
@@ -240,8 +248,11 @@ public:
           if ( map.count (curr_name) == 1 )
           {
             // routine already in the map, update the count
-            //stdext::hash_map<std::string, UINT64>::iterator it = map.find (curr_name);
+	    #if defined (__GNUC__) 
 	    std::unordered_map<std::string, UINT64>::iterator it = map.find (curr_name);
+	    #else
+            stdext::hash_map<std::string, UINT64>::iterator it = map.find (curr_name);
+	    #endif
             map[curr_name] = it->second + curr_count;            
           }
           else
