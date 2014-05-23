@@ -133,7 +133,6 @@ public:
         // guard automatically open and close the rtn for rtn_iter
         OASIS::Pin::Routine_Guard guard (rtn);
         callback->rtn_register (OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_NAME_ONLY));
-//        rtn.insert_call (IPOINT_BEFORE, callback);
         callback->insert (IPOINT_BEFORE, rtn);
         ++callback;
       }
