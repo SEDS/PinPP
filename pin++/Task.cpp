@@ -16,7 +16,7 @@ void Task <T>::__run_svc (void * arg)
 	do
 	{
 		Guard <RW_Mutex> guard (Task::lock_, Guard <RW_Mutex>::Lock_Type::WRITE);
-		Task::ids_.push_back (Task::ids_.begin (), Thread::uid ());
+		Task::ids_.push_back (Thread::uid ());
 	} while (false);
 
 	reinterpret_cast <T *> (arg)->run_svc ();
