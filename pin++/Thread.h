@@ -36,7 +36,7 @@ public:
 	static void yield (void);
 
 	/// Terminate the current thread.
-	static void terminate (INT32 exitCode);
+  static void terminate (INT32 exitCode);
 
 	/// Check to see if the current thread is created by the application.
 	static bool is_application_thread (void);
