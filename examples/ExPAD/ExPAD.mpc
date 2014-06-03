@@ -1,0 +1,16 @@
+project (ExPAD) : oasis_pintool, boost_base {
+  sharedname = ExPAD
+
+  Source_Files {
+    ExPAD_Instrumenter.cpp
+	ExPAD_Call_Graph.cpp
+  }
+  
+  Header_Files {
+	ExPAD_Call_Graph.h
+  }
+  
+  Inline_Files {
+  
+  }
+}
