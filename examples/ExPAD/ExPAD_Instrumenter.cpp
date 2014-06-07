@@ -6,6 +6,7 @@
 #include "pin++/Guard.h"
 #include "pin++/Lock.h"
 #include "ExPAD_Call_Graph.h"
+#include "ExPAD_Config.h"
 
 #include <fstream>
 #include <sstream>
@@ -117,26 +118,10 @@ public:
     using OASIS::Pin::Section;
     using OASIS::Pin::Image;
 
-    if (rtn.name ().find ("function") == std::string::npos)
-      return;
+    ExPAD_Routine_Info * ri = this->get_function (rtn);
 
-    // Allocate an object for this routine
-    ExPAD_Routine_Info * ri = new ExPAD_Routine_Info ();
-    ri->id_ = rtn.id ();
-    ri->name_ = rtn.name ();
-    const std::string & image_name = rtn.section ().image ().name ();
-#if defined (TARGET_WINDOWS)
-    ri->image_ = image_name.substr (image_name.find_last_of ('\\') + 1);
-#else
-    ri->image_ = image_name.substr (image_name.find_last_of ('/') + 1);
-#endif
-    ri->address_ = rtn.address ();
-
-    /*if (kernal_check (ri))
-    {
-      delete ri;
+    if (!ri)
       return;
-    }*/
     
     before * b = new before (ri, this->call_stacks_, this->call_graph_);
 
@@ -145,19 +130,43 @@ public:
     rtn.insert_call (IPOINT_AFTER, &this->a_);
   }
 
-  bool kernal_check (ExPAD_Routine_Info * ri)
-  {
-    std::unordered_set <std::string> system_images;
-    std::array<std::string, 5> temp = {"kernel32.dll", "KERNELBASE.dll", "ntdll.dll", "MSVCR110D.dll", "ACEd.dll"};
-    system_images.insert (temp.begin (), temp.end ());
-    
-    std::unordered_set <std::string>::iterator it = 
-      system_images.find (ri->image_);
 
-    if (it == system_images.end ())
-      return false;
+  ExPAD_Routine_Info * get_function (const OASIS::Pin::Routine & rtn)
+  {
+    const std::string & temp_image_name = rtn.section ().image ().name ();
+    std::string image_name;
+#if defined (TARGET_WINDOWS)
+    image_name = image_name.substr (temp_image_name.find_last_of ('\\') + 1);
+#else
+    image_name = image_name.substr (temp_image_name.find_last_of ('/') + 1);
+#endif
+
+    std::string rtn_name = rtn.name ();
+
+    ExPAD_Config expad_config;
+
+    if (expad_config.read_config ())
+    {
+      if (expad_config.ignore_routine (image_name, rtn_name))
+      {
+        return 0;  
+      }
+      else
+      {
+        ExPAD_Routine_Info * ri = new ExPAD_Routine_Info ();
+        ri->id_ = rtn.id ();
+        ri->name_ = rtn.name ();
+        ri->image_ = image_name;
+        ri->address_ = rtn.address ();
+
+        return ri;
+      }
+    }
     else
-      return true;
+    {
+      std::cerr << "Config parsing failed" << std::endl;
+      return 0;
+    }
   }
 
   const map_type1 & call_stacks (void) const

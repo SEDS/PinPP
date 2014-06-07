@@ -4,6 +4,7 @@ project (ExPAD) : oasis_pintool, boost_base {
   Source_Files {
     ExPAD_Instrumenter.cpp
 	ExPAD_Call_Graph.cpp
+	ExPAD_Config.cpp
   }
   
   Header_Files {
