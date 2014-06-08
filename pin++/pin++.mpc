@@ -31,7 +31,7 @@ project (pin++) : pin {
     Replacement_Routine.h
     Routine.h
     Switch.h
-    Thread.h
+    Task.h
     TLS.h
     Trace.h
     Xarg_Select.h
@@ -60,7 +60,7 @@ project (pin++) : pin {
     Prototype.inl
     Replacement_Routine.inl
     Routine.inl
-    Thread.inl
+    Task.inl
     TLS.inl
     Trace.inl
     Operand.inl
@@ -74,6 +74,7 @@ project (pin++) : pin {
     Pintool.cpp
     Routine_T.cpp
     Routine_Instrument.cpp
+    Task.cpp
     Tool.cpp
     Trace_Buffer.cpp
     Trace_Instrument.cpp

@@ -94,7 +94,7 @@ public:
         // IPOINT_AFTER is implemented by instrumenting each return
         // instruction in a routine.  Pin tries to find all return
         // instructions, but success is not guaranteed.
-        rtn.insert_call (IPOINT_AFTER, &this->after_);
+        this->after_.insert (IPOINT_AFTER, rtn);
 
         // Examine each instruction in the routine.
 #if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
@@ -105,8 +105,8 @@ public:
         {
           if (ins.is_return ())
           {
-            ins.insert_call (IPOINT_BEFORE, &this->before_);
-            ins.insert_call (IPOINT_TAKEN_BRANCH, &this->taken_);
+            this->before_.insert (IPOINT_BEFORE, ins);
+            this->taken_.insert (IPOINT_TAKEN_BRANCH, ins);
           }
         }
       }

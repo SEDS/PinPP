@@ -13,4 +13,10 @@ workspace (pin++) {
 
     ./examples 
   }
+
+  tests {
+    cmdline += -base requires_tests
+
+    ./tests
+  }
 }
