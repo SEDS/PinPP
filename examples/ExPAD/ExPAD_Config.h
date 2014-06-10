@@ -17,9 +17,9 @@ public:
 
   bool ignore_routine (std::string & image_name, std::string & func_name);
 
-  void insert_to_dll_excludes (std::string & dll_name);
+  void insert_to_dll_includes (std::string & dll_name);
 
-  void insert_to_function_excludes (std::string & dll_name, std::string & func_name);
+  void insert_to_function_includes (std::string & dll_name, std::string & func_name);
 
 private:
 
@@ -27,9 +27,9 @@ private:
 
   typedef std::map <std::string, STRING_SET> FUNCTIONS;
   
-  STRING_SET dll_excludes_;
+  STRING_SET dll_includes_;
 
-  FUNCTIONS function_excludes_;
+  FUNCTIONS function_includes_;
 };
 
 #endif

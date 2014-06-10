@@ -111,6 +111,8 @@ public:
   Instrument (void)
     : a_ (call_stacks_, call_graph_)
   {
+    if (!this->expad_config_.read_config ())
+      std::cerr << "Problem with the config file" << std::endl;
   }
 
   void handle_instrument (const OASIS::Pin::Routine & rtn)
@@ -126,8 +128,8 @@ public:
     before * b = new before (ri, this->call_stacks_, this->call_graph_);
 
     OASIS::Pin::Routine_Guard guard (rtn);
-    rtn.insert_call (IPOINT_BEFORE, b);
-    rtn.insert_call (IPOINT_AFTER, &this->a_);
+    b->insert (IPOINT_BEFORE, rtn);
+    this->a_.insert (IPOINT_AFTER, rtn);
   }
 
 
@@ -136,36 +138,29 @@ public:
     const std::string & temp_image_name = rtn.section ().image ().name ();
     std::string image_name;
 #if defined (TARGET_WINDOWS)
-    image_name = image_name.substr (temp_image_name.find_last_of ('\\') + 1);
+    image_name = temp_image_name.substr (temp_image_name.find_last_of ('\\') + 1);
 #else
-    image_name = image_name.substr (temp_image_name.find_last_of ('/') + 1);
+    image_name = temp_image_name.substr (temp_image_name.find_last_of ('/') + 1);
 #endif
 
     std::string rtn_name = rtn.name ();
 
-    ExPAD_Config expad_config;
-
-    if (expad_config.read_config ())
+    std::cerr << rtn_name << ":" << image_name << std::endl;
+    
+    if (this->expad_config_.ignore_routine (image_name, rtn_name))
     {
-      if (expad_config.ignore_routine (image_name, rtn_name))
-      {
-        return 0;  
-      }
-      else
-      {
-        ExPAD_Routine_Info * ri = new ExPAD_Routine_Info ();
-        ri->id_ = rtn.id ();
-        ri->name_ = rtn.name ();
-        ri->image_ = image_name;
-        ri->address_ = rtn.address ();
-
-        return ri;
-      }
+      return 0; 
     }
+       
     else
     {
-      std::cerr << "Config parsing failed" << std::endl;
-      return 0;
+      ExPAD_Routine_Info * ri = new ExPAD_Routine_Info ();
+      ri->id_ = rtn.id ();
+      ri->name_ = rtn.name ();
+      ri->image_ = image_name;
+      ri->address_ = rtn.address ();
+      
+      return ri;
     }
   }
 
@@ -184,6 +179,7 @@ private:
   map_type1 call_stacks_;
   ExPAD_Call_Graph call_graph_;
   after a_;
+  ExPAD_Config expad_config_;
 };
 
 
