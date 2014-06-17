@@ -100,7 +100,7 @@ ExPAD_Config::~ExPAD_Config (void)
 
 }
 
-bool ExPAD_Config::read_config (void)
+bool ExPAD_Config::read_config (const std::string & conf_file)
 {
   // parse the config file and populate the 
   // data structures
@@ -109,8 +109,8 @@ bool ExPAD_Config::read_config (void)
   namespace qi = boost::spirit::qi;
   namespace ascii = boost::spirit::ascii;
 
-  std::ifstream input ("ExPAD.config");
-
+  std::ifstream input (conf_file.c_str ());
+  
   // Adapt the iterator to support Boost backtracking.
   long flags = input.flags ();
 

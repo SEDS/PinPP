@@ -7,8 +7,6 @@
 #include "pin++/Callback.h"
 #include "pin++/Pintool.h"
 #include "boost/graph/adjacency_list.hpp"
-#include "boost/graph/graphviz.hpp"
-
 
 struct ExPAD_Routine_Info
 {
@@ -60,6 +58,9 @@ public:
 
   /// Type definition of the edge descriptor
   typedef boost::graph_traits <ExPAD_Call_Graph_Type>::edge_descriptor edge_descriptor;
+
+  /// Type definition of the adjacency iterator
+  typedef boost::graph_traits <ExPAD_Call_Graph_Type>::adjacency_iterator adjacency_iterator;
 
   /// Default constructor
   ExPAD_Call_Graph (void);

@@ -7,6 +7,7 @@
 #include "pin++/Lock.h"
 #include "ExPAD_Call_Graph.h"
 #include "ExPAD_Config.h"
+#include "ExPAD_Graph_Writer.h"
 
 #include <fstream>
 #include <sstream>
@@ -22,7 +23,6 @@
 
 typedef std::stack <ExPAD_Routine_Info *> stack_type;
 typedef std::map <THREADID, stack_type> map_type1;
-typedef std::map <THREADID, ExPAD_Call_Graph *> map_type2;
 
 class before : public OASIS::Pin::Callback <before (OASIS::Pin::ARG_THREAD_ID)>
 {
@@ -92,10 +92,9 @@ public:
     UINT32 caller_id = this->call_stacks_[thr_id].top ()->id_;
     std::string caller_name = this->call_stacks_[thr_id].top ()->name_;
 
-   // std::cerr << caller_name << " ----> " << callee_name << " (" << thr_id << ")" << std::endl;
-   this->lock_.acquire (thr_id + 1);
-   this->call_graph_.connect (caller_id, callee_id);
-   this->lock_.release ();
+    this->lock_.acquire (thr_id + 1);
+    this->call_graph_.connect (caller_id, callee_id);
+    this->lock_.release ();
   }
 
   map_type1 & call_stacks_;
@@ -109,10 +108,9 @@ public:
 {
 public:
   Instrument (void)
-    : a_ (call_stacks_, call_graph_)
+    : a_ (call_stacks_, call_graph_),
+      filter_ (true)
   {
-    if (!this->expad_config_.read_config ())
-      std::cerr << "Problem with the config file" << std::endl;
   }
 
   void handle_instrument (const OASIS::Pin::Routine & rtn)
@@ -132,6 +130,16 @@ public:
     this->a_.insert (IPOINT_AFTER, rtn);
   }
 
+  bool build_config (const std::string & conf_file_name)
+  {
+    if (!this->expad_config_.read_config (conf_file_name))
+    {
+      std::cerr << "Problem with the config file" << std::endl;
+      return false;
+    }
+    else
+      return true;
+  }
 
   ExPAD_Routine_Info * get_function (const OASIS::Pin::Routine & rtn)
   {
@@ -145,14 +153,7 @@ public:
 
     std::string rtn_name = rtn.name ();
 
-    std::cerr << rtn_name << ":" << image_name << std::endl;
-    
-    if (this->expad_config_.ignore_routine (image_name, rtn_name))
-    {
-      return 0; 
-    }
-       
-    else
+    if (!filter_)
     {
       ExPAD_Routine_Info * ri = new ExPAD_Routine_Info ();
       ri->id_ = rtn.id ();
@@ -162,6 +163,23 @@ public:
       
       return ri;
     }
+    else
+    {
+      if (this->expad_config_.ignore_routine (image_name, rtn_name))
+      {
+        return 0; 
+      }
+      else
+      {
+        ExPAD_Routine_Info * ri = new ExPAD_Routine_Info ();
+        ri->id_ = rtn.id ();
+        ri->name_ = rtn.name ();
+        ri->image_ = image_name;
+        ri->address_ = rtn.address ();
+        return ri;
+      }
+    }
+    
   }
 
   const map_type1 & call_stacks (void) const
@@ -174,12 +192,18 @@ public:
     return this->call_graph_;
   }
 
+  void filter (bool filt)
+  {
+    this->filter_ = filt;
+  }
+
 private:
   
   map_type1 call_stacks_;
   ExPAD_Call_Graph call_graph_;
   after a_;
   ExPAD_Config expad_config_;
+  bool filter_;
 };
 
 
@@ -191,22 +215,16 @@ public:
   {
     this->init_symbols ();
     this->enable_fini_callback ();
-    this->enable_thread_start_callback ();
-    this->enable_thread_fini_callback ();
-  }
-
- void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctxt, INT32 code)
- {
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, thr_id + 1);
-    fprintf (this->file_, "thread begin %d\n", thr_id);
-    fflush (this->file_);
-  }
-
-  void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Const_Context & ctxt, INT32 code)
-  {
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, thr_id + 1);
-    fprintf (this->file_, "thread end %d code %d\n",thr_id, code);
-    fflush (this->file_);
+    
+    if (this->config_file_.Value ().empty ())
+    {
+      this->inst_.filter (false);
+    }
+    else
+    {
+      this->inst_.filter (true);
+      this->inst_.build_config (this->config_file_.Value ());
+    }
   }
 
   void handle_fini (INT32)
@@ -214,16 +232,30 @@ public:
     fclose (this->file_);
 
     const ExPAD_Call_Graph & cg = this->inst_.call_graph ();
-    ExPAD_Vertex_Writer<ExPAD_Call_Graph_Type> vw(cg.graph ());
     
-    ofstream fout("graph.dot");
-    boost::write_graphviz (fout, cg.graph (), vw);
+    if (this->outfile_.Value ().empty ())
+    {
+      ExPAD_Graphviz_Writer gw;
+      ofstream fout ("graph.dot");
+      gw.write_graph (fout, cg);
+    }
+    else
+    {
+      ExPAD_Simple_Graph_Writer gw;
+      ofstream fout (this->outfile_.Value ().c_str ());
+      gw.write_graph (fout, cg);
+    }
   }
 
 private:
   Instrument inst_;
   OASIS::Pin::Lock lock_;
   FILE * file_;
+  static KNOB <string> outfile_;
+  static KNOB <string> config_file_;
 };
+
+KNOB <string> ExPAD_Instrumenter::outfile_ (KNOB_MODE_WRITEONCE, "pintool", "o", "", "specify output file name");
+KNOB <string> ExPAD_Instrumenter::config_file_ (KNOB_MODE_WRITEONCE, "pintool", "c", "", "specify config file name");
 
 DECLARE_PINTOOL (ExPAD_Instrumenter);

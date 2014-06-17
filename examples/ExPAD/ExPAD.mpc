@@ -5,6 +5,7 @@ project (ExPAD) : oasis_pintool, boost_base {
     ExPAD_Instrumenter.cpp
 	ExPAD_Call_Graph.cpp
 	ExPAD_Config.cpp
+	ExPAD_Graph_Writer.cpp
   }
   
   Header_Files {
@@ -12,6 +13,6 @@ project (ExPAD) : oasis_pintool, boost_base {
   }
   
   Inline_Files {
-  
+	ExPAD_Graph_Writer.inl
   }
 }

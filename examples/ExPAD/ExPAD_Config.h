@@ -13,7 +13,7 @@ public:
 
   ~ExPAD_Config (void);
 
-  bool read_config (void);
+  bool read_config (const std::string & conf_file);
 
   bool ignore_routine (std::string & image_name, std::string & func_name);
 
