@@ -1,4 +1,4 @@
-project (ExPAD) : oasis_pintool, boost_base {
+project (ExPAD) : oasis_pintool, boost_base, uses_cpp11 {
   sharedname = ExPAD
 
   Source_Files {
@@ -9,10 +9,10 @@ project (ExPAD) : oasis_pintool, boost_base {
   }
   
   Header_Files {
-	ExPAD_Call_Graph.h
+	
   }
   
   Inline_Files {
-	ExPAD_Graph_Writer.inl
+	
   }
 }

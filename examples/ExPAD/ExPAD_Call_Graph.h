@@ -8,6 +8,16 @@
 #include "pin++/Pintool.h"
 #include "boost/graph/adjacency_list.hpp"
 
+/**
+ * Represent the call graph of a program
+ *
+ * File: ExPAD_Call_Graph.h
+ *
+ */
+
+//
+// Keep details abot a function
+//
 struct ExPAD_Routine_Info
 {
   UINT32 id_;
@@ -16,7 +26,7 @@ struct ExPAD_Routine_Info
   ADDRINT address_;  
 };
 
-
+/// Boost Graph traits
 class ExPAD_Call_Graph_Traits
 {
 public:
@@ -75,12 +85,31 @@ public:
   /// Desturctor
   ~ExPAD_Call_Graph (void);
 
+  /**
+   * Connect method
+   *
+   * @param[in]     caller_id    Caller of the function
+   * @param[in]     callee_id    Called function
+   */
   bool connect (UINT32 caller_id, UINT32 callee_id);
 
+  /**
+   * Insert a vertex into the graph
+   *
+   * @param[in]     func_id    Unique Id represening the fucntion
+   * @param[in]     routine_info    Function details
+   */
   void insert_vertex (UINT32 func_id, ExPAD_Routine_Info * routine_info);
 
+  /**
+   * Get the vertex descriptor for a given function id
+   *
+   * @param[in]     func_id    Unique Id represening the fucntion
+   * @return[out]   vertex_descriptor
+   */
   vertex_descriptor find_vertex (UINT32 func_id);
 
+  // Return the name of the graph
   const std::string & name (void) const;
 
   /**
@@ -94,7 +123,7 @@ public:
   ExPAD_Routine_Info * get_routine_info (vertex_descriptor vertex) const;
 
   /// Get the Graph type
-  const ExPAD_Call_Graph_Type & graph (void) const;
+  ExPAD_Call_Graph_Type graph (void) const;
 
  
 private:
@@ -104,17 +133,19 @@ private:
   /// Local cache of the vertices
   VERTEX_MAP vertices_;
   
+  /// Name of the graph
   std::string name_;
 
+  /// Type of the graph
   ExPAD_Call_Graph_Type graph_;
 
 };
 
-
+// A cusom Graph writer which will be used in Graphviz writer
 template <class ExPAD_Call_Graph_Type> class ExPAD_Vertex_Writer
 {
 public:
-  ExPAD_Vertex_Writer (ExPAD_Call_Graph_Type g) : g_(g) {}
+  ExPAD_Vertex_Writer (ExPAD_Call_Graph_Type & g) : g_(g) {}
 
   template <class VertexOrEdge> void operator () (std::ostream & out, const VertexOrEdge & v) const 
   {
@@ -127,7 +158,9 @@ public:
   }
 
 private:
-  ExPAD_Call_Graph_Type g_;
+  ExPAD_Call_Graph_Type & g_;
 };
+
+#include "ExPAD_Call_Graph.inl"
 
 #endif  // !defined _EXPAD_CALL_GRAPH_H_

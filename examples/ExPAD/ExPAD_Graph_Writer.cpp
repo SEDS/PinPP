@@ -1,5 +1,7 @@
 #include "ExPAD_Graph_Writer.h"
 
+/// A simple graph writer
+// src dest weight
 void ExPAD_Simple_Graph_Writer::
 write_graph (std::ostream & ostr, const ExPAD_Call_Graph & cg)
 {

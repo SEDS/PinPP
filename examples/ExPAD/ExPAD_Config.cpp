@@ -14,6 +14,8 @@
 #include "boost/spirit/include/phoenix_container.hpp"
 #include <fstream>
 
+
+/// A Grammar written in boost to parse the configuration file
 namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 
@@ -90,16 +92,6 @@ private:
 };
 
 
-ExPAD_Config::ExPAD_Config (void)
-{
-
-}
-
-ExPAD_Config::~ExPAD_Config (void)
-{
-
-}
-
 bool ExPAD_Config::read_config (const std::string & conf_file)
 {
   // parse the config file and populate the 
@@ -141,6 +133,9 @@ bool ExPAD_Config::read_config (const std::string & conf_file)
 bool ExPAD_Config::ignore_routine (std::string & image_name, 
                                    std::string & func_name)
 {
+  // The routine will be included if it is only in the specified dll or starting 
+  // with a certain prefix and owned by a dll in the specified list
+
   STRING_SET::iterator it = this->dll_includes_.find (image_name);
 
   if (it == this->dll_includes_.end ())
@@ -165,11 +160,6 @@ bool ExPAD_Config::ignore_routine (std::string & image_name,
   }
   else
     return false;
-}
-
-void ExPAD_Config::insert_to_dll_includes (std::string & dll_name)
-{
-  this->dll_includes_.insert (dll_name);
 }
 
 void ExPAD_Config::insert_to_function_includes (std::string & dll_name, 

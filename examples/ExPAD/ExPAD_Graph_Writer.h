@@ -5,19 +5,27 @@
 #include "ExPAD_Call_Graph.h"
 #include "boost/graph/graphviz.hpp"
 
+/// Base class for any graph writer
 class ExPAD_Graph_Writer
 {
 public :
-
+  /// constructor
   ExPAD_Graph_Writer (void);
 
+  /// Destructor
   ~ExPAD_Graph_Writer (void);
 
+  /**
+   * Graph writting method
+   *
+   * @param[in]     ostr  Stream need to nbe output.
+   * @param[in]     cg    The graph
+   */
   virtual void write_graph (std::ostream & ostr, const ExPAD_Call_Graph & cg) = 0;
 
 };
 
-
+/// Graphviz graph writer
 class ExPAD_Graphviz_Writer : public ExPAD_Graph_Writer
 {
 public :
@@ -28,6 +36,7 @@ public :
   virtual void write_graph (std::ostream & ostr, const ExPAD_Call_Graph & cg);
 };
 
+/// A Simple Graph writer
 class ExPAD_Simple_Graph_Writer : public ExPAD_Graph_Writer
 {
 public :

@@ -2,22 +2,6 @@
 #include "boost/bind.hpp"
 // #include "ace/CORBA_macros.h"
 
-
-ExPAD_Call_Graph::ExPAD_Call_Graph (void)
-{
-
-}
-
-ExPAD_Call_Graph::ExPAD_Call_Graph (const std::string & name)
-  : name_ (name)
-{
-}
-
-ExPAD_Call_Graph::~ExPAD_Call_Graph (void)
-{
-
-}
-
 //
 // connect
 //
@@ -88,37 +72,4 @@ ExPAD_Call_Graph::find_vertex (UINT32 func_id)
     return -1;
   else
     return it->second;
-}
-
-//
-// name
-//
-const std::string & ExPAD_Call_Graph::name (void) const
-{
-  return this->name_;
-}
-
-//
-// name
-//
-
-void ExPAD_Call_Graph::name (const std::string & name)
-{
-  this->name_ = name;
-}
-
-//
-// get_routine_info
-//
-ExPAD_Routine_Info *
-ExPAD_Call_Graph::get_routine_info (vertex_descriptor vertex) const
-{
-  return boost::get (ExPAD_Call_Graph_Traits::routine_info_t (),
-                     this->graph_,
-                     vertex);
-}
-
-const ExPAD_Call_Graph_Type & ExPAD_Call_Graph::graph () const
-{
-  return this->graph_;
 }
