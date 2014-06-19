@@ -14,7 +14,7 @@ connect (UINT32 caller_id, UINT32 callee_id)
   VERTEX_MAP::iterator it2 = this->vertices_.find (callee_id);
 
   if (it1 != this->vertices_.end () &&
-    it2 != this->vertices_.end ())
+      it2 != this->vertices_.end ())
   {
     src = it1->second;
     dst = it2->second;
@@ -53,9 +53,9 @@ insert_vertex (UINT32 func_id, ExPAD_Routine_Info * routine_info)
     this->vertices_.insert (std::pair <UINT32, vertex_descriptor> (func_id, vertex));
     boost::put (boost::vertex_name_t (), this->graph_, vertex, func_id);
     boost::put (ExPAD_Call_Graph_Traits::routine_info_t (),
-              this->graph_,
-              vertex,
-              routine_info);
+                this->graph_,
+                vertex,
+                routine_info);
   }
 }
 

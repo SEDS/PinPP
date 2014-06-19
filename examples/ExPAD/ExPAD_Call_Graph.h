@@ -123,7 +123,7 @@ public:
   ExPAD_Routine_Info * get_routine_info (vertex_descriptor vertex) const;
 
   /// Get the Graph type
-  ExPAD_Call_Graph_Type graph (void) const;
+  const ExPAD_Call_Graph_Type & graph (void) const;
 
  
 private:
@@ -145,7 +145,7 @@ private:
 template <class ExPAD_Call_Graph_Type> class ExPAD_Vertex_Writer
 {
 public:
-  ExPAD_Vertex_Writer (ExPAD_Call_Graph_Type & g) : g_(g) {}
+  ExPAD_Vertex_Writer (ExPAD_Call_Graph_Type g) : g_(g) {}
 
   template <class VertexOrEdge> void operator () (std::ostream & out, const VertexOrEdge & v) const 
   {
@@ -158,7 +158,7 @@ public:
   }
 
 private:
-  ExPAD_Call_Graph_Type & g_;
+  ExPAD_Call_Graph_Type g_;
 };
 
 #include "ExPAD_Call_Graph.inl"

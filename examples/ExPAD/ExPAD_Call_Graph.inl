@@ -51,7 +51,7 @@ ExPAD_Call_Graph::get_routine_info (vertex_descriptor vertex) const
 // graph
 //
 inline 
-ExPAD_Call_Graph_Type ExPAD_Call_Graph::graph () const
+const ExPAD_Call_Graph_Type & ExPAD_Call_Graph::graph () const
 {
   return this->graph_;
 }
