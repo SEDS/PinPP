@@ -5,18 +5,15 @@
 void ExPAD_Simple_Graph_Writer::
 write_graph (std::ostream & ostr, const ExPAD_Call_Graph & cg)
 {
-  ExPAD_Call_Graph::vertex_iterator iter, iter_end;
+  auto iter = boost::vertices (cg.graph ());
 
-  boost::tie (iter, iter_end) = boost::vertices (cg.graph ());
-
-  std::for_each (iter, iter_end,
-    [&ostr, &cg](ExPAD_Call_Graph::vertex_descriptor v) 
+  std::for_each (iter.first, iter.second,
+    [&](ExPAD_Call_Graph::vertex_descriptor v) 
     {
-      ExPAD_Call_Graph::adjacency_iterator ai_iter, ai_iter_end;
-      boost::tie (ai_iter, ai_iter_end) = boost::adjacent_vertices (v, cg.graph ());
+      auto ai_iter = boost::adjacent_vertices (v, cg.graph ());
 
-      std::for_each (ai_iter, ai_iter_end, 
-        [&ostr, &cg, v](ExPAD_Call_Graph::vertex_descriptor u)
+      std::for_each (ai_iter.first, ai_iter.second, 
+        [&, v](ExPAD_Call_Graph::vertex_descriptor u)
         {
            bool found;
            ExPAD_Call_Graph::edge_descriptor e;
