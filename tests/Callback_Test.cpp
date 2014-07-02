@@ -89,7 +89,7 @@ public:
 template <typename T>
 void test_callback (void)
 {
-  T::pin_type obj_type;
+  typename T::pin_type obj_type;
   T obj (obj_type);
 
   callback0 c0;
@@ -117,7 +117,7 @@ void test_callback (void)
 template <typename T>
 void test_conditional_callback (void)
 {
-  T::pin_type pin_obj;
+  typename T::pin_type pin_obj;
   T obj (pin_obj);
 
   Conditional_Test condition;
