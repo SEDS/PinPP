@@ -21,7 +21,8 @@ To build the examples:
 If you building only the Pin++ library, then you do not have to worry
 about the requirements for building the examples.
 
-### Tested Compilers
+Tested Compilers
+-------------------
 
 We have physically tested Pin++ with the following compilers:
 
