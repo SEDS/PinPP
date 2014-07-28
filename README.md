@@ -18,19 +18,22 @@ To build the examples:
 
 * C++11 compliant compiler
 
+If you building only the Pin++ library, then you do not have to worry
+about the requirements for building the examples.
+
 ### Tested Compilers
 
 We have physically tested Pin++ with the following compilers:
 
-* Clang 5.0
-* GCC 4.6*, 4.7, 4.8
-* Visual Studio 2008* (vc9), 2010 (vc10), 2012 (vc11)
+* GCC 4.2\*, 4.6\*, 4.7, 4.8
+* Visual Studio 2008 (vc9)\*, 2010 (vc10)\*, 2012 (vc11)
+
+\* Does not support compiling the examples.
 
 If a compiler you use is not on the list above and Pin++ compiles
 correctly, please let us know so we can update the list with the compiler
 you have tested and/or are using.
 
-\* Does not support compiling the examples.
 
 Environment Setup
 -------------------
