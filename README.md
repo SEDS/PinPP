@@ -77,7 +77,7 @@ then select ```intel64=1```. You can not set both features to 1.
 Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```) 
 will be placed in ```$PINPP_ROOT/lib```.
 
-## Building the C++11 examples
+### Building the C++11 examples
 
 When building the Pin++ examples, you must enable the C++11 feature ```cpp11=1```. 
 Here is the command-line for building the Pin++ library, and the examples:
