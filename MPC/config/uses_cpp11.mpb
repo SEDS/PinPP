@@ -1,5 +1,9 @@
 project {
+  requires += cpp11
+}
+
+feature (cpp11) {
   specific (gnuace, make) {
-    compile_flags += -std=c++11 -stdlib=libstdc++
+    compile_flags += -std=c++11
   }
 }

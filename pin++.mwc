@@ -3,7 +3,7 @@ workspace (pin++) {
 
   static {
     cmdline += -static
-    
+
     ./pin++
   }
 
@@ -11,7 +11,7 @@ workspace (pin++) {
     // make sure to enable C++11 for the examples
     cmdline += -base uses_cpp11
 
-    ./examples 
+    ./examples
   }
 
   tests {
