@@ -77,6 +77,16 @@ then select ```intel64=1```. You can not set both features to 1.
 Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```) 
 will be placed in ```$PINPP_ROOT/lib```.
 
+## Building the C++11 examples
+
+When building the Pin++ examples, you must enable the C++11 feature ```cpp11=1```. 
+Here is the command-line for building the Pin++ library, and the examples:
+
+    $MPC_ROOT/mwc.pl -type [build type] -features pin=1,[ia32=0|1],intel64=[0|1],cpp11=1 pin++.mwc
+    
+If you do not have a C++11 compliant compiler, then you will get a LOT of 
+compile and link errors build you try to build the workspace.
+
 Contact
 -----------------
 
