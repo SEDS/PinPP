@@ -1,0 +1,84 @@
+
+     _________________________________________________________________
+
+   Copyright and Licensing Information for CUTS(TM), OASIS, GAME(TM),
+   and Pin++(TM).
+
+   CUTS[1], OASIS[7], GAME[8], and Pin++[9] (hereafter referred to as "CUTS 
+   software") was authored and copyrighted by James H. Hill[2]. It is a resource 
+   of his research group at the Trustees of Indiana University[3] on behalf of
+   Indiana University-Purdue University Indianapolis[4] (henceforth referred
+   to as IUPUI), all rights reserved. Since CUTS software is open-source, 
+   freely available software, you are free to use, modify, copy, and 
+   distribute--perpetually and irrevocably--CUTS software source code and 
+   object code produced from the source, as well as copy and distribute 
+   modified versions of this software. You must, however, include this 
+   copyright statement along with any code built using CUTS software that 
+   you release. No copyright statement needs to be provided if you just ship 
+   binary executables of your software products.
+
+   You can use CUTS software in commercial and/or binary software releases
+   and are under no obligation to redistribute any of your source code
+   that is built using CUTS software. Note, however, that you may not
+   do anything to CUTS software code, such as copyrighting it yourself
+   or claiming authorship of the CUTS software code, that will prevent
+   CUTS software from being distributed freely using an open-source
+   development model. You need not inform anyone that you're using CUTS
+   software in your software, although we encourage you to let us[5]
+   know so we can promote your project.
+
+   The CUTS web site[1] is maintained by James H. Hill at Department
+   of Computer and Information Science at IUPUI[6] for the development
+   of open-source software as part of the open-source software community.
+   Submissions are provided by the submitter ``as is'' with no warranties
+   whatsoever, including any warranty of merchantability, non-infringement
+   of third party intellectual property, or fitness for any particular
+   purpose. In no event shall the submitter be liable for any direct,
+   indirect, special, exemplary, punitive, or consequential damages,
+   including without limitation, lost profits, even if advised of the
+   possibility of such damages. LIKEWISE, CUTS SOFTWARE IS PROVIDED AS
+   IS WITH NO WARRANTIES OF ANY KIND, INCLUDING THE WARRANTIES OF DESIGN,
+   MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT,
+   OR ARISING FROM A COURSE OF DEALING, USAGE OR TRADE PRACTICE. IUPUI,
+   THEIR EMPLOYEES, AND STUDENTS SHALL HAVE NO LIABILITY WITH RESPECT TO
+   THE INFRINGEMENT OF COPYRIGHTS, TRADE SECRETS OR ANY PATENTS BY CUTS
+   SOFTWARE OR ANY PART THEREOF. MOREOVER, IN NO EVENT WILL IUPUI, THEIR
+   EMPLOYEES, OR STUDENTS BE LIABLE FOR ANY LOST REVENUE OR PROFITS OR
+   OTHER SPECIAL, INDIRECT AND CONSEQUENTIAL DAMAGES.
+
+   CUTS software is provided with no support and without any obligation
+   on the part of IUPUI, their employees, or students to assist in its
+   use, correction, modification, or enhancement.
+
+   CUTS software is Y2K-compliant, as long as the underlying OS platform
+   is Y2K-compliant. Likewise, CUTS software is compliant with the new US
+   daylight savings rule passed by Congress as "The Energy Policy Act of
+   2005," which established new daylight savings times (DST) rules for the
+   United States that expand DST as of March 2007. Since CUTS software
+   obtains time/date and calendaring information from operating systems,
+   users will not be affected by the new DST rules as long as they upgrade
+   their operating systems accordingly.
+
+   The name CUTS, OASIS, GAME, Pin++, and IUPUI, may not be used to endorse 
+   or promote products or services derived from this source without express 
+   written permission from IUPUI. This license grants no permission to call 
+   products or services derived from this source CUTS nor does it grant 
+   permission for the name IUPUI to appear in their names.
+
+   If you have any suggestions, additions, comments, or questions, please
+   let me[5] know.
+
+   James H. Hill[2]
+     _________________________________________________________________
+
+References
+
+   1. http://cuts.cs.iupui.edu
+   2. http://www.cs.iupui.edu/~hillj/
+   3. http://www.indiana.edu/~trustees/
+   4. http://www.iupui.edu/
+   5. mailto:hillj@cs.iupui.edu
+   6. http://www.cs.iupui.edu/
+   7. http://www.github.com/SEDS/OASIS
+   8. http://www.github.com/SEDS/GAME
+   9. http://www.github.com/SEDS/PinPP
