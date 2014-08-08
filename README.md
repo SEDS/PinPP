@@ -81,11 +81,11 @@ will be placed in ```$PINPP_ROOT/lib```.
 ### Compiling on MacOS X
 
 The default compiler on MacOS X (distributed via XCode) can sometimes be an 
-outdated version of GCC/Clang. If you need to use a newer version of GCC/Clang
-than what is provided when installing XCode, we recommend installing your version
-of choice via [MacPorts](http://www.macports.org).
+outdated version of GCC. If you need to use a newer version of GCC than what 
+is provided when installing XCode, we recommend installing your version of 
+choice via [MacPorts](http://www.macports.org).
 
-To use the different version of GCC/Clang, make sure set the ```CC``` and 
+To use the different version of GCC, make sure set the ```CC``` and 
 ```CXX``` macros to the corresponding version of ```gcc``` and ```g++```
 that you want to you. 
 
