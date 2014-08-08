@@ -28,7 +28,7 @@ Tested Compilers
 
 We have physically tested Pin++ with the following compilers:
 
-* GCC 4.2\*, 4.6\*, 4.7, 4.8
+* GCC 4.2\*, 4.6\*, 4.7, 4.8, 4.9
 * Visual Studio 2008 (vc9)\*, 2010 (vc10)\*, 2012 (vc11)
 
 \* Does not support compiling the examples.
@@ -36,7 +36,6 @@ We have physically tested Pin++ with the following compilers:
 If a compiler you use is not on the list above and Pin++ compiles
 correctly, please let us know so we can update the list with the compiler
 you have tested and/or are using.
-
 
 Environment Setup
 -------------------
@@ -79,7 +78,25 @@ then select ```intel64=1```. You can not set both features to 1.
 Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```) 
 will be placed in ```$PINPP_ROOT/lib```.
 
-### Building the C++11 examples
+### Compiling on MacOS X
+
+The default compiler on MacOS X (distributed via XCode) can sometimes be an 
+outdated version of GCC/Clang. If you need to use a newer version of GCC/Clang
+than what is provided when installing XCode, we recommend installing your version
+of choice via [MacPorts](http://www.macports.org).
+
+To use the different version of GCC/Clang, make sure set the ```CC``` and 
+```CXX``` macros to the corresponding version of ```gcc``` and ```g++```
+that you want to you. 
+
+Here is an example:
+
+    make CC=gcc-mp-4.9 CXX=g++-mp-4.9
+
+Thanks to [Kenneth Miller](https://github.com/KennethAdamMiller) for the 
+suggestion.
+
+### Compiling the C++11 examples
 
 When building the Pin++ examples, you must enable the C++11 feature ```cpp11=1```. 
 Here is the command-line for building the Pin++ library, and the examples:
@@ -88,6 +105,7 @@ Here is the command-line for building the Pin++ library, and the examples:
     
 If you do not have a C++11 compliant compiler, then you will get a LOT of 
 compile and link errors build you try to build the workspace.
+
 
 Contact
 -----------------
