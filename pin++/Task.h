@@ -16,41 +16,41 @@ template <typename T>
 class Task
 {
 public:
-	typedef T type;
+  typedef T type;
 
-	/// Default constructor.
-	Task (void);
+  /// Default constructor.
+  Task (void);
 
-	/// Destructor.
-	~Task (void);
+  /// Destructor.
+  ~Task (void);
 
-	/**
-	 * Create a new tool internal thread in the current process.
-	 *
-	 * @param[out]      thr_id        The id of the thread created.
-	 */
-	THREADID run (PIN_THREAD_UID *thr_id = 0);
+  /**
+   * Create a new tool internal thread in the current process.
+   *
+   * @param[out]      thr_id        The id of the thread created.
+   */
+  THREADID run (PIN_THREAD_UID *thr_id = 0);
 
-	/**
-	 * Wait until all threads created using a task have terminated.
-	 * 
-	 * @param[in]       timeout        The maximum amout of time, in milliseconds, to wait for any one thread to terminate.
-	 * @return  TRUE if all threads terminated, FALSE if the timeout time elapsed.
-	 */
-	bool wait (UINT32 timeout = PIN_INFINITE_TIMEOUT);
+  /**
+   * Wait until all threads created using a task have terminated.
+   * 
+   * @param[in]       timeout        The maximum amout of time, in milliseconds, to wait for any one thread to terminate.
+   * @return  TRUE if all threads terminated, FALSE if the timeout time elapsed.
+   */
+  bool wait (UINT32 timeout = PIN_INFINITE_TIMEOUT);
 
-	/// Get a list of the unique thread IDs of all currently running threads created using a task
-	const std::list <PIN_THREAD_UID> & threads (void) const;
+  /// Get a list of the unique thread IDs of all currently running threads created using a task
+  const std::list <PIN_THREAD_UID> & threads (void) const;
 
 private:
-	/// PIN thread hook
-	static void __run_svc (void * arg);
+  /// PIN thread hook
+  static void __run_svc (void * arg);
 
-	/// A list of the IDs of all currently running threads created using a task
-	static std::list <PIN_THREAD_UID> ids_;
+  /// A list of the IDs of all currently running threads created using a task
+  static std::list <PIN_THREAD_UID> ids_;
 
-	/// Controls access to ids_
-	static RW_Mutex lock_;
+  /// Controls access to ids_
+  static RW_Mutex lock_;
 };
 
 // definition of ids_
