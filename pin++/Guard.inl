@@ -13,7 +13,8 @@ Guard <Lock>::Guard (Lock & lock, int owner)
   this->lock_.acquire (owner);
 }
 
-inline Guard <Lock>::~Guard (void)
+inline 
+Guard <Lock>::~Guard (void)
 {
   this->lock_.release ();
 }
@@ -32,13 +33,36 @@ Guard <Mutex>::~Guard (void)
 }
 
 inline
-Guard <RW_Mutex>::Guard (RW_Mutex & lock, Lock_Type type)
+Guard <RW_Mutex>::Guard (RW_Mutex & lock)
 : lock_ (lock)
 {
-  if (type == READ)
-    this->lock_.acquire_read ();
-  else
-    this->lock_.acquire_write ();
+
+}
+
+inline
+Read_Guard <RW_Mutex>::Read_Guard (RW_Mutex & lock)
+: Guard (lock)
+{
+	this->lock_.acquire_read ();
+}
+
+inline
+Read_Guard <RW_Mutex>::~Read_Guard (void)
+{
+
+}
+
+inline
+Write_Guard <RW_Mutex>::Write_Guard (RW_Mutex & lock)
+: Guard (lock)
+{
+	this->lock_.acquire_write ();
+}
+
+inline
+Write_Guard <RW_Mutex>::~Write_Guard (void)
+{
+
 }
 
 inline
