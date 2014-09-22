@@ -85,3 +85,4 @@ Client_Guard::~Client_Guard (void)
 
 } // namespace OASIS
 } // namespace Pin
+ 

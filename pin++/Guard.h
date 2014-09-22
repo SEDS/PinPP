@@ -123,7 +123,7 @@ public:
 template <typename T>
 class Write_Guard;
 
-/**
+/** 
  * Template specialization for RW_Mutex
  * Similar to mutex, but locks for writes
  */
