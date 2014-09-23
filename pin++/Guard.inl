@@ -43,7 +43,7 @@ inline
 Read_Guard <RW_Mutex>::Read_Guard (RW_Mutex & lock)
 : Guard (lock)
 {
-	this->lock_.acquire_read ();
+  this->lock_.acquire_read ();
 }
 
 inline
@@ -56,7 +56,7 @@ inline
 Write_Guard <RW_Mutex>::Write_Guard (RW_Mutex & lock)
 : Guard (lock)
 {
-	this->lock_.acquire_write ();
+  this->lock_.acquire_write ();
 }
 
 inline
