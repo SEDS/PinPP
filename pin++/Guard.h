@@ -77,26 +77,69 @@ private:
  * Template specalization for RW_Mutex
  * Unique features are:
  *  Similar to Mutex but has two locks (Read/Write)
+ *  Usage is through a derived class, Read_Guard or Write_Guard
  *  Release removes both locks
  */
 template <>
 class Guard <RW_Mutex>
 {
-public:
-  enum Lock_Type {READ, WRITE};
-
-  /**
-   * Locking constructor
-   *
-   * @param[in]     type      The type of lock to acquire
-   */
-  Guard (RW_Mutex & lock, Lock_Type type);
-
+public:	
   /// Destructor.
   ~Guard (void);
 
-private:
+protected:
+  /**
+   * Locking constructor
+   *
+   * @param[in]     type      The read/write lock to acquire
+   */
+  Guard (RW_Mutex & lock);
+
   RW_Mutex & lock_;
+};
+
+template <typename T>
+class Read_Guard;
+
+/** 
+ * Template specialization for RW_Mutex
+ * Similar to mutex, but locks for reads
+ */
+template <>
+class Read_Guard <RW_Mutex> : public Guard <RW_Mutex>
+{
+public:
+  /**
+   * Locking constructor
+   *
+   * @param[in]     type      The read lock to acquire
+   */
+  Read_Guard (RW_Mutex & lock);
+
+  /// Destructor
+  ~Read_Guard (void);
+};
+
+template <typename T>
+class Write_Guard;
+
+/** 
+ * Template specialization for RW_Mutex
+ * Similar to mutex, but locks for writes
+ */
+template <>
+class Write_Guard <RW_Mutex> : public Guard <RW_Mutex>
+{
+public:
+  /**
+   * Locking constructor
+   *
+   * @param[in]     type      The write lock to acquire
+   */
+  Write_Guard (RW_Mutex & lock);
+
+  /// Destructor
+  ~Write_Guard (void);
 };
 
 /**
