@@ -15,7 +15,7 @@ void Task <T>::__run_svc (void * arg)
   // add the ID of this thread to the list
   do
   {
-    Guard <RW_Mutex> guard (Task::lock_, Guard <RW_Mutex>::Lock_Type::WRITE);
+    Write_Guard <RW_Mutex> guard (Task::lock_);
     Task::ids_.push_back (Thread::uid ());
   } while (false);
 
@@ -24,7 +24,7 @@ void Task <T>::__run_svc (void * arg)
   // remove the ID of this thread from the list
   do
   {
-    Guard <RW_Mutex> guard (Task::lock_, Guard <RW_Mutex>::Lock_Type::WRITE);
+    Write_Guard <RW_Mutex> guard (Task::lock_);
     Task::ids_.remove (Thread::uid ());
   } while (false);
 }
@@ -37,7 +37,7 @@ bool Task <T>::wait (UINT32 timeout)
 
     do
     {
-      Guard <RW_Mutex> guard (Task::lock_, Guard <RW_Mutex>::Lock_Type::READ);
+      Read_Guard <RW_Mutex> guard (Task::lock_);
 
       if (! Task::ids_.empty ())
       {
