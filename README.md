@@ -3,6 +3,10 @@ Pin++
 
 A C++ template meta-programmable framework for authoring Pintools
 
+Publications
+-------------------------
+* [Pin++: an object-oriented framework for writing pintools](http://dl.acm.org/citation.cfm?id=2658777)
+
 System Requirements
 -------------------------
 
