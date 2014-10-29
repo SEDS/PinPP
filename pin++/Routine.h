@@ -92,8 +92,10 @@ public:
   /// Get the routine's range.
   USIZE range (void) const;
 
+#if PIN_BUILD_NUMBER < 67254
   /// Clear history of routine check
   static VOID delete_check_history (void);
+#endif
 
   /// @{ Search Methods
   static std::string find_name (ADDRINT addr);

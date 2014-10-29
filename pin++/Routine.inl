@@ -118,11 +118,14 @@ USIZE Routine::range (void) const
   return RTN_Range (this->rtn_);
 }
 
+#if PIN_BUILD_NUMBER < 67254
+
 inline
 VOID Routine::delete_check_history (void)
 {
   DeleteRtnCheckHistory ();
 }
+#endif
 
 inline
 string Routine::find_name (ADDRINT addr)
