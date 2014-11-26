@@ -7,9 +7,12 @@ Publications
 -------------------------
 * [Pin++: an object-oriented framework for writing pintools](http://dl.acm.org/citation.cfm?id=2658777)
 
+Tutorials
+-------------------------
+See our [Wiki](../../wiki) for tutorials on using Pin++.
+
 System Requirements
 -------------------------
-
 The following is the minumum system requirements needed to build and
 use Pin++:
 
