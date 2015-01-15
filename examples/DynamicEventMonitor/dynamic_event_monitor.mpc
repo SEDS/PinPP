@@ -1,0 +1,9 @@
+// dynamic_event_monitor.mpc
+
+project (dynamic_event_monitor) : oasis_pintool {
+  sharedname = dynamic_event_monitor
+
+  Source_Files {
+    dynamic_event_monitor.cpp
+  }
+}
