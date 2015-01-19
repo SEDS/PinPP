@@ -1,0 +1,25 @@
+// simple_sampling.mpc
+
+project (simple_sampling_constant) : oasis_pintool {
+  sharedname = simple_sampling_constant
+
+  Source_Files {
+    simple_sampling_constant.cpp
+  }
+}
+
+project (simple_sampling_naive) : oasis_pintool {
+  sharedname = simple_sampling_naive
+
+  Source_Files {
+    simple_sampling_naive.cpp
+  }
+}
+
+project (simple_sampling_reservoir) : oasis_pintool {
+  sharedname = simple_sampling_reservoir
+
+  Source_Files {
+    simple_sampling_reservoir.cpp
+  }
+}

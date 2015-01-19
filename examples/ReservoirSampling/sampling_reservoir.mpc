@@ -1,0 +1,16 @@
+// sampling_reservoir.mpc
+
+project (sampling_reservoir) : oasis_pintool {
+  sharedname = sampling_reservoir
+
+  Source_Files {
+    sampling_reservoir.cpp
+    sampling_reservoir_context.cpp
+    sampling_reservoir_state.cpp
+  }
+  
+  Template_Files {
+    sampling_context.cpp
+    sampling_state.cpp
+  }
+}
