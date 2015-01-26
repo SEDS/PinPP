@@ -29,14 +29,34 @@ namespace Pin
  * Guard for restricting lock ownership to a scope.
  */
 template <typename T>
-class Guard;
+class Guard
+{
+public:
+  /**
+   * Initializing constructor. The lock is acquired by the Guard during
+   * the construction process.
+   *
+   * @param[in]     lock      Target lock
+   */
+  Guard (T & lock);
+  
+  /**
+   * Destructor. The lock is released when the Guard is destroyed.
+   */
+  ~Guard (void);
+
+private:
+  /// The lock managed by the guard.
+  T & lock_;
+};
 
 /**
- * Template specalization for Lock.
- * Unique features are:
- *  Locks do not have a non-blocking acquire, removing try_acquire and is_locked.
- *  Can provide owner identifier upon acquisition.
- *
+ * @class Guard <Lock>
+ * 
+ * Template specialization of the Guard for a Lock. This version of the 
+ * Guard behaves the same as the generic Guard class. The main difference
+ * with this version is that it passes the current thread id to the acquire()
+ * method on the Lock. This helps with debugging.
  */
 template <>
 class Guard <Lock>
@@ -47,7 +67,7 @@ public:
    *
    * @param[in]     owner       Owner of the lock
    */
-  Guard (Lock & lock, int owner);
+  Guard (Lock & lock);
 
   /// Destructor.
   ~Guard (void);
@@ -56,57 +76,17 @@ private:
   Lock & lock_;
 };
 
-/**
- * Template specalization for Mutex.
- */
-template <>
-class Guard <Mutex>
-{
-public:
-  /// Locking constructor.
-  Guard (Mutex & lock);
-
-  /// Destructor.
-  ~Guard (void);
-
-private:
-  Mutex & lock_;
-};
-
-/**
- * Template specalization for RW_Mutex
- * Unique features are:
- *  Similar to Mutex but has two locks (Read/Write)
- *  Usage is through a derived class, Read_Guard or Write_Guard
- *  Release removes both locks
- */
-template <>
-class Guard <RW_Mutex>
-{
-public:	
-  /// Destructor.
-  ~Guard (void);
-
-protected:
-  /**
-   * Locking constructor
-   *
-   * @param[in]     type      The read/write lock to acquire
-   */
-  Guard (RW_Mutex & lock);
-
-  RW_Mutex & lock_;
-};
-
-template <typename T>
-class Read_Guard;
-
 /** 
- * Template specialization for RW_Mutex
- * Similar to mutex, but locks for reads
+ * @class Read_Guard
+ * 
+ * A guard that acquires a read lock from the locking object. The Read_Guard
+ * expects the locking object to define the following methods:
+ *
+ *  # acquire_read (void);
+ *  # release (void);
  */
-template <>
-class Read_Guard <RW_Mutex> : public Guard <RW_Mutex>
+template <typename T>
+class Read_Guard
 {
 public:
   /**
@@ -114,21 +94,27 @@ public:
    *
    * @param[in]     type      The read lock to acquire
    */
-  Read_Guard (RW_Mutex & lock);
+  Read_Guard (T & lock);
 
   /// Destructor
   ~Read_Guard (void);
+
+private:
+  /// Reference to the lock managed by the guard.
+  T & lock_;
 };
 
-template <typename T>
-class Write_Guard;
-
 /** 
- * Template specialization for RW_Mutex
- * Similar to mutex, but locks for writes
+ * @class Write_Guard
+ * 
+ * A guard that acquires a write lock from the locking object. The Write_Guard
+ * expects the locking object to define the following methods:
+ *
+ *  # acquire_write (void);
+ *  # release (void);
  */
-template <>
-class Write_Guard <RW_Mutex> : public Guard <RW_Mutex>
+template <typename T>
+class Write_Guard
 {
 public:
   /**
@@ -136,10 +122,14 @@ public:
    *
    * @param[in]     type      The write lock to acquire
    */
-  Write_Guard (RW_Mutex & lock);
+  Write_Guard (T & lock);
 
   /// Destructor
   ~Write_Guard (void);
+
+private:
+  /// Reference to the lock managed by the guard.
+  T & lock_;
 };
 
 /**

@@ -1,3 +1,7 @@
+// -*- C++ -*-
+
+#include "Guard.h"
+
 namespace OASIS
 {
 namespace Pin
@@ -5,6 +9,47 @@ namespace Pin
 
 inline
 Thread::Thread (void)
+: thr_id_ (INVALID_THREADID),
+  os_thr_id_ (INVALID_OS_THREAD_ID),
+  thr_uid_ (INVALID_PIN_THREAD_UID),
+  parent_os_thr_id_ (INVALID_OS_THREAD_ID),
+  runnable_ (0)
+{
+
+}
+
+inline
+Thread::Thread (Runnable * runnable)
+: thr_id_ (INVALID_THREADID),
+  os_thr_id_ (INVALID_OS_THREAD_ID),
+  thr_uid_ (INVALID_PIN_THREAD_UID),
+  parent_os_thr_id_ (INVALID_OS_THREAD_ID),
+  runnable_ (runnable)
+{
+
+}
+
+inline
+Thread::Thread (const Thread & thr)
+: thr_id_ (thr.thr_id_),
+  os_thr_id_ (thr.os_thr_id_),
+  thr_uid_ (thr.thr_uid_),
+  parent_os_thr_id_ (thr.parent_os_thr_id_),
+  runnable_ (thr.runnable_)
+{
+
+}
+
+inline
+Thread::Thread (THREADID thr_id, 
+                OS_THREAD_ID os_thr_id,
+                PIN_THREAD_UID thr_uid,
+                OS_THREAD_ID parent_os_thr_id)
+: thr_id_ (thr_id),
+  os_thr_id_ (os_thr_id_),
+  thr_uid_ (thr_uid),
+  parent_os_thr_id_ (parent_os_thr_id),
+  runnable_ (0)
 {
 
 }
@@ -12,31 +57,22 @@ Thread::Thread (void)
 inline
 Thread::~Thread (void)
 {
-
+  cerr << "Being destroyed\n";
 }
 
 inline
-THREADID Thread::id (void)
+Thread Thread::current (void)
 {
-  return PIN_ThreadId ();
+  return Thread (PIN_ThreadId (),
+                 PIN_GetTid (),
+                 PIN_ThreadUid (),
+                 PIN_GetParentTid ());
 }
 
 inline
-PIN_THREAD_UID Thread::uid (void)
+void Thread::sleep (UINT32 millis)
 {
-  return PIN_ThreadUid ();
-}
-
-inline
-OS_THREAD_ID Thread::parent_id (void)
-{
-  return PIN_GetParentTid ();
-}
-
-inline
-void Thread::sleep (UINT32 milliseconds)
-{
-  PIN_Sleep (milliseconds);
+  PIN_Sleep (millis);
 }
 
 inline
@@ -46,9 +82,9 @@ void Thread::yield (void)
 }
 
 inline
-void Thread::terminate (INT32 exitCode)
+void Thread::terminate (INT32 exit_code)
 {
-  return PIN_ExitThread (exitCode);
+  return PIN_ExitThread (exit_code);
 }
 
 inline
@@ -58,9 +94,9 @@ bool Thread::is_application_thread (void)
 }
 
 inline
-bool Thread::wait (const PIN_THREAD_UID &threadUid, UINT32 milliseconds, INT32 *pExitCode)
+void Thread::run (void)
 {
-  return PIN_WaitForThreadTermination (threadUid, milliseconds, pExitCode);
+
 }
 
 } // namespace OASIS

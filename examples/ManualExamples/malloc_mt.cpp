@@ -27,7 +27,7 @@ public:
 
   void handle_analyze (int size, THREADID thr_id)
   {
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, thr_id + 1);
+    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
 
     fprintf (this->file_, "thread %d entered malloc (%d)\n", thr_id, size);
     fflush (this->file_);
@@ -83,14 +83,14 @@ public:
 
   void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctxt, INT32 code)
   {
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, thr_id + 1);
+    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
     fprintf (this->file_, "thread begin %d\n", thr_id);
     fflush (this->file_);
   }
 
   void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Const_Context & ctxt, INT32 code)
   {
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, thr_id + 1);
+    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
     fprintf (this->file_, "thread end %d code %d\n",thr_id, code);
     fflush (this->file_);
   }
