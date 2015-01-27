@@ -109,8 +109,14 @@ public:
   static bool is_application_thread (void);
 
   /**
-   * Start the thread. If the thread starts, then the return value is
-   * true. If the thread cannot start, then the return value is false.
+   * Start the thread. The caller can customize the size of the new thread's
+   * stack. This, however, should be used only if you know what you are doing.
+   * Otherwise, the thread has size of DEFAULT_THREAD_STACK_SIZE.
+   *
+   * If the thread is already started, then it throws the Already_Started 
+   * exception. If the thread cannot be started, then it throws the Cannot_Start
+   * exception.
+   *
    *
    * @param[in]       stack_size        Size of the threads stack.
    */
