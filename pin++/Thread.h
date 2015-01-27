@@ -117,14 +117,6 @@ public:
   void start (size_t stack_size = DEFAULT_THREAD_STACK_SIZE);
 
   /**
-   * @Override
-   *
-   * @param[in]       runnable          Pointer to the Runnable object
-   * @param[in]       stack_size        Size of the threads stack.
-   */
-  void start (Runnable * runnable, size_t stack_size = DEFAULT_THREAD_STACK_SIZE);
-
-  /**
    * Delay the current thread until the specified thread is terminated 
    * or the time-out interval elapses.
    */

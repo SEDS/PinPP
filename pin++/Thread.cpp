@@ -47,12 +47,6 @@ void Thread::start (size_t stack_size)
     throw Cannot_Start ();
 }
 
-void Thread::start (Runnable * runnable, size_t stack_size)
-{
-  this->runnable_ = runnable;
-  this->start (stack_size);
-}
-
 bool Thread::wait (UINT32 millis, INT32 * exit_code)
 {
   // Ideally, we would like to put a read guard here while we are "reading"
