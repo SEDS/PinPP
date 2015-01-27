@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-#include <iostream>
+#include <stdexcept>
 
 namespace OASIS
 {
@@ -19,7 +19,6 @@ RW_Mutex::RW_Mutex (void)
 inline
 RW_Mutex::~RW_Mutex (void)
 {
-  std::cerr << "Destorying the rw mutex\n";
   PIN_RWMutexFini (&this->mutex_);
 }
 
