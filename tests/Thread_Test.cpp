@@ -15,26 +15,22 @@ class Thread_Test :
 public:
   Thread_Test (void)
     : thread_start_passed_ (false),
+      thread_running_passed_ (false),
       already_started_test_passed_ (false),
       thread_wait_passed_ (false)
   {
+    using OASIS::Pin::Thread;
+    
     this->enable_fini_callback ();
     this->enable_fini_unlocked_callback ();
 
-    // Create a new Thread and start it.
+    // Create a new thread and start it.
     cerr << "Starting the thread\n";
-    this->thr_ = new OASIS::Pin::Thread (this);
-    this->thr_->start ();
+    this->thr_ = new Thread (this);
+    this->thread_start_passed_ = this->thr_->start () == Thread::STARTED;
     
-    try
-    {
-      // This should throw an exception
-      this->thr_->start ();
-    }
-    catch (const OASIS::Pin::Thread::Already_Started &)
-    {
-      this->already_started_test_passed_ = true;
-    }
+    // Should return that the thread is running.
+    this->already_started_test_passed_ = this->thr_->start () != Thread::NEW;
   }
 
   ~Thread_Test (void)
@@ -43,31 +39,37 @@ public:
       delete this->thr_;
   }
 
-  void handle_fini (INT32 code)
+  void handle_fini (INT32)
   {
     cerr << ">> Thread start passed: " << this->thread_start_passed_ << std::endl;
     cerr << ">> Already started passed: " << this->already_started_test_passed_ << std::endl;
+    cerr << ">> Thread running passed: " << this->thread_running_passed_ << std::endl;
     cerr << ">> Thread wait passed: " << this->thread_wait_passed_ << std::endl;
   }
 
-  void handle_fini_unlocked (INT32 code)
+  void handle_fini_unlocked (INT32)
   {
+    using OASIS::Pin::Thread;
+    
     std::cerr << "Waiting for thread to exit...\n";
 
     if (this->thr_->wait (5000))
-      this->thread_wait_passed_ = true;
+      this->thread_wait_passed_ = this->thr_->state () == Thread::TERMINATED;
   }
 
   void run (void)
   {
+    using OASIS::Pin::Thread;
+    
     std::cerr << "Background thread is running..." << std::endl;
-    this->thread_start_passed_ = true;
+    this->thread_running_passed_ = this->thr_->state () == Thread::RUNNING;
   }
 
 private:
   OASIS::Pin::Thread * thr_;
 
   bool thread_start_passed_;
+  bool thread_running_passed_;
   bool already_started_test_passed_;
   bool thread_wait_passed_;
 };

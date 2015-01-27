@@ -36,20 +36,32 @@ namespace Pin
 class Thread : public Runnable
 {
 public:
-  class Already_Started : public std::runtime_error  
+  /**
+   * @enum State
+   *
+   * An enumeration that tracks that state of the Thread.
+   */
+  enum State
   {
-  public:
-    Already_Started (void)
-      : std::runtime_error ("Thread is already started") { }
+    /// The Thread is newly created and has not been started.
+    NEW,
+    
+    /// The Thread has been started. This does not mean that the thread
+    /// is actually running.
+    STARTED,
+    
+    /// The Thread is running. This means that the run() method on the Thread,
+    /// or the Runnable object, has been called.
+    RUNNING,
+    
+    /// The Thread has terminated. This means the thread is no longer executing
+    /// and can be started again.
+    TERMINATED,
+    
+    /// The Thread has an error.
+    ERROR,
   };
-
-  class Cannot_Start : public std::runtime_error
-  {
-  public:
-    Cannot_Start (void)
-      : std::runtime_error ("Cannot start thread") { }
-  };
-
+  
   /// Default constructor.
   Thread (void);
 
@@ -113,14 +125,9 @@ public:
    * stack. This, however, should be used only if you know what you are doing.
    * Otherwise, the thread has size of DEFAULT_THREAD_STACK_SIZE.
    *
-   * If the thread is already started, then it throws the Already_Started 
-   * exception. If the thread cannot be started, then it throws the Cannot_Start
-   * exception.
-   *
-   *
    * @param[in]       stack_size        Size of the threads stack.
    */
-  void start (size_t stack_size = DEFAULT_THREAD_STACK_SIZE);
+  State start (size_t stack_size = DEFAULT_THREAD_STACK_SIZE);
 
   /**
    * Delay the current thread until the specified thread is terminated 
@@ -137,6 +144,9 @@ public:
   // Prevent the following operations
   const Thread & operator = (const Thread & rhs);
 
+  /// Get the threads current state.
+  State state (void) const;
+  
 protected:
   /**
    * Terminate the current thread. This method can only be called by the original
@@ -177,6 +187,9 @@ private:
 
   /// The optional runnable object for the thread.
   Runnable * runnable_;
+  
+  /// The current state of the thread.
+  State state_;
 };
 
 } // namespace OASIS

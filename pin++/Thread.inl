@@ -13,7 +13,8 @@ Thread::Thread (void)
   os_thr_id_ (INVALID_OS_THREAD_ID),
   thr_uid_ (INVALID_PIN_THREAD_UID),
   parent_os_thr_id_ (INVALID_OS_THREAD_ID),
-  runnable_ (0)
+  runnable_ (0),
+  state_ (NEW)
 {
 
 }
@@ -24,7 +25,8 @@ Thread::Thread (Runnable * runnable)
   os_thr_id_ (INVALID_OS_THREAD_ID),
   thr_uid_ (INVALID_PIN_THREAD_UID),
   parent_os_thr_id_ (INVALID_OS_THREAD_ID),
-  runnable_ (runnable)
+  runnable_ (runnable),
+  state_ (NEW)
 {
 
 }
@@ -35,7 +37,8 @@ Thread::Thread (const Thread & thr)
   os_thr_id_ (thr.os_thr_id_),
   thr_uid_ (thr.thr_uid_),
   parent_os_thr_id_ (thr.parent_os_thr_id_),
-  runnable_ (thr.runnable_)
+  runnable_ (thr.runnable_),
+  state_ (thr.state_)
 {
 
 }
@@ -46,10 +49,11 @@ Thread::Thread (THREADID thr_id,
                 PIN_THREAD_UID thr_uid,
                 OS_THREAD_ID parent_os_thr_id)
 : thr_id_ (thr_id),
-  os_thr_id_ (os_thr_id_),
+  os_thr_id_ (os_thr_id),
   thr_uid_ (thr_uid),
   parent_os_thr_id_ (parent_os_thr_id),
-  runnable_ (0)
+  runnable_ (0),
+  state_ (NEW)
 {
 
 }
@@ -99,5 +103,11 @@ void Thread::run (void)
 
 }
 
+inline
+Thread::State Thread::state (void) const
+{
+  return this->state_;
+}
+  
 } // namespace OASIS
 } // namespace Pin
