@@ -39,7 +39,8 @@ public:
 
   ~Thread_Test (void)
   {
-
+    if (0 != this->thr_)
+      delete this->thr_;
   }
 
   void handle_fini (INT32 code)
