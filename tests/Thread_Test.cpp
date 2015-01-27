@@ -3,12 +3,12 @@
 #include "pin++/Callback.h"
 #include "pin++/Instruction_Instrument.h"
 #include "pin++/Pintool.h"
-#include "pin++/Thread.h" 
+#include "pin++/Thread.h"
 
 #include <fstream>
 #include <memory>
 
-class Thread_Test : 
+class Thread_Test :
   public OASIS::Pin::Tool <Thread_Test>,
   public OASIS::Pin::Runnable
 {
@@ -26,21 +26,20 @@ public:
 
   ~Thread_Test (void)
   {
-    cerr << "~Thread_Test\n";
+
   }
 
   void handle_fini (INT32 code)
   {
+    cerr << "Test passed: " << (this->thread_test_1_ == 1) << std::endl;
   }
 
   void handle_fini_unlocked (INT32 code)
   {
-    cerr << ">> Thread Test 1: " << this->thread_test_1_ << std::endl;
+    std::cerr << "Waiting for thread to exit...\n";
 
     if (!this->thr_->wait (5000))
       std::cerr << "Time has elapsed" << std::endl;
-
-    cerr << ">>> Thread Test 1: " << this->thread_test_1_ << std::endl;
   }
 
   void run (void)
