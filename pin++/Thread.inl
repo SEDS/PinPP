@@ -41,7 +41,7 @@ Thread::Thread (const Thread & thr)
 }
 
 inline
-Thread::Thread (THREADID thr_id, 
+Thread::Thread (THREADID thr_id,
                 OS_THREAD_ID os_thr_id,
                 PIN_THREAD_UID thr_uid,
                 OS_THREAD_ID parent_os_thr_id)
@@ -57,7 +57,7 @@ Thread::Thread (THREADID thr_id,
 inline
 Thread::~Thread (void)
 {
-  cerr << "Being destroyed\n";
+
 }
 
 inline
