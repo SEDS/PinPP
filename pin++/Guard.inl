@@ -27,7 +27,7 @@ inline
 Guard <Lock>::Guard (Lock & lock)
 : lock_ (lock)
 {
-  this->lock_.acquire (Thread::current ().id ());
+  this->lock_.acquire (Thread::current ()->id ());
 }
 
 inline 

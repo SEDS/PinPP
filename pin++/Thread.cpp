@@ -1,11 +1,25 @@
 #include "Thread.h"
 #include "Guard.h"
 
+#include <iostream>
+
 namespace OASIS
 {
 namespace Pin
 {
 
+TLS <Thread> Thread::current_ (&Thread::__tls_cleanup);
+  
+VOID Thread::__tls_cleanup (VOID * arg)
+{
+  Thread * thr = reinterpret_cast <Thread *> (arg);
+  
+  // TODO If we start experiencing runtime error where, we may have to
+  // implement a destroy () method on the Thread to call delete.
+  if (0 != thr && thr->auto_destroy_)
+    delete thr;
+}
+  
 THREADID Thread::id (void)
 {
   Read_Guard <RW_Mutex> guard (this->rw_mutex_);
@@ -28,6 +42,26 @@ OS_THREAD_ID Thread::parent_id (void)
 {
   Read_Guard <RW_Mutex> guard (this->rw_mutex_);
   return this->parent_os_thr_id_;
+}
+  
+Thread * Thread::current (void)
+{
+  // Get the current thread in TLS, and return if exists.
+  THREADID thr_id = PIN_ThreadId ();
+  Thread * thr = Thread::current_.get (thr_id);
+  
+  if (0 != thr)
+    return thr;
+  
+  // This could be the main thread, which does not have an Thread object
+  // in the TLS. So, create a new thread, and store it.
+  thr = new Thread (thr_id,
+                    PIN_GetTid (),
+                    PIN_ThreadUid (),
+                    PIN_GetParentTid ());
+  
+  Thread::current_.set (thr_id, thr);
+  return thr;
 }
 
 Thread::State Thread::start (size_t stack_size)
@@ -65,7 +99,11 @@ VOID Thread::__thr_run (VOID * arg)
 {
   // Get the thread object, and update its remaining attributes.
   Thread * thr = reinterpret_cast <Thread *> (arg);
-
+  
+  // Set the current thread to the Thread object. This allows the
+  // client to access the Thread object via the current () method.
+  Thread::current_.set (thr->thr_id_, thr);
+  
   do
   {
     Write_Guard <RW_Mutex> guard (thr->rw_mutex_);
@@ -89,32 +127,10 @@ VOID Thread::__thr_run (VOID * arg)
 
   do
   {
-    // Reset the thread id since everything is complete. This allows the
-    // client to call the start () method again on the thread. Make sure
-    // we get a guard to the mutex since we are updating attributes that
-    // are set in the start() method.
+    // Reset the thread state.
     Write_Guard <RW_Mutex> guard (thr->rw_mutex_);
-
-    thr->thr_id_ = INVALID_THREADID;
-    thr->thr_uid_ = INVALID_PIN_THREAD_UID;
-    thr->os_thr_id_ = INVALID_OS_THREAD_ID;
-    thr->parent_os_thr_id_ = INVALID_OS_THREAD_ID;
-    
-    // Set the state to terminated.
     thr->state_ = TERMINATED;
   } while (0);
-}
-
-const Thread & Thread::operator = (const Thread & rhs)
-{
-  this->thr_id_ = rhs.thr_id_;
-  this->os_thr_id_ = rhs.os_thr_id_;
-  this->thr_uid_ = rhs.thr_uid_;
-  this->parent_os_thr_id_ = rhs.parent_os_thr_id_;
-  this->runnable_ = rhs.runnable_;
-  this->state_ = rhs.state_;
-  
-  return *this;
 }
 
 }

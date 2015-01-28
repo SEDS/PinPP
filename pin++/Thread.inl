@@ -14,7 +14,8 @@ Thread::Thread (void)
   thr_uid_ (INVALID_PIN_THREAD_UID),
   parent_os_thr_id_ (INVALID_OS_THREAD_ID),
   runnable_ (0),
-  state_ (NEW)
+  state_ (NEW),
+  auto_destroy_ (false)
 {
 
 }
@@ -26,19 +27,8 @@ Thread::Thread (Runnable * runnable)
   thr_uid_ (INVALID_PIN_THREAD_UID),
   parent_os_thr_id_ (INVALID_OS_THREAD_ID),
   runnable_ (runnable),
-  state_ (NEW)
-{
-
-}
-
-inline
-Thread::Thread (const Thread & thr)
-: thr_id_ (thr.thr_id_),
-  os_thr_id_ (thr.os_thr_id_),
-  thr_uid_ (thr.thr_uid_),
-  parent_os_thr_id_ (thr.parent_os_thr_id_),
-  runnable_ (thr.runnable_),
-  state_ (thr.state_)
+  state_ (NEW),
+  auto_destroy_ (false)
 {
 
 }
@@ -53,24 +43,16 @@ Thread::Thread (THREADID thr_id,
   thr_uid_ (thr_uid),
   parent_os_thr_id_ (parent_os_thr_id),
   runnable_ (0),
-  state_ (NEW)
+  state_ (RUNNING),
+  auto_destroy_ (true)
 {
 
 }
-
+  
 inline
 Thread::~Thread (void)
 {
 
-}
-
-inline
-Thread Thread::current (void)
-{
-  return Thread (PIN_ThreadId (),
-                 PIN_GetTid (),
-                 PIN_ThreadUid (),
-                 PIN_GetParentTid ());
 }
 
 inline

@@ -15,6 +15,7 @@
 
 #include "RW_Mutex.h"
 #include "Runnable.h"
+#include "TLS.h"
 
 namespace OASIS
 {
@@ -66,35 +67,17 @@ public:
   Thread (void);
 
   /**
-   * Copy constuctor.
-   *
-   * @param[in]       thr       Source thread to copy.
-   */
-  Thread (const Thread & thr);
-
-  /**
    * Initializing 
    */
   Thread (Runnable * runnable);
 
-private:
-  /**
-   * Initializing constructor. This constructor can only be called by
-   * the Thread class. It is mainly used by the current() method.
-   */
-  Thread (THREADID thr_id, 
-          OS_THREAD_ID os_thr_id,
-          PIN_THREAD_UID thr_uid,
-          OS_THREAD_ID parent_os_thr_id);
-
-public:
   /// Get the current thread.
-  static Thread current (void);
+  static Thread * current (void);
 
-  /// Destructor
+  /// Destructor.
   virtual ~Thread (void);
 
-  /// Get identifier of the current thread in Pin. 
+  /// Get identifier of the current thread in Pin.
   THREADID id (void);
 
   /// Get unique identifier of the current thread in Pin. 
@@ -141,9 +124,6 @@ public:
    */
   virtual void run (void);
 
-  // Prevent the following operations
-  const Thread & operator = (const Thread & rhs);
-
   /// Get the threads current state.
   State state (void) const;
   
@@ -159,6 +139,11 @@ protected:
   void terminate (INT32 exit_code = 0);
 
 private:
+  Thread (THREADID thr_id,
+          OS_THREAD_ID os_thr_id,
+          PIN_THREAD_UID thr_uid,
+          OS_THREAD_ID parent_os_thr_id);
+  
   /**
    * The main entry point for the spawned thread that in turn calls the run()
    * method on the Thread class.
@@ -167,6 +152,11 @@ private:
    */
   static VOID __thr_run (VOID * arg);
 
+  /**
+   * Destruction method for the TLS current object.
+   */
+  static VOID __tls_cleanup (VOID * arg);
+  
   /// Thread ID assigned by PIN.
   THREADID thr_id_;
 
@@ -190,6 +180,16 @@ private:
   
   /// The current state of the thread.
   State state_;
+  
+  /// Reference to the current thread.
+  static TLS <Thread> current_;
+  
+  /// Automatically destory the Thread object with the thread exit.
+  bool auto_destroy_;
+  
+  // prevent the following operations
+  Thread (const Thread &);
+  const Thread & operator = (const Thread &);
 };
 
 } // namespace OASIS
