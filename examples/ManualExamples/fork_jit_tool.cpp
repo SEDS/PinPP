@@ -27,7 +27,7 @@ public:
   {
     do
     {
-      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_, thr_id + 1);
+      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_);
       std::cerr << "TOOL: Before fork." << std::endl;
     } while (false);
 
@@ -38,7 +38,7 @@ public:
   {
     do
     {
-      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_, thr_id + 1);
+      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_);
       std::cerr << "TOOL: After fork in child." << std::endl;
     } while (false);
 
@@ -53,7 +53,7 @@ public:
   {
     do
     {
-      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_, thr_id + 1);
+      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_);
       std::cerr << "TOOL: After fork in parent." << std::endl;
     } while (false);
 

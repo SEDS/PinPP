@@ -58,7 +58,9 @@ public:
 
 private:
   bool read_lock_;
+
   bool write_lock_;
+  
   PIN_RWMUTEX mutex_;
 };
 

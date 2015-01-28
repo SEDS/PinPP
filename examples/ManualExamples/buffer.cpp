@@ -105,7 +105,7 @@ public:
     if (!this->write_to_output_file_)
       return buf;
 
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, 1);
+    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
 
     for (UINT64 i = 0; i < elements; ++ i, ++ buf)
     {
@@ -206,7 +206,7 @@ public:
 #if defined (TARGET_WINDOWS)
   void handle_fini (void)
   {
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, 1);
+    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
     this->fout_.close ();
   }
 #endif

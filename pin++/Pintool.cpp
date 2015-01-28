@@ -14,7 +14,7 @@ Pintool <T>::Pintool (int argc, char * argv [])
 {
   PIN_InitSymbols ();
   this->cmdline_error_ = PIN_Init (argc, argv);
-  
+
   if (this->cmdline_error_)
     std::cerr
       << "*** error parsing command line arguments" << std::endl

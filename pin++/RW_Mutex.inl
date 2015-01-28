@@ -1,5 +1,6 @@
 // -*- C++ -*-
-// $Id: RWMutex.inl 2288 2013-09-19 19:09:57Z hillj $
+
+#include <stdexcept>
 
 namespace OASIS
 {
@@ -11,7 +12,8 @@ RW_Mutex::RW_Mutex (void)
 : read_lock_ (false),
   write_lock_ (false)
 {
-  PIN_RWMutexInit (&this->mutex_);
+  if (!PIN_RWMutexInit (&this->mutex_))
+    throw std::runtime_error ("Failed to initialized RW mutex");
 }
 
 inline
