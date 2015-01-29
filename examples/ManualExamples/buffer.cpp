@@ -116,7 +116,7 @@ public:
     // Non-Windows implementation for writing trace buffer to a file. This
     // version is more effecient than the Window implementation above according
     // to the Pin documentation.
-    this->tls_mlog_[tid]->dump_buffer_to_file (buf, elements, tid);
+    this->tls_mlog_.get (tid)->dump_buffer_to_file (buf, elements, tid);
 #endif
 
     return buf;
@@ -246,7 +246,7 @@ public:
   void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Const_Context & ctxt, INT32 flags)
   {
 #if !defined (TARGET_WINDOWS)
-    delete this->tls_mlog_[thr_id];
+    delete this->tls_mlog_.get (thr_id);
     this->tls_mlog_.set (thr_id, 0);
 #endif
   }
