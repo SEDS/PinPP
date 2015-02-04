@@ -18,10 +18,9 @@ use Pin++:
 
 * Perl, on Windows we suggest [ActivePerl](http://www.activestate.com/activeperl)
 * [GIT] (http://git-scm.com/downloads)
-* [Pin](http://software.intel.com/en-us/articles/pintool) (build 61206 to 67254) 
-* [Makefile, Project, Workspace Creator](http://www.ociweb.com/products/mpc) (trunk) 
-  from its [Subversion](https://svn.dre.vanderbilt.edu/DOC/MPC/trunk) repo. The 
-  username/password for read-only access is anonymous/anonymous.
+* [Pin](http://software.intel.com/en-us/articles/pintool) (build 61206 to 67254)
+* [Makefile, Project, Workspace Creator](http://www.ociweb.com/products/mpc) (master)
+  from its [GitHub](https://github.com/DOCGroup/MPC) repository.
 
 To build the examples:
 
@@ -48,9 +47,9 @@ Environment Setup
 -------------------
 
 Set ```PIN_ROOT``` environment variable to the location of Pin
-since we will be building Pintools outside of the normal distribution 
+since we will be building Pintools outside of the normal distribution
 of Pin. We also assume that you have your ```PATH``` (and ```LD_LIBRARY_PATH```
-or ```DYLD_LIBRARY_PATH```) configured correctly for Pin. Next, clone the 
+or ```DYLD_LIBRARY_PATH```) configured correctly for Pin. Next, clone the
 Pin++ repo and configure the environment variables:
 
 **Windows**
@@ -73,44 +72,44 @@ Pin++ repo and configure the environment variables:
 Quick Build
 ----------------
 
-Generate the Pin++ workspace: 
+Generate the Pin++ workspace:
 
     cd $PINPP_ROOT
     $MPC_ROOT/mwc.pl -type [build type] -features pin=1,[ia32=0|1],intel64=[0|1] pin++.mwc
 
-If you are building Pin++ for a 32-bit architecture, then select 
+If you are building Pin++ for a 32-bit architecture, then select
 ```ia32=1```. If you are building Pin++ for a 64-bit architecture,
 then select ```intel64=1```. You can not set both features to 1.
 
-Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```) 
+Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```)
 will be placed in ```$PINPP_ROOT/lib```.
 
 ### Compiling on MacOS X
 
-The default compiler on MacOS X (distributed via XCode) can sometimes be an 
-outdated version of GCC. If you need to use a newer version of GCC than what 
-is provided when installing XCode, we recommend installing your version of 
+The default compiler on MacOS X (distributed via XCode) can sometimes be an
+outdated version of GCC. If you need to use a newer version of GCC than what
+is provided when installing XCode, we recommend installing your version of
 choice via [MacPorts](http://www.macports.org).
 
-To use the different version of GCC, make sure set the ```CC``` and 
+To use the different version of GCC, make sure set the ```CC``` and
 ```CXX``` macros to the corresponding version of ```gcc``` and ```g++```
-that you want to you. 
+that you want to you.
 
 Here is an example:
 
     make CC=gcc-mp-4.9 CXX=g++-mp-4.9
 
-Thanks to [Kenneth Miller](https://github.com/KennethAdamMiller) for the 
+Thanks to [Kenneth Miller](https://github.com/KennethAdamMiller) for the
 suggestion.
 
 ### Compiling the C++11 examples
 
-When building the Pin++ examples, you must enable the C++11 feature ```cpp11=1```. 
+When building the Pin++ examples, you must enable the C++11 feature ```cpp11=1```.
 Here is the command-line for building the Pin++ library, and the examples:
 
     $MPC_ROOT/mwc.pl -type [build type] -features pin=1,[ia32=0|1],intel64=[0|1],cpp11=1 pin++.mwc
-    
-If you do not have a C++11 compliant compiler, then you will get a LOT of 
+
+If you do not have a C++11 compliant compiler, then you will get a LOT of
 compile and link errors build you try to build the workspace.
 
 
