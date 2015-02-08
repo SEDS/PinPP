@@ -22,6 +22,7 @@ Static_Release/
 
 # Temp Files
 *~
+pin.log
 
 # Build Files
 GNUmakefile*
