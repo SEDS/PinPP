@@ -159,29 +159,22 @@ public:
   void handle_instrument (const OASIS::Pin::Trace & trace)
   {
     using OASIS::Pin::Operand;
+    using OASIS::Pin::Memory_Operand;
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-    for each (OASIS::Pin::Bbl & bbl in trace)
-#else
     for (OASIS::Pin::Bbl & bbl : trace)
-#endif
     {
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-      for each (OASIS::Pin::Ins & ins in bbl)
-#else
       for (OASIS::Pin::Ins & ins : bbl)
-#endif
       {
         UINT32 mem_operands = ins.memory_operand_count ();
 
         for (UINT32 mem_op = 0; mem_op < mem_operands; ++ mem_op)
         {
-          Operand operand = ins.operand (mem_op);
-          UINT32 ref_size = operand.memory_size ();
+          Memory_Operand operand = ins.memory_operand (mem_op);
+          UINT32 ref_size = operand.size ();
 
           // Note that if the operand is both read and written we log it once
           // for each.
-          if (operand.is_memory_read ())
+          if (operand.is_read ())
             INS_InsertFillBuffer (ins,
                                   IPOINT_BEFORE, this->buffer_full_.buffer_id (),
                                   IARG_INST_PTR, offsetof (struct MEMREF, pc),
@@ -190,7 +183,7 @@ public:
                                   IARG_BOOL, TRUE, offsetof (struct MEMREF, read),
                                   IARG_END);
 
-          if (operand.is_memory_written ())
+          if (operand.is_written ())
             INS_InsertFillBuffer (ins,
                                   IPOINT_BEFORE, this->buffer_full_.buffer_id (),
                                   IARG_INST_PTR, offsetof(struct MEMREF, pc),
