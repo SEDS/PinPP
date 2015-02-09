@@ -9,7 +9,10 @@ Publications
 
 Tutorials
 -------------------------
-See our [Wiki](../../wiki) for tutorials on using Pin++.
+See our [Wiki](../../wiki) for tutorials on using Pin++, or the list below for 
+tutorial presentations:
+
+* [Using Pin++ to Author Highly Configurable Pintools for Pin](http://slidesha.re/1vds8x8) (CGO 2015)
 
 System Requirements
 -------------------------
