@@ -190,12 +190,6 @@ string Ins::disassemble (void) const
 }
 
 inline
-UINT32 Ins::memory_operand_count (void) const
-{
-  return INS_MemoryOperandCount (this->ins_);
-}
-
-inline
 std::string Ins::mnemonic (void) const
 {
   return INS_Mnemonic (this->ins_);
@@ -606,12 +600,6 @@ BOOL Ins::is_original (void) const
 }
 
 inline
-UINT32 Ins::operand_count (void) const
-{
-  return INS_OperandCount (this->ins_);
-}
-
-inline
 ADDRINT Ins::code_cache_address (void) const
 {
   return INS_CodeCacheAddress (this->ins_);
@@ -657,6 +645,30 @@ inline
 void Ins::insert_direct_jump (IPOINT location, ADDRINT tgt) const
 {
   INS_InsertDirectJump (this->ins_, location, tgt);
+}
+
+inline
+UINT32 Ins::operand_count (void) const
+{
+  return INS_OperandCount (this->ins_);
+}
+
+inline
+Operand Ins::operand (int index) const
+{
+  return Operand (this->ins_, index);
+}
+
+inline
+UINT32 Ins::memory_operand_count (void) const
+{
+  return INS_MemoryOperandCount (this->ins_);
+}
+
+inline
+Memory_Operand Ins::memory_operand (int index) const
+{
+  return Memory_Operand (this->ins_, index);
 }
 
 } // namespace OASIS

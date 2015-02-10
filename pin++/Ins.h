@@ -16,6 +16,7 @@
 #include "pin.H"
 #include "Iterator.h"
 #include "Insert_T.h"
+#include "Operand.h"
 
 #include "Pin_export.h"
 
@@ -81,10 +82,11 @@ public:
   /// {@ Operand Methods
 
   Operand operand (int index) const;
-  Operand operator [] (int index) const;
-  UINT32 memory_operand_count (void) const;
   UINT32 operand_count (void) const;
-
+ 
+  UINT32 memory_operand_count (void) const;
+  Memory_Operand memory_operand (int index) const;
+  
   /// @}
 
   /// {@ Inspection Methods

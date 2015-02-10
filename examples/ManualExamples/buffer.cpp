@@ -162,6 +162,7 @@ public:
   void handle_instrument (const OASIS::Pin::Trace & trace)
   {
     using OASIS::Pin::Operand;
+    using OASIS::Pin::Memory_Operand;
 
     for (OASIS::Pin::Bbl & bbl : trace)
     {
@@ -185,7 +186,7 @@ public:
                                   IARG_BOOL, TRUE, offsetof (struct MEMREF, read),
                                   IARG_END);
 
-          if (operand.is_memory_written ())
+          if (operand.is_written ())
             INS_InsertFillBuffer (ins,
                                   IPOINT_BEFORE, this->buffer_full_.buffer_id (),
                                   IARG_INST_PTR, offsetof(struct MEMREF, pc),
