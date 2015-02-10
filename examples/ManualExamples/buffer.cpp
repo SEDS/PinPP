@@ -55,7 +55,8 @@ public:
 
   ~MLOG (void)
   {
-    this->file_.close ();
+    if (this->file_.is_open ())
+      this->file_.close ();
   }
 
   VOID dump_buffer_to_file (struct MEMREF * reference, UINT64 elements, THREADID tid)
@@ -95,8 +96,10 @@ public:
   }
 
 
-  element_type * handle_trace_buffer (BUFFER_ID id, THREADID tid, const OASIS::Pin::Const_Context & ctx, element_type * buf, UINT64 elements)
+  element_type * handle_trace_buffer (BUFFER_ID id, THREADID tid, const OASIS::Pin::Context & ctx, element_type * buf, UINT64 elements)
   {
+    cerr << "handle trace buffer" << std::endl;
+    
 #if defined (TARGET_WINDOWS)
     // Windows implementation for writing buffer to the file. It must take
     // a lock to ensure that no other operations occur on the file while the
@@ -160,28 +163,20 @@ public:
   {
     using OASIS::Pin::Operand;
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-    for each (OASIS::Pin::Bbl & bbl in trace)
-#else
     for (OASIS::Pin::Bbl & bbl : trace)
-#endif
     {
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-      for each (OASIS::Pin::Ins & ins in bbl)
-#else
       for (OASIS::Pin::Ins & ins : bbl)
-#endif
       {
         UINT32 mem_operands = ins.memory_operand_count ();
 
         for (UINT32 mem_op = 0; mem_op < mem_operands; ++ mem_op)
         {
-          Operand operand = ins.operand (mem_op);
-          UINT32 ref_size = operand.memory_size ();
+          Memory_Operand operand = ins.memory_operand (mem_op);
+          UINT32 ref_size = operand.size ();
 
           // Note that if the operand is both read and written we log it once
           // for each.
-          if (operand.is_memory_read ())
+          if (operand.is_read ())
             INS_InsertFillBuffer (ins,
                                   IPOINT_BEFORE, this->buffer_full_.buffer_id (),
                                   IARG_INST_PTR, offsetof (struct MEMREF, pc),
@@ -236,16 +231,17 @@ public:
 #endif
   }
 
-  void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctxt, INT32 flags)
+  void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctx, INT32 flags)
   {
 #if !defined (TARGET_WINDOWS)
     this->tls_mlog_.set (thr_id, new MLOG (thr_id));
 #endif
   }
 
-  void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Const_Context & ctxt, INT32 flags)
+  void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Context & ctx, INT32 flags)
   {
 #if !defined (TARGET_WINDOWS)
+    std::cerr << "Deleting TLS data" << std::endl;
     delete this->tls_mlog_.get (thr_id);
     this->tls_mlog_.set (thr_id, 0);
 #endif

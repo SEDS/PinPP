@@ -15,6 +15,7 @@
 
 #include "pin.H"
 #include "Arg_List.h"
+#include "Type_Conversion.h"
 #include "Insert_T.h"
 
 namespace OASIS
@@ -38,8 +39,8 @@ class Routine;
  * @class Callback_Guard
  *
  * Wrapper class that handles executing _InsertIfCall and _InsertThenCall
- * for the sampling _this and the analysis _this. The wrapper ensures
- * that the same object and location is applied to either _this object. 
+ * for the sampling callback and the analysis callback. The wrapper ensures
+ * that the same object and location is applied to either callback object. 
  * This is necessary per the Pin specification.
  */
 template <typename GUARD, typename CALLBACK>
@@ -49,7 +50,7 @@ public:
   /// Type definition of the guard type.
   typedef GUARD guard_type;
 
-  /// Type definition of the _this type.
+  /// Type definition of the callback type.
   typedef CALLBACK callback_type;
 
   /**
@@ -176,10 +177,10 @@ public:
   }
 
 private:
-  /// Guard object that determine when the _this is called.
+  /// Guard object that determine when the callback is called.
   GUARD & guard_;
 
-  /// Target _this object.
+  /// Target callback object.
   CALLBACK & callback_;
 };
 
@@ -196,10 +197,10 @@ template <typename T, typename List>
 class Callback_Base
 {
 public:
-  /// Type definition of the _this.
+  /// Type definition of the callback.
   typedef T type;
 
-  /// Type definition of the _this argument list.
+  /// Type definition of the callback argument list.
   typedef List arglist_type;
 
   /// The number of arguments expected by the insert method.
@@ -224,7 +225,7 @@ public:
    *  = Trace
    *  = Routine
    *
-   * If the _this has parameters that require additional arguments, then the
+   * If the callback has parameters that require additional arguments, then the
    * additional arguments must come after the object being instrumented. The 
    * framework will take care of forming the correct argument list for you.
    *
@@ -319,7 +320,7 @@ public:
    *  = Trace
    *  = Routine
    *
-   * If the _this has parameters that require additional arguments, then the
+   * If the callback has parameters that require additional arguments, then the
    * additional arguments must come after the object being instrumented. The 
    * framework will take care of forming the correct argument list for you.
    *
@@ -421,9 +422,9 @@ template <typename T>
 class Callback <T (void)> : public Callback_Base <T, End>
 {
 public:
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this)
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze ();
+    reinterpret_cast <T *> (callback)->handle_analyze ();
   }
 };
 
@@ -440,9 +441,15 @@ public:
   typedef typename A1::param_type param_type1;
   /// @}
 
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1)
-  {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1);
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  /// @}
+  
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1)
+  {
+    pinpp_type1 pp1 (p1);
+    
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1);
   }
 };
 
@@ -461,10 +468,18 @@ public:
   typedef typename A2::param_type param_type2;
   /// @}
 
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  typedef typename pinpp_type <param_type2>::result_type pinpp_type2;
+  /// @}
+
   /// @{ Analysis Methods
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1, param_type2 p2)
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1, param_type2 p2)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1, p2);
+    pinpp_type1 pp1 (p1);
+    pinpp_type2 pp2 (p2);
+    
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1, pp2);
   }
   /// @}
 };
@@ -486,9 +501,19 @@ public:
   typedef typename A3::param_type param_type3;
   /// @}
 
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1, param_type2 p2, param_type3 p3)
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  typedef typename pinpp_type <param_type2>::result_type pinpp_type2;
+  typedef typename pinpp_type <param_type3>::result_type pinpp_type3;
+  /// @}
+
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1, param_type2 p2, param_type3 p3)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1, p2, p3);
+    pinpp_type1 pp1 (p1);
+    pinpp_type2 pp2 (p2);
+    pinpp_type3 pp3 (p3);
+
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1, pp2, pp3);
   }
 };
 
@@ -511,9 +536,21 @@ public:
   typedef typename A4::param_type param_type4;
   /// @}
 
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4)
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  typedef typename pinpp_type <param_type2>::result_type pinpp_type2;
+  typedef typename pinpp_type <param_type3>::result_type pinpp_type3;
+  typedef typename pinpp_type <param_type4>::result_type pinpp_type4;
+  /// @}
+
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1, p2, p3, p4);
+    pinpp_type1 pp1 (p1);
+    pinpp_type2 pp2 (p2);
+    pinpp_type3 pp3 (p3);
+    pinpp_type4 pp4 (p4);
+
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1, pp2, pp3, pp4);
   }
 };
 
@@ -538,9 +575,23 @@ public:
   typedef typename A5::param_type param_type5;
   /// @}
 
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5)
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  typedef typename pinpp_type <param_type2>::result_type pinpp_type2;
+  typedef typename pinpp_type <param_type3>::result_type pinpp_type3;
+  typedef typename pinpp_type <param_type4>::result_type pinpp_type4;
+  typedef typename pinpp_type <param_type5>::result_type pinpp_type5;
+  /// @}
+
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1, p2, p3, p4, p5);
+    pinpp_type1 pp1 (p1);
+    pinpp_type2 pp2 (p2);
+    pinpp_type3 pp3 (p3);
+    pinpp_type4 pp4 (p4);
+    pinpp_type5 pp5 (p5);
+
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1, pp2, pp3, pp4, pp5);
   }
 };
 
@@ -567,9 +618,25 @@ public:
   typedef typename A6::param_type param_type6;
   /// @}
 
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5, param_type6 p6)
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  typedef typename pinpp_type <param_type2>::result_type pinpp_type2;
+  typedef typename pinpp_type <param_type3>::result_type pinpp_type3;
+  typedef typename pinpp_type <param_type4>::result_type pinpp_type4;
+  typedef typename pinpp_type <param_type5>::result_type pinpp_type5;
+  typedef typename pinpp_type <param_type6>::result_type pinpp_type6;
+  /// @}
+
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5, param_type6 p6)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1, p2, p3, p4, p5, p6);
+    pinpp_type1 pp1 (p1);
+    pinpp_type2 pp2 (p2);
+    pinpp_type3 pp3 (p3);
+    pinpp_type4 pp4 (p4);
+    pinpp_type5 pp5 (p5);
+    pinpp_type6 pp6 (p6);
+
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1, pp2, pp3, pp4, pp5, pp6);
   }
 };
 
@@ -598,9 +665,27 @@ public:
   typedef typename A7::param_type param_type7;
   /// @}
 
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5, param_type6 p6, param_type7 p7)
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  typedef typename pinpp_type <param_type2>::result_type pinpp_type2;
+  typedef typename pinpp_type <param_type3>::result_type pinpp_type3;
+  typedef typename pinpp_type <param_type4>::result_type pinpp_type4;
+  typedef typename pinpp_type <param_type5>::result_type pinpp_type5;
+  typedef typename pinpp_type <param_type6>::result_type pinpp_type6;
+  typedef typename pinpp_type <param_type7>::result_type pinpp_type7;
+  /// @}
+
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5, param_type6 p6, param_type7 p7)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1, p2, p3, p4, p5, p6, p7);
+    pinpp_type1 pp1 (p1);
+    pinpp_type2 pp2 (p2);
+    pinpp_type3 pp3 (p3);
+    pinpp_type4 pp4 (p4);
+    pinpp_type5 pp5 (p5);
+    pinpp_type6 pp6 (p6);
+    pinpp_type7 pp7 (p7);
+
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1, pp2, pp3, pp4, pp5, pp6, pp7);
   }
 };
 
@@ -631,10 +716,30 @@ public:
   typedef typename A8::param_type param_type8;
   /// @}
 
+  /// @{ Pin++ Type Definitions
+  typedef typename pinpp_type <param_type1>::result_type pinpp_type1;
+  typedef typename pinpp_type <param_type2>::result_type pinpp_type2;
+  typedef typename pinpp_type <param_type3>::result_type pinpp_type3;
+  typedef typename pinpp_type <param_type4>::result_type pinpp_type4;
+  typedef typename pinpp_type <param_type5>::result_type pinpp_type5;
+  typedef typename pinpp_type <param_type6>::result_type pinpp_type6;
+  typedef typename pinpp_type <param_type7>::result_type pinpp_type7;
+  typedef typename pinpp_type <param_type8>::result_type pinpp_type8;
+  /// @}
+
   /// @{ Analysis Methods
-  static void PIN_FAST_ANALYSIS_CALL __analyze (void * _this, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5, param_type6 p6, param_type7 p7, param_type8 p8)
+  static void PIN_FAST_ANALYSIS_CALL __analyze (void * callback, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4, param_type5 p5, param_type6 p6, param_type7 p7, param_type8 p8)
   {  
-    reinterpret_cast <T *> (_this)->handle_analyze (p1, p2, p3, p4, p5, p6, p7, p8);
+    pinpp_type1 pp1 (p1);
+    pinpp_type2 pp2 (p2);
+    pinpp_type3 pp3 (p3);
+    pinpp_type4 pp4 (p4);
+    pinpp_type5 pp5 (p5);
+    pinpp_type6 pp6 (p6);
+    pinpp_type7 pp7 (p7);
+    pinpp_type8 pp8 (p8);
+
+    reinterpret_cast <T *> (callback)->handle_analyze (pp1, pp2, pp3, pp4, pp5, pp6, pp7, pp8);
   }
   /// @}
 };
@@ -653,10 +758,10 @@ template <typename T, typename List>
 class Conditional_Callback_Base
 {
 public:
-  /// Type definition of the _this.
+  /// Type definition of the callback.
   typedef T type;
 
-  /// Type definition of the _this argument list.
+  /// Type definition of the callback argument list.
   typedef List arglist_type;
 
   /// The number of arguments expected by the insert method.
@@ -694,9 +799,9 @@ class Conditional_Callback <T (void)> :
   public Conditional_Callback_Base <T, End>
 {
 public:
-  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this) 
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * callback) 
   {
-    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next ());
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (callback)->do_next ());
   }
 };
 
@@ -718,9 +823,9 @@ public:
   typedef typename A1::param_type param_type1;
   /// @}
 
-  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1)
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * callback, param_type1 p1)
   {  
-    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1));
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (callback)->do_next (p1));
   }
 };
 
@@ -744,9 +849,9 @@ public:
   typedef typename A2::param_type param_type2;
   /// @}
 
-  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1, param_type2 p2)
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * callback, param_type1 p1, param_type2 p2)
   {  
-    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1, p2));
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (callback)->do_next (p1, p2));
   }
 };
  
@@ -772,9 +877,9 @@ public:
   typedef typename A3::param_type param_type3;
   /// @}
 
-  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1, param_type2 p2, param_type3 p3)
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * callback, param_type1 p1, param_type2 p2, param_type3 p3)
   {  
-    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1, p2, p3));
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (callback)->do_next (p1, p2, p3));
   }
 };
 
@@ -802,9 +907,9 @@ public:
   typedef typename A4::param_type param_type4;
   /// @}
 
-  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * _this, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4)
+  static ADDRINT PIN_FAST_ANALYSIS_CALL __do_next (VOID * callback, param_type1 p1, param_type2 p2, param_type3 p3, param_type4 p4)
   {  
-    return static_cast <ADDRINT> (reinterpret_cast <T *> (_this)->do_next (p1, p2, p3, p4));
+    return static_cast <ADDRINT> (reinterpret_cast <T *> (callback)->do_next (p1, p2, p3, p4));
   }
 };
 
