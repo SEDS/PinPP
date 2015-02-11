@@ -52,7 +52,7 @@ public:
 
   }
 
-  inline void handle_analyze (ADDRINT ip, ADDRINT addr)
+  void handle_analyze (ADDRINT ip, ADDRINT addr)
   {
     fprintf (this->file_,"%p: W %p\n", ip, addr);
   }
@@ -83,13 +83,15 @@ public:
     // Iterate over each memory operand of the instruction.
     for (UINT32 mem_op = 0; mem_op < operands; ++ mem_op)
     {
-      if (ins [mem_op].is_memory_read ())
+      OASIS::Pin::Memory_Operand operand = ins.memory_operand (mem_op);
+      
+      if (operand.is_read ())
         this->mem_read_.insert_predicated (IPOINT_BEFORE, ins, mem_op);
 
       // Note that in some architectures a single memory operand can be
       // both read and written (for instance incl (%eax) on IA-32)
       // In that case we instrument it once for read and once for write.
-      if (ins [mem_op].is_memory_written ())
+      if (operand.is_written ())
         this->mem_write_.insert_predicated (IPOINT_BEFORE, ins, mem_op);
     }
   }

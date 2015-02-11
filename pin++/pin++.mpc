@@ -57,6 +57,7 @@ project (pin++) : pin {
     Guard.inl
     Lock.inl
     Mutex.inl
+    Memory_Operand.inl
     Operand.inl
     RW_Mutex.inl
     Semaphore.inl
