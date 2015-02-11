@@ -57,7 +57,7 @@ void Memory_Operand::rewrite (REG reg) const
 inline
 USIZE Memory_Operand::size (void) const
 {
-  INS_MemoryOperandSize (this->ins_, this->index_);
+  return INS_MemoryOperandSize (this->ins_, this->index_);
 }
 
 } // namespace OASIS
