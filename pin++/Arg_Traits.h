@@ -20,21 +20,34 @@ namespace OASIS
 namespace Pin
 {
 
+// Forward decl.
+class Context;
+  
 /**
  * @struct Arg_T
  *
- * Struct for converting PIN IARG_TYPEs to their parameter types
+ * Struct for converting PIN IARG_TYPEs from the native Pin type to the
+ * Pin++ parameter type.
  */
-template <IARG_TYPE T, typename PARAM_TYPE>
+template <IARG_TYPE T, typename PIN_TYPE, typename PINPP_TYPE>
 struct Arg_T
 {
+  /// Static definition of the IARG_TYPE for this argument.
   static const IARG_TYPE arg_type = T;
-  typedef PARAM_TYPE param_type;
+ 
+  /// Type definition of the native Pin type.
+  typedef PIN_TYPE pin_type;
+  
+  /// Type definition of the Pin++ type.
+  typedef PINPP_TYPE pinpp_type;
 };
 
-#define DEFINE_ARG_TYPE(TYPENAME, IARG, PARAM_TYPE) \
-  typedef Arg_T <IARG, PARAM_TYPE> TYPENAME
+#define DEFINE_ARG_TYPE_MAPPING(TYPENAME, IARG, PIN_TYPE, PINPP_TYPE) \
+  typedef Arg_T <IARG, PIN_TYPE, PINPP_TYPE> TYPENAME
 
+#define DEFINE_ARG_TYPE(TYPENAME, IARG, PIN_TYPE) \
+  DEFINE_ARG_TYPE_MAPPING (TYPENAME, IARG, PIN_TYPE, PIN_TYPE)
+  
 DEFINE_ARG_TYPE (ARG_INST_PTR, ::IARG_INST_PTR, ADDRINT);
 DEFINE_ARG_TYPE (ARG_THREAD_ID, ::IARG_THREAD_ID, THREADID);
 
@@ -56,8 +69,8 @@ DEFINE_ARG_TYPE (ARG_FALLTHROUGH_ADDR, ::IARG_FALLTHROUGH_ADDR, ADDRINT);
 DEFINE_ARG_TYPE (ARG_EXECUTING, ::IARG_EXECUTING, BOOL);
 DEFINE_ARG_TYPE (ARG_FIRST_REP_ITERATION, ::IARG_FIRST_REP_ITERATION, BOOL);
 
-DEFINE_ARG_TYPE (ARG_CONTEXT, ::IARG_CONTEXT, CONTEXT *);
-DEFINE_ARG_TYPE (ARG_CONST_CONTEXT, ::IARG_CONST_CONTEXT, const CONTEXT *);
+DEFINE_ARG_TYPE_MAPPING (ARG_CONTEXT, ::IARG_CONTEXT, CONTEXT *, Context);
+DEFINE_ARG_TYPE_MAPPING (ARG_CONST_CONTEXT, ::IARG_CONST_CONTEXT, CONTEXT *, const Context);
 
 DEFINE_ARG_TYPE (ARG_MEMORYOP_EA, ::IARG_MEMORYOP_EA, ADDRINT);
 DEFINE_ARG_TYPE (ARG_MEMORYOP_MASKED_ON, ::IARG_MEMORYOP_MASKED_ON, BOOL);

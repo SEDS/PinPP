@@ -41,7 +41,8 @@ public:
   MLOG (THREADID tid)
   {
     std::ostringstream filename;
-    filename << "buffer." << getpid_portable () << "." << tid;
+    filename << "buffer." << PIN_GetPid () << "." << tid;
+
     this->file_.open (filename.str ().c_str ());
 
     if (!this->file_.is_open ())
@@ -164,6 +165,8 @@ public:
     using OASIS::Pin::Operand;
     using OASIS::Pin::Memory_Operand;
 
+    cerr << "in handle_instrument" << endl;
+    
     for (OASIS::Pin::Bbl & bbl : trace)
     {
       for (OASIS::Pin::Ins & ins : bbl)
@@ -224,6 +227,8 @@ public:
     : trace_ (tls_mlog_)
 #endif
   {
+    cerr << "buffer ()" << endl;
+    
 #if defined (TARGET_WINDOWS)
     this->enable_fini_callback ();
 #else
@@ -234,13 +239,18 @@ public:
 
   void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctx, INT32 flags)
   {
+    cerr << "entered handle_thread_start" << endl;
+    
 #if !defined (TARGET_WINDOWS)
     this->tls_mlog_.set (thr_id, new MLOG (thr_id));
 #endif
+    cerr << "leaving handle_thread_start" << endl;
   }
 
   void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Context & ctx, INT32 flags)
   {
+    cerr << "handle_thread_fini" << endl;
+
 #if !defined (TARGET_WINDOWS)
     std::cerr << "Deleting TLS data" << std::endl;
     delete this->tls_mlog_.get (thr_id);
