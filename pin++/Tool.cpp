@@ -34,53 +34,39 @@ void Tool <T>::__detach_probed (void * obj)
 template <typename T>
 void Tool <T>::__thread_start (THREADID index, CONTEXT * ctx, INT32 flags, VOID * obj)
 {
-#if defined (TARGET_WINDOWS)
-  reinterpret_cast <T *> (obj)->handle_thread_start (index, Context (ctx), flags);
-#else
-  Context c (ctx);
-  reinterpret_cast <T *> (obj)->handle_thread_start (index, c, flags);
-#endif
+  Context context (ctx);
+  reinterpret_cast <T *> (obj)->handle_thread_start (index, context, flags);
 }
 
 template <typename T>
 void Tool <T>::__thread_fini (THREADID index, const CONTEXT * ctx, INT32 flags, VOID * obj)
 {
-  reinterpret_cast <T *> (obj)->handle_thread_fini (index, Const_Context (ctx), flags);
+  // Strip the const from the CONTEXT, and let the const wrapper class
+  // handle the const.
+  const Context context (const_cast <CONTEXT *> (ctx));
+  reinterpret_cast <T *> (obj)->handle_thread_fini (index, context, flags);
 }
 
 template <typename T>
-void Tool <T>::__syscall_entry (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std, VOID * obj)
+void Tool <T>::__syscall_entry (THREADID thr_index, CONTEXT * ctx, SYSCALL_STANDARD std, VOID * obj)
 {
-#if defined (TARGET_WINDOWS)
-  reinterpret_cast <T *> (obj)->handle_syscall_entry (thr_index, Context (ctxt), std);
- #else
-  Context ctx (ctxt);
-  reinterpret_cast <T *> (obj)->handle_syscall_entry (thr_index, ctx, std);
-#endif
-
+  Context context (ctx);
+  reinterpret_cast <T *> (obj)->handle_syscall_entry (thr_index, context, std);
 }
 
 template <typename T>
-void Tool <T>::__syscall_exit (THREADID thr_index, CONTEXT * ctxt, SYSCALL_STANDARD std, VOID * obj)
+void Tool <T>::__syscall_exit (THREADID thr_index, CONTEXT * ctx, SYSCALL_STANDARD std, VOID * obj)
 {
-#if defined (TARGET_WINDOWS)
-  reinterpret_cast <T *> (obj)->handle_syscall_exit (thr_index, Context (ctxt), std);
-#else
-  Context ctx (ctxt);
-  reinterpret_cast <T *> (obj)->handle_syscall_exit (thr_index, ctx, std);
-#endif
+  Context context (ctx);
+  reinterpret_cast <T *> (obj)->handle_syscall_exit (thr_index, context, std);
 }
 
 template <typename T>
 EXCEPT_HANDLING_RESULT Tool <T>::
-__internal_exception_handler (THREADID thr, EXCEPTION_INFO * ex_info, PHYSICAL_CONTEXT * ctx, VOID *v)
+__internal_exception_handler (THREADID thr, EXCEPTION_INFO * ex, PHYSICAL_CONTEXT * ctx, VOID *v)
 {
-#if defined (TARGET_WINDOWS)
-  return reinterpret_cast <T *> (v)->handle_internal_exception (thr, Exception (ex_info), ctx);
-#else
-  Exception ex (ex_info);
-  return reinterpret_cast <T *> (v)->handle_internal_exception (thr, ex, ctx);
-#endif
+  Exception e (ex);
+  return reinterpret_cast <T *> (v)->handle_internal_exception (thr, e, ctx);
 }
 
 template <typename T>
@@ -92,7 +78,8 @@ BOOL Tool <T>::__follow_child_process (CHILD_PROCESS child, VOID * val)
 template <typename T>
 size_t Tool <T>::__fetch (void *buf, ADDRINT addr, size_t size, EXCEPTION_INFO *ex, VOID *v)
 {
-  return reinterpret_cast <T *> (v)->handle_fetch (buf, addr, size, Exception (ex));
+  Exception e (ex);
+  return reinterpret_cast <T *> (v)->handle_fetch (buf, addr, size, e);
 }
 
 template <typename T>
@@ -134,31 +121,42 @@ void Tool <T>::__context_change (THREADID thr_id, CONTEXT_CHANGE_REASON reason, 
 template <typename T>
 void Tool <T>::__probes_inserted (IMG img, VOID *v)
 {
-  reinterpret_cast <T *> (v)->handle_probes_inserted (Image (img));
+  Image image (img);
+  reinterpret_cast <T *> (v)->handle_probes_inserted (image);
 }
 
 template <typename T>
 void Tool <T>::__unload (IMG img, VOID *v)
 {
-  reinterpret_cast <T *> (v)->handle_unload (Image (img));
+  Image image (img);
+  reinterpret_cast <T *> (v)->handle_unload (image);
 }
   
 template <typename T>
 void Tool <T>::__fork_before (THREADID thr_id, const CONTEXT * ctx, VOID * v)
 {
-  reinterpret_cast <T *> (v)->handle_fork_before (thr_id, Const_Context (ctx));
+  // Strip the const from the CONTEXT, and let the const wrapper class
+  // handle the const.
+  const Context context (const_cast <CONTEXT *> (ctx));
+  reinterpret_cast <T *> (v)->handle_fork_before (thr_id, context);
 }
 
 template <typename T>
 void Tool <T>::__fork_after_in_child (THREADID thr_id, const CONTEXT * ctx, VOID *v)
 {
-  reinterpret_cast <T *> (v)->handle_fork_after_in_child (thr_id, Const_Context (ctx));
+  // Strip the const from the CONTEXT, and let the const wrapper class
+  // handle the const.
+  const Context context (const_cast <CONTEXT *> (ctx));
+  reinterpret_cast <T *> (v)->handle_fork_after_in_child (thr_id, context);
 }
   
 template <typename T>
 void Tool <T>::__fork_after_in_parent (THREADID thr_id, const CONTEXT * ctx, VOID *v)
 {
-  reinterpret_cast <T *> (v)->handle_fork_after_in_parent (thr_id, Const_Context (ctx));
+  // Strip the const from the CONTEXT, and let the const wrapper class
+  // handle the const.
+  const Context context (const_cast <CONTEXT *> (ctx));
+  reinterpret_cast <T *> (v)->handle_fork_after_in_parent (thr_id, context);
 }
 
 } // namespace Pin

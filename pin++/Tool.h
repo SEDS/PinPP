@@ -107,12 +107,12 @@ protected:
   void handle_detach_probed (void);
   void handle_fetch (void *buf, ADDRINT addr, size_t size, const Exception & ex);
 
-  void handle_thread_start (THREADID threadIndex, Context & ctxt, INT32 flags);
-  void handle_thread_fini (THREADID threadIndex, const Const_Context & ctxt, INT32 flags);
+  void handle_thread_start (THREADID threadIndex, Context & ctx, INT32 flags);
+  void handle_thread_fini (THREADID threadIndex, const Context & ctx, INT32 flags);
   void handle_destroy_thread_data (void * data);
 
-  void handle_syscall_entry (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std);
-  void handle_syscall_exit (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std);
+  void handle_syscall_entry (THREADID thr_index, Context & ctx, SYSCALL_STANDARD std);
+  void handle_syscall_exit (THREADID thr_index, Context & ctx, SYSCALL_STANDARD std);
   EXCEPT_HANDLING_RESULT handle_internal_exception (THREADID, Exception & ex, PHYSICAL_CONTEXT *);
 
   BOOL handle_follow_child_process (CHILD_PROCESS child);
@@ -124,14 +124,14 @@ protected:
   void handle_thread_detach_probed (void);
 
   void handle_application_start (void);
-  void handle_context_change (THREADID threadIndex, CONTEXT_CHANGE_REASON reason, const CONTEXT *from, CONTEXT *to, INT32 info);
+  void handle_context_change (THREADID threadIndex, CONTEXT_CHANGE_REASON reason, const Context & from, Context & to, INT32 info);
   void handle_probes_inserted (const Image & img);
 
   void handle_unload (const Image & img);
   
-  void handle_fork_before (THREADID threadid, const Const_Context & ctx);
-  void handle_fork_after_in_child (THREADID threadid, const Const_Context & ctx);
-  void handle_fork_after_in_parent (THREADID threadid, const Const_Context & ctx);
+  void handle_fork_before (THREADID threadid, const Context & ctx);
+  void handle_fork_after_in_child (THREADID threadid, const Context & ctx);
+  void handle_fork_after_in_parent (THREADID threadid, const Context & ctx);
   /// @}
 
 private:

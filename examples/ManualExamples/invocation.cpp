@@ -8,7 +8,7 @@
 #include <fstream>
 #include <iostream>
 
-class taken : public OASIS::Pin::Callback <taken (OASIS::Pin::ARG_CONTEXT) >
+class taken : public OASIS::Pin::Callback <taken (OASIS::Pin::ARG_CONST_CONTEXT) >
 {
 public:
   taken (ofstream & fout)
@@ -26,7 +26,7 @@ private:
   std::ofstream & fout_;
 };
 
-class before : public OASIS::Pin::Callback <before (OASIS::Pin::ARG_CONTEXT) >
+class before : public OASIS::Pin::Callback <before (OASIS::Pin::ARG_CONST_CONTEXT) >
 {
 public:
   before (ofstream & fout)
@@ -41,7 +41,7 @@ private:
   std::ofstream & fout_;
 };
 
-class after : public OASIS::Pin::Callback <after (OASIS::Pin::ARG_CONTEXT) >
+class after : public OASIS::Pin::Callback <after (OASIS::Pin::ARG_CONST_CONTEXT) >
 {
 public:
   after (ofstream & fout)
@@ -70,26 +70,18 @@ public:
   void handle_instrument (const OASIS::Pin::Image & img)
   {
     using OASIS::Pin::Section;
+    using OASIS::Pin::Routine;
+    using OASIS::Pin::Routine_Guard;
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-    for each (OASIS::Pin::Section & section in img)
-#else
-    for (OASIS::Pin::Section & section : img)
-#endif
+    for (Section & section : img)
     {
-      using OASIS::Pin::Routine;
-
       // RTN_InsertCall () and INS_InsertCall () are executed in order of
       // appearance.  In the code sequence below, the IPOINT_AFTER is
       // executed before the IPOINT_BEFORE.
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-      for each (OASIS::Pin::Routine & rtn in section)
-#else
-      for (OASIS::Pin::Routine & rtn : section)
-#endif
+      for (Routine & rtn : section)
       {
-        OASIS::Pin::Routine_Guard guard (rtn);
+        Routine_Guard guard (rtn);
 
         // IPOINT_AFTER is implemented by instrumenting each return
         // instruction in a routine.  Pin tries to find all return
@@ -97,11 +89,9 @@ public:
         this->after_.insert (IPOINT_AFTER, rtn);
 
         // Examine each instruction in the routine.
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-        for each (OASIS::Pin::Ins & ins in rtn)
-#else
-        for (OASIS::Pin::Ins & ins : rtn)
-#endif
+        using OASIS::Pin::Ins;
+        
+        for (Ins & ins : rtn)
         {
           if (ins.is_return ())
           {
@@ -111,7 +101,6 @@ public:
         }
       }
     }
-
   }
 
 private:
