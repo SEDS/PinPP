@@ -13,10 +13,6 @@
 #include <fstream>
 #include <sstream>
 
-#if !defined (TARGET_WINDOWS)
-#include "portability.H"
-#endif
-
 /*
  * Record of memory references.  Rather than having two separate
  * buffers for reads and writes, we just use one struct that includes a
@@ -41,7 +37,8 @@ public:
   MLOG (THREADID tid)
   {
     std::ostringstream filename;
-    filename << "buffer." << getpid_portable () << "." << tid;
+    filename << "buffer." << PIN_GetPid () << "." << tid;
+
     this->file_.open (filename.str ().c_str ());
 
     if (!this->file_.is_open ())
@@ -55,7 +52,8 @@ public:
 
   ~MLOG (void)
   {
-    this->file_.close ();
+    if (this->file_.is_open ())
+      this->file_.close ();
   }
 
   VOID dump_buffer_to_file (struct MEMREF * reference, UINT64 elements, THREADID tid)
@@ -95,7 +93,7 @@ public:
   }
 
 
-  element_type * handle_trace_buffer (BUFFER_ID id, THREADID tid, const OASIS::Pin::Const_Context & ctx, element_type * buf, UINT64 elements)
+  element_type * handle_trace_buffer (BUFFER_ID id, THREADID tid, const OASIS::Pin::Context & ctx, element_type * buf, UINT64 elements)
   {
 #if defined (TARGET_WINDOWS)
     // Windows implementation for writing buffer to the file. It must take
@@ -229,14 +227,14 @@ public:
 #endif
   }
 
-  void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctxt, INT32 flags)
+  void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctx, INT32 flags)
   {
 #if !defined (TARGET_WINDOWS)
     this->tls_mlog_.set (thr_id, new MLOG (thr_id));
 #endif
   }
 
-  void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Const_Context & ctxt, INT32 flags)
+  void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Context & ctx, INT32 flags)
   {
 #if !defined (TARGET_WINDOWS)
     delete this->tls_mlog_.get (thr_id);

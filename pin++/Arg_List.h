@@ -4,8 +4,6 @@
 /**
  *  @file        Arg_List.h
  *
- *  $Id: Arg_List.h 2305 2013-10-07 03:23:23Z hillj $
- *
  *  @author      James H. Hill
  */
 //==============================================================================
@@ -47,7 +45,7 @@ struct Type_Node
   typedef IARG_TYPE arg_value_type;
 
   /// Type definition of the parameter type
-  typedef typename T::param_type param_type;
+  typedef typename T::pin_type pin_type;
 
   /// Type definition of the next node.
   typedef NEXT Tail;
@@ -69,7 +67,7 @@ struct Value_Node
   typedef ARG_VALUE_TYPE arg_value_type;
 
   /// Type definition of the value type.
-  typedef PARAM_TYPE param_type;
+  typedef PARAM_TYPE pin_type;
 
   /// Type definition of the next node. It should be of type Type_Node.
   typedef NEXT Tail;
@@ -81,7 +79,7 @@ struct Value_Node
   template <typename NEXT> \
   struct Type_Node <ARG_TYPE, NEXT> { \
     typedef IARG_TYPE arg_value_type; \
-    typedef typename ARG_TYPE::param_type param_type; \
+    typedef typename ARG_TYPE::pin_type pin_type; \
     static const IARG_TYPE value = ARG_TYPE::arg_type; \
     typedef Value_Node <ARG_VALUE_TYPE, PARAM_TYPE, NEXT> Tail; \
   }

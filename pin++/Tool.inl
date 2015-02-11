@@ -231,21 +231,21 @@ void Tool <T>::handle_thread_start (THREADID, Context &, INT32)
 
 template <typename T>
 inline
-void Tool <T>::handle_thread_fini (THREADID, const Const_Context &, INT32)
+void Tool <T>::handle_thread_fini (THREADID, const Context &, INT32)
 {
 
 }
 
 template <typename T>
 inline
-void Tool <T>::handle_syscall_entry (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std)
+void Tool <T>::handle_syscall_entry (THREADID thr_index, Context & ctx, SYSCALL_STANDARD std)
 {
 
 }
 
 template <typename T>
 inline
-void Tool <T>::handle_syscall_exit (THREADID thr_index, Context & ctxt, SYSCALL_STANDARD std)
+void Tool <T>::handle_syscall_exit (THREADID thr_index, Context & ctx, SYSCALL_STANDARD std)
 {
 
 }
@@ -308,35 +308,35 @@ void Tool <T>::handle_application_start (void)
 
 template <typename T>
 inline
-void Tool <T>::handle_context_change (THREADID threadIndex, CONTEXT_CHANGE_REASON reason, const CONTEXT *from, CONTEXT *to, INT32 info)
+void Tool <T>::handle_context_change (THREADID, CONTEXT_CHANGE_REASON, const Context & , Context & , INT32)
 {
 
 }
 
 template <typename T>
 inline
-void Tool <T>::handle_probes_inserted (const Image & img)
+void Tool <T>::handle_probes_inserted (const Image & )
 {
 
 }
 
 template <typename T>
 inline
-void Tool <T>::handle_fork_before (THREADID threadid, const Const_Context & ctx)
+void Tool <T>::handle_fork_before (THREADID, const Context & )
 {
   
 }
   
 template <typename T>
 inline
-void Tool <T>::handle_fork_after_in_child (THREADID threadid, const Const_Context & ctx)
+void Tool <T>::handle_fork_after_in_child (THREADID, const Context & )
 {
     
 }
   
 template <typename T>
 inline
-void Tool <T>::handle_fork_after_in_parent (THREADID threadid, const Const_Context & ctx)
+void Tool <T>::handle_fork_after_in_parent (THREADID, const Context & )
 {
     
 }

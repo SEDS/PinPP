@@ -23,7 +23,7 @@ public:
     this->enable_fork_after_in_parent_callback ();
   }
 
-  void handle_fork_before (THREADID thr_id, const OASIS::Pin::Const_Context &)
+  void handle_fork_before (THREADID thr_id, const OASIS::Pin::Context &)
   {
     do
     {
@@ -34,7 +34,7 @@ public:
     this->parent_pid_ = PIN_GetPid ();
   }
 
-  void handle_fork_after_in_child (THREADID thr_id, const OASIS::Pin::Const_Context &)
+  void handle_fork_after_in_child (THREADID thr_id, const OASIS::Pin::Context &)
   {
     do
     {
@@ -49,7 +49,7 @@ public:
     }
   }
 
-  void handle_fork_after_in_parent (THREADID thr_id, const OASIS::Pin::Const_Context &)
+  void handle_fork_after_in_parent (THREADID thr_id, const OASIS::Pin::Context &)
   {
     do
     {

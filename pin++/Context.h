@@ -21,92 +21,61 @@ namespace Pin
 {
 
 /**
- * @class Context_Base
- *
- * Templated base class for Context wrappers.  Implements the getter methods.
- */
-template <typename T>
-class Context_Base
-{
-public:
-  /// Initalizing constructor.
-  Context_Base (T ctx);
-
-  /// Destructor.
-  ~Context_Base (void);
-
-  /// CONTEXT conversion
-  operator T () const;
-
-  /// {@ PIN wrapper methods
-  static bool supports_processor_state (PROCESSOR_STATE state);
-  
-#if (PIN_BUILD_NUMBER <= 61206)
-  void get_regval (REG reg, REGVAL * val) const;
-#else
-  void get_regval (REG reg, UINT8 * val) const;
-#endif
-
-  ADDRINT get_reg (REG reg) const;
-
-  ADDRINT get_syscall_return (SYSCALL_STANDARD std) const;
-  ADDRINT get_syscall_number (SYSCALL_STANDARD std) const;
-  ADDRINT get_syscall_argument (SYSCALL_STANDARD std, UINT32 argNum) const;
-
-  void execute_at (void) const;
-  /// @}
-
-protected:
-  /// The context
-  T ctx_;
-};
-
-/**
- * @class Const_Context
- *
- * Wrapper class for a const PIN Context.
- */
-class Const_Context : public Context_Base <const CONTEXT *>
-{
-public:
-  /// Initalizing constructor.
-  Const_Context (const CONTEXT * ctx);
-
-  /// Destructor
-  ~Const_Context (void);
-};
-
-/**
  * @class Context
  *
- * Wrapper class for the PIN Context. This is the mutable version,
- * so it has setters.
+ * Wrapper facade class for the CONTEXT in Pin.
  */
-class Context : public Context_Base <CONTEXT *>
+class Context
 {
 public:
-  Context (const Context & ctx);
-
-  /// Initializing constructor.
+  /// Initalizing constructor.
   Context (CONTEXT * ctx);
 
   /// Destructor.
   ~Context (void);
 
-  /// {@ Processor Methods
+  /**
+   * Query if Pin supports the specified PROCESSOR_STATE.
+   */
   static bool supports_processor_state (PROCESSOR_STATE state);
-  bool contains_state (PROCESSOR_STATE state);
+  bool contains_state (PROCESSOR_STATE state) const;
+  
+  /// @{ Type Conversion Operators
+  
+  operator CONTEXT * (void);
+  operator const CONTEXT * (void) const;
+  
   /// @}
-
-  /// @{ Register Methods
+  
 #if (PIN_BUILD_NUMBER <= 61206)
+  void get_regval (REG reg, REGVAL * val) const;
   void set_regval (REG reg, const REGVAL *val);
 #else
+  void get_regval (REG reg, UINT8 * val) const;
   void set_regval (REG reg, const UINT8 * val);
 #endif
 
+  ADDRINT get_reg (REG reg) const;
   void set_reg (REG reg, ADDRINT val);
-  /// @}
+
+  ADDRINT get_syscall_return (SYSCALL_STANDARD std) const;
+  ADDRINT get_syscall_number (SYSCALL_STANDARD std) const;
+  ADDRINT get_syscall_argument (SYSCALL_STANDARD std, UINT32 argNum) const;
+
+  /**
+   * A tool can call this API to abandon the current analysis function and resume 
+   * execution of the calling thread at a new application register state. Note that 
+   * this API does not return back to the caller's analysis function.
+   */
+  void execute_at (void) const;
+
+private:
+  /// Pointer to the Pin context.
+  CONTEXT * ctx_;
+  
+  // prevent the following operations
+  Context (const Context &);
+  const Context & operator = (const Context &);
 };
 
 } // namespace OASIS
