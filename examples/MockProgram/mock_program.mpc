@@ -1,0 +1,11 @@
+project (mock_program) {
+  exename = mock_program
+  install = .
+  
+  libs  += my_shared_lib
+  after += my_shared_lib
+
+  Source_Files {
+    mock_program.cpp
+  }
+}
