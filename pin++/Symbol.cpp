@@ -9,11 +9,11 @@ namespace Pin
 {
 
 const SYM Symbol::invalid = SYM_Invalid ();
-
+  
 Symbol::iterator_type Symbols::begin (void) const
 {
   return IMG_RegsymHead (this->img_);
 }
-  
+
 } // namespace OASIS
 } // namespace Pin

@@ -193,7 +193,7 @@ Section::iterator_type Image::begin (void) const
 inline
 Section::iterator_type Image::end (void) const
 {
-  return IMG_SecTail (this->img_);
+  return Section::invalid;
 }
 
 inline
