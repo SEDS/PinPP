@@ -73,7 +73,7 @@ Routine::iterator_type Section::begin (void) const
 inline
 Routine::iterator_type Section::end (void) const
 {
-  return SEC_RtnTail (this->sec_);
+  return Routine::invalid;
 }
 
 inline

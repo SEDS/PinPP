@@ -172,7 +172,7 @@ Ins::iterator_type Routine::begin_only (void) const
 inline
 Ins::iterator_type Routine::end (void) const
 {
-  return RTN_InsTail (this->rtn_);
+  return Ins::invalid;
 }
 
 inline
