@@ -52,8 +52,12 @@ public:
   void handle_fini (INT32 retcode)
   {
 #if defined TARGET_MAC
-    this->assert_equals (static_cast <size_t> (5), this->instrument_.count (), "Counting number of routines");
+    size_t expected = 5;
+#elif defined TARGET_WINDOWS
+    size_t expected = 75;
 #endif
+
+    this->assert_equals (expected, this->instrument_.count (), "Counting number of routines");
   }
   
 private:
