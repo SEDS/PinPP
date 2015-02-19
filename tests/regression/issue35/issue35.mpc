@@ -9,7 +9,7 @@ project (issue35) : uses_cpp11, oasis_pintool {
   }
 }
 
-project (program) {
+project (issue35_program) {
   exename = program
   install = .
 
