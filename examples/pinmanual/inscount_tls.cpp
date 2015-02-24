@@ -21,6 +21,8 @@
 class thread_data_t
 {
 public:
+  static void __delete (void * data) { delete reinterpret_cast <thread_data_t *> (data); }
+  
   thread_data_t (void)
     : count_ (0) { }
 
@@ -32,8 +34,8 @@ class docount : public OASIS::Pin::Callback < docount (OASIS::Pin::ARG_THREAD_ID
 {
 public:
   docount (void)
-    : tls_ (0),
-      ins_count_ (0)
+  : tls_ (0),
+    ins_count_ (0)
   {
 
   }
@@ -46,7 +48,11 @@ public:
 
   void handle_analyze (THREADID thr_id)
   {
-    this->tls_->get (thr_id)->count_ += this->ins_count_;
+    // Get the local data; create new data object if not exists.
+    auto factory = [] (void) { return new thread_data_t (); };
+    thread_data_t * data = this->tls_->get_with_create (thr_id, factory);
+    
+    data->count_ += this->ins_count_;
   }
 
 private:
@@ -69,11 +75,7 @@ public:
     item_type item (trace.num_bbl ());
     item_type::iterator callback = item.begin ();
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-   for each (OASIS::Pin::Bbl & bbl in trace)
-#else
-   for (OASIS::Pin::Bbl & bbl : trace)
-#endif
+    for (OASIS::Pin::Bbl & bbl : trace)
     {
       callback->init (&this->tls_, bbl.ins_count ());
       callback->insert (IPOINT_BEFORE, bbl);
@@ -91,8 +93,6 @@ public:
       OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
       ++ this->num_threads_;
     } while (false);
-
-    this->tls_.set (thr_id, new thread_data_t ());
   }
 
   void handle_fini (INT32)
