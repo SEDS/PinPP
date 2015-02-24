@@ -69,11 +69,7 @@ public:
     item_type item (trace.num_bbl ());
     item_type::iterator callback = item.begin ();
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-   for each (OASIS::Pin::Bbl & bbl in trace)
-#else
-   for (OASIS::Pin::Bbl & bbl : trace)
-#endif
+    for (OASIS::Pin::Bbl & bbl : trace)
     {
       callback->init (&this->tls_, bbl.ins_count ());
       callback->insert (IPOINT_BEFORE, bbl);

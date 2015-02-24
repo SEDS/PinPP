@@ -51,13 +51,37 @@ public:
  
   /// Get the object for the current thread.
   T * get (void) const;
-
+  
   /**
    * Get the object for a thread from thread-local storage.
    *
    * @param[in]     thr_id        Target thread
    */
   T * get (THREADID thr_id) const;
+  
+  /**
+   * Get the object for the thread from its local storage. If the object
+   * does exists, then the factory object will be used to create a new one.
+   *
+   * The factory is a functor object. This allows developers to use C++11
+   * lambda objects when calling this method. The lambda object can capture
+   * the state of the caller, and be used to initialize the local data object.
+   * The FACTORY should have void -> T * function type signature.
+   */
+  template <typename FACTORY>
+  T * get_with_create (FACTORY factory);
+  
+  /**
+   * Get the object for the thread from its local storage. If the object
+   * does exists, then the factory object will be used to create a new one.
+   *
+   * The factory is a functor object. This allows developers to use C++11
+   * lambda objects when calling this method. The lambda object can capture
+   * the state of the caller, and be used to initialize the local data object.
+   * The FACTORY should have void -> T * function type signature.
+   */
+  template <typename FACTORY>
+  T * get_with_create (THREADID thr_id, FACTORY factory);
 
   /// Set the data for the current thread.
   void set (T * data);
@@ -80,8 +104,9 @@ public:
   bool is_set (THREADID thr_id) const;
   
 private:
+  /// The registered key for the thread-local data object.
   TLS_KEY key_;
-
+  
   // prevent the following operations
   const TLS & operator = (const TLS &);
   TLS (const TLS & rhs);
