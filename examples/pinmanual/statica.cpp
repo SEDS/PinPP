@@ -36,19 +36,11 @@ public:
     std::cout << hex;
     rtn_internal_range_list.clear ();
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-   for each (OASIS::Pin::Section & section in img)
-#else
-   for (OASIS::Pin::Section & section : img)
-#endif
+    for (OASIS::Pin::Section & section : img)
     {
       std::cout << "Section: " << std::setw (8) << section.address () << " " << section.name () << std::endl;
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-      for each (OASIS::Pin::Routine & rtn in section)
-#else
       for (OASIS::Pin::Routine rtn : section)
-#endif
       {
         std::cout << "  Rtn: " << std::setw (8) << hex << rtn.address () << " " << rtn.name () << endl;
 

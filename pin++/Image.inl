@@ -197,6 +197,18 @@ Section::iterator_type Image::end (void) const
 }
 
 inline
+Section::reverse_iterator_type Image::rbegin (void) const
+{
+  return IMG_SecTail (this->img_);
+}
+  
+inline
+Section::reverse_iterator_type Image::rend (void) const
+{
+  return Section::invalid;
+}
+
+inline
 Image::iterator_type Image::make_iter (void) const
 {
   return iterator_type (this->img_);

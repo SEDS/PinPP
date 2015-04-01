@@ -39,6 +39,7 @@ public:
 
   /// Type definition of the iterator type.
   typedef Iterator <Routine, &RTN_Prev, &RTN_Next> iterator_type;
+  typedef Iterator <Routine, &RTN_NExt, &RTN_Prev> reverse_iterator_type;
 
   /// Pointer to INS_InsertCall
   static const Insert_Call_T <Routine>::funcptr_type __insert_call;
@@ -120,6 +121,9 @@ public:
   /// @{ Instruction Methods
   Ins::iterator_type begin (void) const;
   Ins::iterator_type end (void) const;
+
+  Ins::reverse_iterator_type rbegin (void) const;
+  Ins::reverse_iterator_type rend (void) const;
 
   Ins::iterator_type begin_only (void) const;
   UINT32 instruction_count (void) const;
