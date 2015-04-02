@@ -44,6 +44,7 @@ public:
 
   /// Type definition of the iterator type.
   typedef Iterator2 <Ins, &INS_Prev, &INS_Next> iterator_type;
+  typedef Iterator2 <Ins, &INS_Next, &INS_Prev> reverse_iterator_type;
 
   /// Invalid instruction.
   static const INS invalid;

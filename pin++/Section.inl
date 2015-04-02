@@ -69,9 +69,21 @@ Routine::iterator_type Section::begin (void) const
 {
   return SEC_RtnHead (this->sec_);
 }
-
+  
 inline
 Routine::iterator_type Section::end (void) const
+{
+  return Routine::invalid;
+}
+
+inline
+Routine::reverse_iterator_type Section::rbegin (void) const
+{
+  return SEC_RtnTail (this->sec_);
+}
+
+inline
+Routine::reverse_iterator_type Section::rend (void) const
 {
   return Routine::invalid;
 }

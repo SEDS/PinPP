@@ -35,6 +35,7 @@ public:
 
   /// Type definition of the iterator type.
   typedef Iterator <Section, &SEC_Prev, &SEC_Next> iterator_type;
+  typedef Iterator <Section, &SEC_Next, &SEC_Prev> reverse_iterator_type;
 
   Section (SEC sec);
   Section (const Section & sec);
@@ -70,16 +71,27 @@ public:
   /// @{ Iterator Methods
   Routine::iterator_type begin (void) const;
   Routine::iterator_type end (void) const;
+
+  Routine::reverse_iterator_type rbegin (void) const;
+  Routine::reverse_iterator_type rend (void) const;
   /// @}
 
   const string & name (void) const;
+  
   SEC_TYPE type (void) const;
+  
   BOOL mapped (void) const;
+  
   const VOID * data (void) const;
+  
   ADDRINT address (void) const;
+  
   BOOL is_readable (void) const;
+  
   BOOL is_writeable (void) const;
+  
   BOOL is_executable (void) const;
+  
   USIZE size (void) const;
 
 private:

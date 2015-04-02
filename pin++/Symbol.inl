@@ -120,5 +120,11 @@ Symbol::iterator_type Symbols::end (void) const
   return Symbol::invalid;
 }
   
+inline
+Symbol::reverse_iterator_type Symbols::rend (void) const
+{
+  return Symbol::invalid;
+}
+  
 } // namespace OASIS
 } // namespace Pin
