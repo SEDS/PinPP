@@ -26,7 +26,7 @@ Symbol::reverse_iterator_type Symbols::rbegin (void) const
   for (; iter != iter_end; ++ iter)
     last_sym = iter;
 
-  return last_sym;
+  return *last_sym;
 }
 
 } // namespace OASIS
