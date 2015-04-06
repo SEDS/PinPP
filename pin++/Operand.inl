@@ -1,5 +1,4 @@
 // -*- C++ -*-
-// $Id: Operand.inl 2288 2013-09-19 19:09:57Z hillj $
 
 namespace OASIS
 {
@@ -31,6 +30,9 @@ Operand::~Operand (void)
 inline
 const Operand & Operand::operator = (const Operand & rhs)
 {
+  if (this == &rhs)
+    return *this;
+  
   this->ins_ = rhs.ins_;
   this->index_ = rhs.index_;
   return *this;
@@ -168,6 +170,62 @@ Memory_Operand Operand::to_memory_operand (void) const
 {
   return Memory_Operand (this->ins_, this->index_);
 }
+  
+  
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  // Memory_Operand
+  
+  inline
+  Memory_Operand::Memory_Operand (INS ins, int index)
+  : Operand (ins, index)
+  {
+    
+  }
+  
+  inline
+  Memory_Operand::Memory_Operand (const Memory_Operand & copy)
+  : Operand (copy)
+  {
+    
+  }
+  
+  inline
+  Memory_Operand::~Memory_Operand (void)
+  {
+    
+  }
+  
+  inline
+  const Memory_Operand & Memory_Operand::operator = (const Memory_Operand & rhs)
+  {
+    Operand::operator = (rhs);
+    return *this;
+  }
+  
+  inline
+  bool Memory_Operand::is_read (void) const
+  {
+    return INS_MemoryOperandIsRead (this->ins_, this->index_);
+  }
+  
+  inline
+  bool Memory_Operand::is_written (void) const
+  {
+    return INS_MemoryOperandIsWritten (this->ins_, this->index_);
+  }
+  
+  inline
+  void Memory_Operand::rewrite (REG reg) const
+  {
+    INS_RewriteMemoryOperand (this->ins_, this->index_, reg);
+  }
+  
+  inline
+  USIZE Memory_Operand::size (void) const
+  {
+    return INS_MemoryOperandSize (this->ins_, this->index_);
+  }
+
   
 } // namespace OASIS
 } // namespace Pin

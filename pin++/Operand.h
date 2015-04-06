@@ -13,8 +13,7 @@
 #ifndef _OASIS_PIN_OPERAND_H_
 #define _OASIS_PIN_OPERAND_H_
 
-#include "Memory_Operand.h"
-
+#include "pin.H"
 #include "Pin_export.h"
 
 namespace OASIS
@@ -22,6 +21,9 @@ namespace OASIS
 namespace Pin
 {
 
+// Forward decl.
+class Memory_Operand;
+  
 /**
  * @class Operand
  *
@@ -30,7 +32,17 @@ namespace Pin
 class OASIS_PIN_Export Operand
 {
 public:
+  /**
+   * Initializing constructor.
+   *
+   * @param[in]     ins         Parent instruction of the operand
+   * @param[in]     index       Index of the operand
+   */
   Operand (INS ins, int index);
+  
+  /**
+   * Copy constructor.
+   */
   Operand (const Operand & rhs);
 
   /// Destructor.
@@ -74,9 +86,47 @@ public:
   bool is_read_and_written (void) const;
   /// @}
 
-private:
+protected:
+  /// The parent instruction of the operand.
   INS ins_;
+  
+  /// The index of the operand.
   int index_;
+};
+
+/**
+ * @class Memory_Operand
+ *
+ * Wrapper class for Operand specificlly for memory operands.
+ */
+class Memory_Operand : public Operand
+{
+public:
+  /**
+   * Initializing constructor.
+   *
+   * @param[in]       ins       Parent instruction of the operand
+   * @param[in]       index     Index of the operand
+   */
+  Memory_Operand (INS ins, int index);
+
+  /**
+   * Copy constructor
+   */
+  Memory_Operand (const Memory_Operand & copy);
+    
+  /// Destructor.
+  ~Memory_Operand (void);
+    
+  bool is_read (void) const;
+  bool is_written (void) const;
+    
+  /// Get the size of the memory operand.
+  USIZE size (void) const;
+    
+  void rewrite (REG reg) const;
+    
+  const Memory_Operand & operator = (const Memory_Operand & rhs);
 };
 
 } // namespace OASIS

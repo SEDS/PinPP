@@ -13,19 +13,19 @@
 #ifndef _OASIS_PIN_INS_H_
 #define _OASIS_PIN_INS_H_
 
-#include "pin.H"
 #include "Iterator.h"
 #include "Insert_T.h"
 #include "Operand.h"
-
-#include "Pin_export.h"
 
 namespace OASIS
 {
 namespace Pin
 {
+
 // Forward decl.
 class Routine;
+
+// Forward decl.
 class Operand;
 
 /**
