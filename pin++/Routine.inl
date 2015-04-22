@@ -8,9 +8,6 @@ namespace OASIS
 namespace Pin
 {
 
-//
-// Routine
-//
 inline
 Routine::Routine (RTN rtn)
 : rtn_ (rtn),
@@ -20,9 +17,6 @@ Routine::Routine (RTN rtn)
 
 }
 
-//
-// Routine
-//
 inline
 Routine::Routine (const Routine & rtn)
 : rtn_ (rtn.rtn_),
@@ -32,27 +26,18 @@ Routine::Routine (const Routine & rtn)
 
 }
 
-//
-// ~Routine
-//
 inline
 Routine::~Routine (void)
 {
 
 }
 
-//
-// operator RTN ()
-//
 inline
 Routine::operator RTN () const
 {
   return this->rtn_;
 }
 
-//
-// operator =
-//
 inline
 const Routine & Routine::operator = (const Routine & rtn)
 {
@@ -164,17 +149,29 @@ Ins::iterator_type Routine::begin (void) const
 }
 
 inline
+Ins::iterator_type Routine::end (void) const
+{
+  return Ins::invalid;
+}
+
+inline
+Ins::reverse_iterator_type Routine::rbegin (void) const
+{
+  return RTN_InsTail (this->rtn_);
+}
+  
+inline
+Ins::reverse_iterator_type Routine::rend (void) const
+{
+  return Ins::invalid;
+}
+
+inline
 Ins::iterator_type Routine::begin_only (void) const
 {
   return RTN_InsHeadOnly (this->rtn_);
 }
-
-inline
-Ins::iterator_type Routine::end (void) const
-{
-  return RTN_InsTail (this->rtn_);
-}
-
+  
 inline
 UINT32 Routine::instruction_count (void) const
 {

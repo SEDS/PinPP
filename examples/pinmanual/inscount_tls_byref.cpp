@@ -38,7 +38,7 @@ public:
 
   }
 
-  void init (const OASIS::Pin::TLS <thread_data_t> & tls, UINT64 count)
+  void init (OASIS::Pin::TLS <thread_data_t> * tls, UINT64 count)
   {
     this->tls_ = tls;
     this->ins_count_ = count;
@@ -46,11 +46,11 @@ public:
 
   void handle_analyze (THREADID thr_id)
   {
-    this->tls_[thr_id]->count_ += this->ins_count_;
+    this->tls_->get (thr_id)->count_ += this->ins_count_;
   }
 
 private:
-  OASIS::Pin::TLS <thread_data_t> tls_;
+  OASIS::Pin::TLS <thread_data_t> * tls_;
   UINT64 ins_count_;
 };
 
@@ -69,13 +69,9 @@ public:
     item_type item (trace.num_bbl ());
     item_type::iterator callback = item.begin ();
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-   for each (OASIS::Pin::Bbl & bbl in trace)
-#else
-   for (OASIS::Pin::Bbl & bbl : trace)
-#endif
+    for (OASIS::Pin::Bbl & bbl : trace)
     {
-      callback->init (this->tls_, bbl.ins_count ());
+      callback->init (&this->tls_, bbl.ins_count ());
       callback->insert (IPOINT_BEFORE, bbl);
 
       ++ callback;
@@ -88,7 +84,7 @@ public:
   {
     do
     {
-      OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, thr_id + 1);
+      OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
       ++ this->num_threads_;
     } while (false);
 
@@ -101,7 +97,7 @@ public:
     fout << "Total number of threads = " << this->num_threads_ << endl;
 
     for (INT32 t = 0; t < this->num_threads_; t ++)
-      fout << "Count[" << decstr (t) << "]= " << this->tls_[t]->count_ << std::endl;
+      fout << "Count[" << decstr (t) << "]= " << this->tls_.get (t)->count_ << std::endl;
 
     fout.close ();
   }
@@ -141,10 +137,8 @@ public:
     std::ofstream fout ("inscount_tls.out");
     fout << "Total number of threads = " << this->trace_.num_threads () << endl;
 
-    const OASIS::Pin::TLS <thread_data_t> & tls = this->trace_.tls ();
-
     for (INT32 t = 0; t < this->trace_.num_threads (); t ++)
-      fout << "Count[" << decstr (t) << "]= " << tls[t]->count_ << std::endl;
+      fout << "Count[" << decstr (t) << "]= " << this->trace_.tls ().get (t)->count_ << std::endl;
 
     fout.close ();
   }
@@ -158,4 +152,4 @@ private:
   Trace trace_;
 };
 
-DECLARE_PINTOOL (inscount_tls);
+DECLARE_PINTOOL (inscount_tls)

@@ -26,6 +26,7 @@ project (pin++) : pin {
     Mutex.h
     Operand.h
     RW_Mutex.h
+    Runnable.h
     Semaphore.h
     Prototype.h
     Replacement_Routine.h
@@ -45,6 +46,7 @@ project (pin++) : pin {
     Routine.cpp
     Section.cpp
     Symbol.cpp
+    Thread.cpp
     Trace.cpp
   }
 
@@ -56,15 +58,15 @@ project (pin++) : pin {
     Guard.inl
     Lock.inl
     Mutex.inl
+    Operand.inl
     RW_Mutex.inl
     Semaphore.inl
     Prototype.inl
     Replacement_Routine.inl
     Routine.inl
     Task.inl
+    Thread.inl
     TLS.inl
-    Trace.inl
-    Operand.inl
   }
 
   Template_Files {

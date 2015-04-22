@@ -23,22 +23,22 @@ public:
     this->enable_fork_after_in_parent_callback ();
   }
 
-  void handle_fork_before (THREADID thr_id, const OASIS::Pin::Const_Context &)
+  void handle_fork_before (THREADID thr_id, const OASIS::Pin::Context &)
   {
     do
     {
-      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_, thr_id + 1);
+      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_);
       std::cerr << "TOOL: Before fork." << std::endl;
     } while (false);
 
     this->parent_pid_ = PIN_GetPid ();
   }
 
-  void handle_fork_after_in_child (THREADID thr_id, const OASIS::Pin::Const_Context &)
+  void handle_fork_after_in_child (THREADID thr_id, const OASIS::Pin::Context &)
   {
     do
     {
-      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_, thr_id + 1);
+      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_);
       std::cerr << "TOOL: After fork in child." << std::endl;
     } while (false);
 
@@ -49,11 +49,11 @@ public:
     }
   }
 
-  void handle_fork_after_in_parent (THREADID thr_id, const OASIS::Pin::Const_Context &)
+  void handle_fork_after_in_parent (THREADID thr_id, const OASIS::Pin::Context &)
   {
     do
     {
-      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_, thr_id + 1);
+      OASIS::Pin::Guard <OASIS::Pin::Lock> (this->lock_);
       std::cerr << "TOOL: After fork in parent." << std::endl;
     } while (false);
 

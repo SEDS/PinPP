@@ -34,7 +34,8 @@ public:
 
   /// Type definition of the iterator type.
   typedef Iterator <Image, &IMG_Prev, &IMG_Next> iterator_type;
-
+  typedef Iterator <Image, &IMG_Next, &IMG_Prev> reverse_iterator_type;
+  
   /// Initializing constructor.
   Image (const IMG & img);
   Image (const Image & img);
@@ -81,6 +82,9 @@ public:
   /// @{ Section Methods
   Section::iterator_type begin (void) const;
   Section::iterator_type end (void) const;
+  
+  Section::reverse_iterator_type rbegin (void) const;
+  Section::reverse_iterator_type rend (void) const;
   /// @}
 
   ADDRINT entry (void) const;

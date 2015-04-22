@@ -7,3 +7,19 @@ project (Callback_Test) : oasis_pintool, tests_common {
     Callback_Test.cpp
   }
 }
+
+project (Thread_Test) : oasis_pintool, tests_common {
+  sharedname = Thread_Test
+
+  Source_Files {
+    Thread_Test.cpp
+  }
+}
+
+project (Inline_Thread_Test) : uses_cpp11, oasis_pintool, tests_common {
+  sharedname = Inline_Thread_Test
+
+  Source_Files {
+    Inline_Thread_Test.cpp
+  }
+}

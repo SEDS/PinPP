@@ -1,5 +1,4 @@
 // -*- C++ -*-
-// $Id: Operand.inl 2288 2013-09-19 19:09:57Z hillj $
 
 namespace OASIS
 {
@@ -31,25 +30,16 @@ Operand::~Operand (void)
 inline
 const Operand & Operand::operator = (const Operand & rhs)
 {
+  if (this == &rhs)
+    return *this;
+  
   this->ins_ = rhs.ins_;
   this->index_ = rhs.index_;
   return *this;
 }
 
 inline
-BOOL Operand::is_memory_read (void) const
-{
-  return INS_MemoryOperandIsRead (this->ins_, this->index_);
-}
-
-inline
-BOOL Operand::is_memory_written (void) const
-{
-  return INS_MemoryOperandIsWritten (this->ins_, this->index_);
-}
-
-inline
-BOOL Operand::is_memory (void) const
+bool Operand::is_memory (void) const
 {
   return INS_OperandIsMemory (this->ins_, this->index_);
 }
@@ -86,37 +76,25 @@ INT64 Operand::memory_displacement (void) const
 }
 
 inline
-USIZE Operand::memory_size (void) const
-{
-  return INS_MemoryOperandSize (this->ins_, this->index_);
-}
-
-inline
-VOID Operand::rewrite_memory_operand (REG reg) const
-{
-  INS_RewriteMemoryOperand (this->ins_, this->index_, reg);
-}
-
-inline
-BOOL Operand::is_fixed_memop (void) const
+bool Operand::is_fixed_memop (void) const
 {
   return INS_OperandIsFixedMemop (this->ins_, this->index_);
 }
 
 inline
-BOOL Operand::is_address_generator (void) const
+bool Operand::is_address_generator (void) const
 {
   return INS_OperandIsAddressGenerator (this->ins_, this->index_);
 }
 
 inline
-BOOL Operand::is_branch_displacememt (void) const
+bool Operand::is_branch_displacememt (void) const
 {
   return INS_OperandIsBranchDisplacement (this->ins_, this->index_);
 }
 
 inline
-BOOL Operand::is_reg (void) const
+bool Operand::is_reg (void) const
 {
   return INS_OperandIsReg (this->ins_, this->index_);
 }
@@ -128,7 +106,7 @@ REG Operand::reg (void) const
 }
 
 inline
-BOOL Operand::is_immediate (void) const
+bool Operand::is_immediate (void) const
 {
   return INS_OperandIsImmediate (this->ins_, this->index_);
 }
@@ -140,7 +118,7 @@ UINT64 Operand::immediate (void) const
 }
 
 inline
-BOOL Operand::is_implicit (void) const
+bool Operand::is_implicit (void) const
 {
   return INS_OperandIsImplicit (this->ins_, this->index_);
 }
@@ -158,34 +136,96 @@ UINT32 Operand::name_id (void) const
 }
 
 inline
-BOOL Operand::is_read (void) const
+bool Operand::is_read (void) const
 {
   return INS_OperandRead (this->ins_, this->index_);
 }
 
 inline
-BOOL Operand::is_read_only (void) const
+bool Operand::is_read_only (void) const
 {
   return INS_OperandReadOnly (this->ins_, this->index_);
 }
 
 inline
-BOOL Operand::is_written (void) const
+bool Operand::is_written (void) const
 {
   return INS_OperandWritten (this->ins_, this->index_);
 }
 
 inline
-BOOL Operand::is_written_only (void) const
+bool Operand::is_written_only (void) const
 {
   return INS_OperandWrittenOnly (this->ins_, this->index_);
 }
 
 inline
-BOOL Operand::is_read_and_written (void) const
+bool Operand::is_read_and_written (void) const
 {
   return INS_OperandReadAndWritten (this->ins_, this->index_);
 }
 
+inline
+Memory_Operand Operand::to_memory_operand (void) const
+{
+  return Memory_Operand (this->ins_, this->index_);
+}
+  
+  
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  // Memory_Operand
+  
+  inline
+  Memory_Operand::Memory_Operand (INS ins, int index)
+  : Operand (ins, index)
+  {
+    
+  }
+  
+  inline
+  Memory_Operand::Memory_Operand (const Memory_Operand & copy)
+  : Operand (copy)
+  {
+    
+  }
+  
+  inline
+  Memory_Operand::~Memory_Operand (void)
+  {
+    
+  }
+  
+  inline
+  const Memory_Operand & Memory_Operand::operator = (const Memory_Operand & rhs)
+  {
+    Operand::operator = (rhs);
+    return *this;
+  }
+  
+  inline
+  bool Memory_Operand::is_read (void) const
+  {
+    return INS_MemoryOperandIsRead (this->ins_, this->index_);
+  }
+  
+  inline
+  bool Memory_Operand::is_written (void) const
+  {
+    return INS_MemoryOperandIsWritten (this->ins_, this->index_);
+  }
+  
+  inline
+  void Memory_Operand::rewrite (REG reg) const
+  {
+    INS_RewriteMemoryOperand (this->ins_, this->index_, reg);
+  }
+  
+  inline
+  USIZE Memory_Operand::size (void) const
+  {
+    return INS_MemoryOperandSize (this->ins_, this->index_);
+  }
+
+  
 } // namespace OASIS
 } // namespace Pin

@@ -16,14 +16,6 @@ TLS <T>::TLS (DESTRUCTFUN destructor)
 
 template <typename T>
 inline
-TLS <T>::TLS (const TLS & tls)
-: key_ (tls.key_)
-{
-
-}
-
-template <typename T>
-inline
 TLS <T>::~TLS (void)
 {
   PIN_DeleteThreadDataKey (this->key_);
@@ -33,22 +25,16 @@ template <typename T>
 inline
 T * TLS <T>::operator -> (void) const
 {
-  return reinterpret_cast <T *> (PIN_GetThreadData (this->key_));
-}
-
-template <typename T>
-inline
-T * TLS <T>::operator [] (THREADID thr_id) const
-{
-  return reinterpret_cast <T *> (PIN_GetThreadData (this->key_, thr_id));
+  return this->get ();
 }
 
 template <typename T>
 inline
 T * TLS <T>::get (void) const
 {
-  return reinterpret_cast <T *> (PIN_GetThreadData (this->key_));
+  return this->get (PIN_ThreadId ());
 }
+
 
 template <typename T>
 inline
@@ -56,19 +42,52 @@ T * TLS <T>::get (THREADID thr_id) const
 {
   return reinterpret_cast <T *> (PIN_GetThreadData (this->key_, thr_id));
 }
+  
+template <typename T>
+template <typename FACTORY>
+inline
+T * TLS <T>::get_with_create (FACTORY factory)
+{
+  return this->get (PIN_ThreadId (), factory);
+}
+
+template <typename T>
+template <typename FACTORY>
+inline
+T * TLS <T>::get_with_create (THREADID thr_id, FACTORY factory)
+{
+  T * data = this->get (thr_id);
+    
+  if (0 != data)
+    return data;
+    
+  // Create a new data object using the provided factory. Then, store
+  // the data object for access later.
+  data = factory ();
+  this->set (thr_id, data);
+    
+  return data;
+}
 
 template <typename T>
 inline
 bool TLS <T>::is_set (void) const
 {
-  return 0 != PIN_GetThreadData (this->key_);
+  return this->is_set (PIN_ThreadId ());
+}
+
+template <typename T>
+inline
+bool TLS <T>::is_set (THREADID thr_id) const
+{
+  return 0 != PIN_GetThreadData (this->key_, thr_id);
 }
 
 template <typename T>
 inline
 void TLS <T>::set (T * data)
 {
-  PIN_SetThreadData (this->key_, data);
+  this->set (PIN_ThreadId (), data);
 }
 
 template <typename T>
@@ -76,14 +95,6 @@ inline
 void TLS <T>::set (THREADID thr_id, T * data)
 {
   PIN_SetThreadData (this->key_, data, thr_id);
-}
-
-template <typename T>
-inline
-const TLS <T> & TLS <T>::operator = (const TLS & rhs)
-{
-  this->key_ = rhs.key_;
-  return *this;
 }
 
 } // namespace OASIS

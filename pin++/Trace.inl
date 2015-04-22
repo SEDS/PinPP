@@ -49,7 +49,7 @@ Bbl::iterator_type Trace::begin (void) const
 inline
 Bbl::iterator_type Trace::end (void) const
 {
-  return TRACE_BblTail (this->trace_);
+  return Bbl::invalid;
 }
 
 //

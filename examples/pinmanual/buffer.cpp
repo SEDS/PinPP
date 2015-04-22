@@ -13,10 +13,6 @@
 #include <fstream>
 #include <sstream>
 
-#if !defined (TARGET_WINDOWS)
-#include "portability.H"
-#endif
-
 /*
  * Record of memory references.  Rather than having two separate
  * buffers for reads and writes, we just use one struct that includes a
@@ -41,7 +37,8 @@ public:
   MLOG (THREADID tid)
   {
     std::ostringstream filename;
-    filename << "buffer." << getpid_portable () << "." << tid;
+    filename << "buffer." << PIN_GetPid () << "." << tid;
+
     this->file_.open (filename.str ().c_str ());
 
     if (!this->file_.is_open ())
@@ -55,7 +52,8 @@ public:
 
   ~MLOG (void)
   {
-    this->file_.close ();
+    if (this->file_.is_open ())
+      this->file_.close ();
   }
 
   VOID dump_buffer_to_file (struct MEMREF * reference, UINT64 elements, THREADID tid)
@@ -95,7 +93,7 @@ public:
   }
 
 
-  element_type * handle_trace_buffer (BUFFER_ID id, THREADID tid, const OASIS::Pin::Const_Context & ctx, element_type * buf, UINT64 elements)
+  element_type * handle_trace_buffer (BUFFER_ID id, THREADID tid, const OASIS::Pin::Context & ctx, element_type * buf, UINT64 elements)
   {
 #if defined (TARGET_WINDOWS)
     // Windows implementation for writing buffer to the file. It must take
@@ -105,7 +103,7 @@ public:
     if (!this->write_to_output_file_)
       return buf;
 
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, 1);
+    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
 
     for (UINT64 i = 0; i < elements; ++ i, ++ buf)
     {
@@ -116,7 +114,7 @@ public:
     // Non-Windows implementation for writing trace buffer to a file. This
     // version is more effecient than the Window implementation above according
     // to the Pin documentation.
-    this->tls_mlog_[tid]->dump_buffer_to_file (buf, elements, tid);
+    this->tls_mlog_.get (tid)->dump_buffer_to_file (buf, elements, tid);
 #endif
 
     return buf;
@@ -159,29 +157,22 @@ public:
   void handle_instrument (const OASIS::Pin::Trace & trace)
   {
     using OASIS::Pin::Operand;
+    using OASIS::Pin::Memory_Operand;
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-    for each (OASIS::Pin::Bbl & bbl in trace)
-#else
     for (OASIS::Pin::Bbl & bbl : trace)
-#endif
     {
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-      for each (OASIS::Pin::Ins & ins in bbl)
-#else
       for (OASIS::Pin::Ins & ins : bbl)
-#endif
       {
         UINT32 mem_operands = ins.memory_operand_count ();
 
         for (UINT32 mem_op = 0; mem_op < mem_operands; ++ mem_op)
         {
-          Operand operand = ins.operand (mem_op);
-          UINT32 ref_size = operand.memory_size ();
+          Memory_Operand operand = ins.memory_operand (mem_op);
+          UINT32 ref_size = operand.size ();
 
           // Note that if the operand is both read and written we log it once
           // for each.
-          if (operand.is_memory_read ())
+          if (operand.is_read ())
             INS_InsertFillBuffer (ins,
                                   IPOINT_BEFORE, this->buffer_full_.buffer_id (),
                                   IARG_INST_PTR, offsetof (struct MEMREF, pc),
@@ -190,7 +181,7 @@ public:
                                   IARG_BOOL, TRUE, offsetof (struct MEMREF, read),
                                   IARG_END);
 
-          if (operand.is_memory_written ())
+          if (operand.is_written ())
             INS_InsertFillBuffer (ins,
                                   IPOINT_BEFORE, this->buffer_full_.buffer_id (),
                                   IARG_INST_PTR, offsetof(struct MEMREF, pc),
@@ -206,7 +197,7 @@ public:
 #if defined (TARGET_WINDOWS)
   void handle_fini (void)
   {
-    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_, 1);
+    OASIS::Pin::Guard <OASIS::Pin::Lock> guard (this->lock_);
     this->fout_.close ();
   }
 #endif
@@ -236,17 +227,17 @@ public:
 #endif
   }
 
-  void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctxt, INT32 flags)
+  void handle_thread_start (THREADID thr_id, OASIS::Pin::Context & ctx, INT32 flags)
   {
 #if !defined (TARGET_WINDOWS)
     this->tls_mlog_.set (thr_id, new MLOG (thr_id));
 #endif
   }
 
-  void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Const_Context & ctxt, INT32 flags)
+  void handle_thread_fini (THREADID thr_id, const OASIS::Pin::Context & ctx, INT32 flags)
   {
 #if !defined (TARGET_WINDOWS)
-    delete this->tls_mlog_[thr_id];
+    delete this->tls_mlog_.get (thr_id);
     this->tls_mlog_.set (thr_id, 0);
 #endif
   }
