@@ -1,7 +1,7 @@
 // $Id: proccount.cpp 2281 2013-09-16 13:41:50Z dfeiock $
 
 #include "pin++/Routine_Instrument.h"
-#include "pin++/callback/Counter.h"
+#include "pin++/Counter.h"
 #include "pin++/Pintool.h"
 #include "pin++/Section.h"
 #include "pin++/Image.h"
