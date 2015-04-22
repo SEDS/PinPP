@@ -1,4 +1,4 @@
-// $Id
+// -*- MPC -*-
 
 project (pin++) : pin {
   staticname    = pin++
@@ -39,6 +39,7 @@ project (pin++) : pin {
 
   Source_Files {
     Bbl.cpp
+    Constant_Sampling.cpp
     Image.cpp
     Ins.cpp
     Routine.cpp
