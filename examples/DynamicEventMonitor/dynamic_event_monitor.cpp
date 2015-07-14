@@ -43,6 +43,11 @@ typedef std::unordered_map <std::string, ADDRINT> helper_addr_map_type;
 typedef std::unordered_map <std::string, helper_addr_map_type> event_helper_map_type;
 event_helper_map_type event_helper_map;
 
+// map that loads and stores all the methods in the helper image, to be registered later with events
+typedef std::unordered_map <std::string, ADDRINT> helper_method_map_type;
+helper_method_map_type helper_methods_map;
+bool helper_image_loaded = false;
+
 enum RTN_TYPE {SIGNATURE, METHOD_CALL, INVALID};
 
 //std::vector<string> target_layer_list;                               // list of the target layers to be instrumented
@@ -237,6 +242,9 @@ public:
               method_event_map[rtn_name] = event_type;
               event_list[event_type] = true;
 
+              if (helper_image_loaded)
+                check_and_register_valid_helper_method ();
+
               if (DEBUG)
               {
                 fout << "Signature found: " << std::endl;
@@ -270,6 +278,7 @@ public:
       }
     }
 
+    // Load methods from the helper class.
     size_t sep = std::string::npos;
     for (auto helper : helper_list)
     {
@@ -278,18 +287,10 @@ public:
       {
         fout << "Finding helper method in " << img.name () <<std::endl;
 
-        // the second iteration looks for helper methods of the event
-        for (auto sec : img)
-        {
-          for (auto rtn : sec)
-          {
-            if (!rtn.valid ())
-              continue;
+        // Load the methods and address from helper image, so that we can process when we discover events laters.
+        load_helper_image_methods (img);
 
-            std::string rtn_signature = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE); 
-            check_and_register_valid_helper_method (rtn_signature, rtn.address ());
-          }
-        }
+        helper_image_loaded = true;
       }
     }
   }
@@ -345,53 +346,61 @@ public:
   }
 
   /**
-  * Determine whether the passed in routine is a valid helper method for any registered event class.
-  *
-  * @param[in]      rtn_signature      a complete and undecorated routine name
+  * Check if the accessor method exists in the helper_methods_map and
+  * register it with events that do not have helper methods registered.
   */
-  void check_and_register_valid_helper_method (std::string rtn_signature, ADDRINT rtn_addr)
+  void check_and_register_valid_helper_method ()
   {
-    size_t separator = rtn_signature.rfind ("::");
-    if (separator == std::string::npos)
-      return;
-
-    std::string event_type = rtn_signature.substr (0, separator);
-
-    // Find Object by value (obv) prefix in the event type. 
-    // If it is not found, then default to OBV_, which is obv prefix for TAO middleware
-    size_t obv_sep;
-
-    if (!obv.empty ())
-      obv_sep = event_type.find (obv);
-    else
-      obv_sep = event_type.find ("OBV_");
-
-    if (obv_sep == std::string::npos)
-      return;
-
-    // Taking out OBV_ from event type, becuase it is child class
-    event_type = event_type.substr (4, event_type.length () - 4);
-
-    size_t sep2 = event_type.rfind ("::");
-    std::string class_name = event_type.substr (0, sep2);
-
-    if (event_list.find (event_type) != event_list.end ())
+    for (auto rtn : helper_methods_map)
     {
-      std::string method_name = rtn_signature.substr (separator + 2, rtn_signature.length () - separator - 2);
+      std::string rtn_signature = rtn.first;
+      ADDRINT rtn_addr = rtn.second;
 
-      // exclude constructor, destructor, middleware specific or operator reloading routines
-      if (method_name.find (class_name) != std::string::npos 
-        || method_name.find ("operator") != std::string::npos 
-        || method_name.find ("destructor") != std::string::npos
-        || method_name.find ("_copy_value") != std::string::npos
-        || method_name.find ("_tao") != std::string::npos
-        || method_name.find ("truncation_") != std::string::npos)
-        return;
+      size_t separator = rtn_signature.rfind ("::");
+      if (separator == std::string::npos)
+        continue;
 
-      helper_addr_map_type helper_addr_map = event_helper_map[event_type];
-      helper_addr_map[method_name] = rtn_addr;
-      event_helper_map[event_type] = helper_addr_map;
+      std::string event_type = rtn_signature.substr (0, separator);
 
+      // Find Object by value (obv) prefix in the event type. 
+      // If it is not found, then default to OBV_, which is obv prefix for TAO middleware
+      size_t obv_sep;
+
+      if (!obv.empty ())
+        obv_sep = event_type.find (obv);
+      else
+        obv_sep = event_type.find ("OBV_");
+
+      if (obv_sep == std::string::npos)
+        continue;
+
+      // Taking out OBV_ from event type, becuase it is child class
+      event_type = event_type.substr (4, event_type.length () - 4);
+
+      // Get the classname to check for constructor, destructor.
+      size_t sep2 = event_type.rfind ("::");
+      std::string class_name = event_type.substr (0, sep2);
+
+      if ( (event_list.find (event_type) != event_list.end ()) 
+        && event_helper_map.find (event_type) == event_helper_map.end ())   //check if helper is already registered for the event.
+      {
+        std::string method_name = rtn_signature.substr (separator + 2, rtn_signature.length () - separator - 2);
+
+        // exclude constructor, destructor, middleware specific or operator reloading routines
+        if (method_name.find (class_name) != std::string::npos 
+          || method_name.find ("operator") != std::string::npos 
+          || method_name.find ("destructor") != std::string::npos
+          || method_name.find ("_copy_value") != std::string::npos
+          || method_name.find ("_tao") != std::string::npos
+          || method_name.find ("truncation_") != std::string::npos)
+          continue;
+
+        helper_addr_map_type helper_addr_map = event_helper_map[event_type];
+        helper_addr_map[method_name] = rtn_addr;
+        event_helper_map[event_type] = helper_addr_map;
+
+        fout << "Registered event " << event_type << " with accessor method " << method_name << std::endl;
+      }
     }
   }
 
@@ -410,6 +419,33 @@ public:
           << " at layer '" << helper.get_component_layer () << "'"
           << std::endl;
       }
+    }
+  }
+
+  /*
+  * Load all the methods in the helper image methods and store them with their address
+  */
+  void load_helper_image_methods (const OASIS::Pin::Image & img)
+  {
+    // the second iteration looks for helper methods of the event
+    for (auto sec : img)
+    {
+      for (auto rtn : sec)
+      {
+        if (!rtn.valid ())
+          continue;
+
+        std::string rtn_signature = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+        helper_methods_map[rtn_signature] = rtn.address ();  // Store the method name and its return address.
+      }
+    }
+
+    // If event list is not empty, i.e. it was loaded before the helper image was loaded,
+    // then register helper methods immediately.
+    if (! event_list.empty())
+    {
+      for (auto event : event_list)
+        check_and_register_valid_helper_method ();
     }
   }
 
@@ -549,7 +585,7 @@ KNOB <string> dynamic_event_monitor::target_layers_ (KNOB_MODE_WRITEONCE, "pinto
 KNOB <string> dynamic_event_monitor::target_methods_ (KNOB_MODE_WRITEONCE, "pintool", "m", "push_",
                                                       "(case sensitive) name of the method call to be instrumented");
 
-KNOB <string> dynamic_event_monitor::include_ (KNOB_MODE_WRITEONCE, "pintool", "i", "StockBroker_exec",
+KNOB <string> dynamic_event_monitor::include_ (KNOB_MODE_WRITEONCE, "pintool", "i", "StockBroker_exec,StockDistributor_svnt",
                                                "(case sensitive) name of the dll to be included to find push method");
 
 KNOB <string> dynamic_event_monitor::helper_ (KNOB_MODE_WRITEONCE, "pintool", "ih", "Stock_Base_stub",
