@@ -29,7 +29,7 @@
 
 class dynamic_event_monitor_utility
 {
-  public:
+public:
   // map between name of the target method and the event type passed into it
   typedef std::unordered_map <std::string, std::string> method_event_map_type;
   static method_event_map_type method_event_map;                              
@@ -40,6 +40,9 @@ class dynamic_event_monitor_utility
   typedef std::unordered_map <std::string, ADDRINT> helper_addr_map_type;
   typedef std::unordered_map <std::string, helper_addr_map_type> event_helper_map_type;
   static event_helper_map_type event_helper_map;
+
+  // map between helper and its return types
+  static std::unordered_map <std::string, std::string> helper_return_type_map;
 
   //std::vector<string> target_layer_list;                               // list of the target layers to be instrumented
   static std::vector<string> target_method_list;                         // list of the target method call to be instrumented
@@ -60,6 +63,7 @@ std::ofstream dynamic_event_monitor_utility::fout;                              
 std::string dynamic_event_monitor_utility::obv;
 dynamic_event_monitor_utility::method_event_map_type dynamic_event_monitor_utility::method_event_map;
 dynamic_event_monitor_utility::event_helper_map_type dynamic_event_monitor_utility::event_helper_map;
+std::unordered_map <std::string, std::string> dynamic_event_monitor_utility::helper_return_type_map;
 
 
 /*******************************
@@ -119,8 +123,11 @@ public:
       {
         ADDRINT helper_addr = method.second;
         ADDRINT result_addr = 0;
+
+        std::string method_return_type = dynamic_event_monitor_utility::helper_return_type_map[method.first];
+
         if (DEBUG)
-          dynamic_event_monitor_utility::fout << "  Method: " << method.first << std::endl;
+          dynamic_event_monitor_utility::fout << "  Method: " << method.first << "with return type " << method_return_type << std::endl;
 
         __asm
         {
@@ -407,7 +414,47 @@ public:
         dynamic_event_monitor_utility::event_helper_map[event_type] = helper_addr_map;
 
         dynamic_event_monitor_utility::fout << "Registered event " << event_type << " with accessor method " << method_name << std::endl;
+
+        find_helper_return_type (event_type, method_name);
       }
+    }
+  }
+
+  // Find the return type for the public accessor and store it for later processing
+  void find_helper_return_type (std::string event_type, std::string method_name)
+  {
+    // Check the return signature to look for the helper signature.
+    for (auto rtn : helper_methods_map)
+    {
+      std::string rtn_signature = rtn.first;
+
+      // If rtn_signature has (, it is signature and not a method call. 
+      // Method calls don't have return types and parameteres, so we ignore.
+      if (rtn_signature.find("(") != std::string::npos)
+      {
+        // Look if the signature has event_type::method_name, i.e. the method we are looking for.
+        if (rtn_signature.find(event_type + "::" + method_name) != std::string::npos)
+        {
+          size_t position1 = rtn_signature.find ("public: ");
+          size_t position2 = rtn_signature.find (" __thiscall");
+
+          std::string method_return_type = rtn_signature.substr (position1 + 8, position2 - (position1 + 8));         
+          
+          // If there is virtual, trim it
+          if (method_return_type.find("virtual ") != std::string::npos)
+            method_return_type = method_return_type.substr (8, method_return_type.length () - 8);
+
+          // We don't need void return type.
+          if (method_return_type.find ("void") == std::string::npos)
+          {
+            dynamic_event_monitor_utility::helper_return_type_map[method_name] = method_return_type;
+            dynamic_event_monitor_utility::fout << "Return type of method is " << method_return_type << std::endl;
+          }
+        }
+      }
+      else
+        continue;
+
     }
   }
 
