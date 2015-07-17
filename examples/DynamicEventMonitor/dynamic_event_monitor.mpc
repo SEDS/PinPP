@@ -4,6 +4,15 @@ project (dynamic_event_monitor) : oasis_pintool {
   sharedname = dynamic_event_monitor
 
   Source_Files {
+	data_type_cmd.cpp
+	const_char_ptr_cmd.cpp
+	data_type_cmd_factory.cpp
     dynamic_event_monitor.cpp
+  }
+  
+  Header_files {
+	data_type_cmd.h
+	const_char_ptr_cmd.h
+	data_type_cmd_factory.h
   }
 }

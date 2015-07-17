@@ -23,6 +23,9 @@
 #include <vector>
 #include <unordered_map>
 
+#include "data_type_cmd.h"
+#include "data_type_cmd_factory.h"
+
 #define DEBUG 1
 
 #include <fstream>
@@ -42,7 +45,7 @@ public:
   static event_helper_map_type event_helper_map;
 
   // map between helper and its return types
-  static std::unordered_map <std::string, std::string> helper_return_type_map;
+  static std::unordered_map <std::string, data_type_cmd *> helper_return_type_map;
 
   //std::vector<string> target_layer_list;                               // list of the target layers to be instrumented
   static std::vector<string> target_method_list;                         // list of the target method call to be instrumented
@@ -63,7 +66,7 @@ std::ofstream dynamic_event_monitor_utility::fout;                              
 std::string dynamic_event_monitor_utility::obv;
 dynamic_event_monitor_utility::method_event_map_type dynamic_event_monitor_utility::method_event_map;
 dynamic_event_monitor_utility::event_helper_map_type dynamic_event_monitor_utility::event_helper_map;
-std::unordered_map <std::string, std::string> dynamic_event_monitor_utility::helper_return_type_map;
+std::unordered_map <std::string, data_type_cmd *> dynamic_event_monitor_utility::helper_return_type_map;
 
 
 /*******************************
@@ -124,10 +127,11 @@ public:
         ADDRINT helper_addr = method.second;
         ADDRINT result_addr = 0;
 
-        std::string method_return_type = dynamic_event_monitor_utility::helper_return_type_map[method.first];
+        // Create a command for the return type.
+        data_type_cmd * cmd = dynamic_event_monitor_utility::helper_return_type_map[method.first];
 
         if (DEBUG)
-          dynamic_event_monitor_utility::fout << "  Method: " << method.first << "with return type " << method_return_type << std::endl;
+          dynamic_event_monitor_utility::fout << "  Method: " << method.first << std::endl;
 
         __asm
         {
@@ -137,7 +141,7 @@ public:
         }
 
         if (DEBUG)
-          dynamic_event_monitor_utility::fout << "  Return value: " << (const char *)result_addr << std::endl;
+          dynamic_event_monitor_utility::fout << "  Return value: " << cmd->execute (result_addr) << std::endl;
       }
     }
     else
@@ -444,11 +448,20 @@ public:
           if (method_return_type.find("virtual ") != std::string::npos)
             method_return_type = method_return_type.substr (8, method_return_type.length () - 8);
 
+          data_type_cmd * cmd  = 0;
+          data_type_cmd_factory factory;
+
           // We don't need void return type.
           if (method_return_type.find ("void") == std::string::npos)
           {
-            dynamic_event_monitor_utility::helper_return_type_map[method_name] = method_return_type;
-            dynamic_event_monitor_utility::fout << "Return type of method is " << method_return_type << std::endl;
+            if (method_return_type.find("char const *") != std::string::npos)
+            {
+              cmd = factory.create_const_char_ptr_cmd ();
+              dynamic_event_monitor_utility::helper_return_type_map[method_name] = cmd;
+            }
+
+            //dynamic_event_monitor_utility::helper_return_type_map[method_name] = method_return_type;
+            //dynamic_event_monitor_utility::fout << "Return type of method is " << method_return_type << std::endl;
           }
         }
       }
