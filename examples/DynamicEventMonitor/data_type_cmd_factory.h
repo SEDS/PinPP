@@ -10,7 +10,6 @@
 
 class data_type_cmd_factory
 {
-  //friend class const_char_ptr_cmd;
 public:
    data_type_cmd_factory(void);
 

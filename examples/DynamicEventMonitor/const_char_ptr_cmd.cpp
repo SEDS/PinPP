@@ -8,7 +8,7 @@ const_char_ptr_cmd::~const_char_ptr_cmd (void)
 {
 }
 
-const char * const_char_ptr_cmd::execute (unsigned long addr)
+void const_char_ptr_cmd::execute (unsigned long addr, std::ofstream & fout)
 {
-  return (const char *) addr;
+  fout << "  Return value: " << (const char *) addr << std::endl;
 }

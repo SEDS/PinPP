@@ -6,16 +6,17 @@
 #ifndef _DATA_TYPE_CMD_H_
 #define _DATA_TYPE_CMD_H_
 
+#include <fstream>
+
 class data_type_cmd
 {
-  //friend class data_type_cmd_factory;
 public:
   //Constructor
 	data_type_cmd(void);
 
   virtual ~ data_type_cmd(void);
 
-  virtual const char * execute (unsigned long addr) = 0;
+  virtual void execute (unsigned long addr, std::ofstream & fout) = 0;
 };
 
 #endif

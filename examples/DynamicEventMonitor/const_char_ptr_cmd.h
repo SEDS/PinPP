@@ -14,7 +14,7 @@ public:
 
   ~const_char_ptr_cmd (void);
 
-  const char * execute (unsigned long addr);
+  void execute (unsigned long addr, std::ofstream & fout);
 };
 
 #endif

@@ -121,8 +121,9 @@ public:
           mov result_addr, eax
         }
 
-        if (DEBUG)
-          *fout_ << "  Return value: " << cmd->execute (result_addr) << std::endl;
+        cmd->execute (result_addr, *fout_);
+        //if (DEBUG)
+          //*fout_ << "  Return value: " << cmd->execute (result_addr) << std::endl;
       }
     }
     else
