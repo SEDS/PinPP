@@ -30,44 +30,19 @@
 
 #include <fstream>
 
-class dynamic_event_monitor_utility
-{
-public:
-  // map between name of the target method and the event type passed into it
-  typedef std::unordered_map <std::string, std::string> method_event_map_type;
-  static method_event_map_type method_event_map;                              
+/*******************************
+* Type definitions
+*******************************/
 
-  static bool helper_image_loaded;
+// map between name of the target method and the event type passed into it
+typedef std::unordered_map <std::string, std::string> method_event_map_type;
 
-  // map between event type and its helper methods
-  typedef std::unordered_map <std::string, ADDRINT> helper_addr_map_type;
-  typedef std::unordered_map <std::string, helper_addr_map_type> event_helper_map_type;
-  static event_helper_map_type event_helper_map;
+// map between event type and its helper methods
+typedef std::unordered_map <std::string, ADDRINT> helper_addr_map_type;
+typedef std::unordered_map <std::string, helper_addr_map_type> event_helper_map_type;
 
-  // map between helper and its return types
-  static std::unordered_map <std::string, data_type_cmd *> helper_return_type_map;
-
-  //std::vector<string> target_layer_list;                               // list of the target layers to be instrumented
-  static std::vector<string> target_method_list;                         // list of the target method call to be instrumented
-  static std::vector<string> include_list;                              // list of the dlls to be included in instrumentation
-  static std::vector<string> exclude_list;                              // list of the dlls to be excluded in instrumentation
-  static std::vector<string> helper_list;                              // list of the dlls to be instrumetned to find helper methods.
-  static std::ofstream fout;                                           // file to write output 
-  static std::string obv;
-};
-
-// Defining static members of dynamic_event_monitor
-bool dynamic_event_monitor_utility::helper_image_loaded;
-std::vector<string> dynamic_event_monitor_utility::target_method_list;                         // list of the target method call to be instrumented
-std::vector<string> dynamic_event_monitor_utility::include_list;                              // list of the dlls to be included in instrumentation
-std::vector<string> dynamic_event_monitor_utility::exclude_list;                              // list of the dlls to be excluded in instrumentation
-std::vector<string> dynamic_event_monitor_utility::helper_list;                              // list of the dlls to be instrumetned to find helper methods.
-std::ofstream dynamic_event_monitor_utility::fout;                                           // file to write output 
-std::string dynamic_event_monitor_utility::obv;
-dynamic_event_monitor_utility::method_event_map_type dynamic_event_monitor_utility::method_event_map;
-dynamic_event_monitor_utility::event_helper_map_type dynamic_event_monitor_utility::event_helper_map;
-std::unordered_map <std::string, data_type_cmd *> dynamic_event_monitor_utility::helper_return_type_map;
-
+// map between helper and return type.
+typedef std::unordered_map <std::string, data_type_cmd *> helper_returntype_map_type;
 
 /*******************************
 * Analysis routine
@@ -79,6 +54,12 @@ std::unordered_map <std::string, data_type_cmd *> dynamic_event_monitor_utility:
 class Event_Monitor : public OASIS::Pin::Callback <Event_Monitor (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>
 {
 public:
+  Event_Monitor ()
+    : fout_ (0),
+    method_event_map_ (0),
+    helper_return_type_map_ (0)
+  {
+  }
   /**
   * Analysis routine.
   */
@@ -87,16 +68,16 @@ public:
     if (object_addr == 0)
     {
       if (DEBUG)
-        dynamic_event_monitor_utility::fout << "..Error: the object passed in is null." << std::endl;
+        *fout_ << "..Error: the object passed in is null." << std::endl;
 
       return;
     }
     // check the existence of the helper methods
-    dynamic_event_monitor_utility::method_event_map_type::iterator push_event_iter = dynamic_event_monitor_utility::method_event_map.find (target_name_);
-    if (push_event_iter == dynamic_event_monitor_utility::method_event_map.end ())
+    method_event_map_type::iterator push_event_iter = method_event_map_->find (target_name_);
+    if (push_event_iter == method_event_map_->end ())
     {
       if (DEBUG)        
-        dynamic_event_monitor_utility::fout << "..Error: push method '" << target_name_ << "' not registered." << std::endl;
+        *fout_ << "..Error: push method '" << target_name_ << "' not registered." << std::endl;
 
       return;
     }
@@ -104,7 +85,7 @@ public:
     std::string event_type = push_event_iter->second;
 
     if (DEBUG)
-      dynamic_event_monitor_utility::fout << "..Intercepted a push method call '" << target_name_ << "' with event type '" << event_type << "'" << std::endl;
+      *fout_ << "..Intercepted a push method call '" << target_name_ << "' with event type '" << event_type << "'" << std::endl;
 
     helper_methods_execution (event_type, object_addr);
   }
@@ -118,9 +99,9 @@ public:
   */
   void helper_methods_execution (std::string event_type, ADDRINT object_addr)
   {
-    if (dynamic_event_monitor_utility::event_helper_map.find (event_type) != dynamic_event_monitor_utility::event_helper_map.end ())
+    if (event_helper_map_->find (event_type) != event_helper_map_->end ())
     {
-      dynamic_event_monitor_utility::helper_addr_map_type helper_addr_map = dynamic_event_monitor_utility::event_helper_map[event_type];
+      helper_addr_map_type helper_addr_map = (*event_helper_map_)[event_type];
 
       for (auto method : helper_addr_map)
       {
@@ -128,10 +109,10 @@ public:
         ADDRINT result_addr = 0;
 
         // Create a command for the return type.
-        data_type_cmd * cmd = dynamic_event_monitor_utility::helper_return_type_map[method.first];
+        data_type_cmd * cmd = (*helper_return_type_map_)[method.first];
 
         if (DEBUG)
-          dynamic_event_monitor_utility::fout << "  Method: " << method.first << std::endl;
+          *fout_ << "  Method: " << method.first << std::endl;
 
         __asm
         {
@@ -141,13 +122,13 @@ public:
         }
 
         if (DEBUG)
-          dynamic_event_monitor_utility::fout << "  Return value: " << cmd->execute (result_addr) << std::endl;
+          *fout_ << "  Return value: " << cmd->execute (result_addr) << std::endl;
       }
     }
     else
     {
       if (DEBUG)
-        dynamic_event_monitor_utility::fout << "..No helper method found." << std::endl;
+        *fout_ << "..No helper method found." << std::endl;
     }
   }
 
@@ -204,8 +185,52 @@ public:
     return target_name_.substr (0, separator2);
   }
 
+   /**
+  * Setter for ofstream pointer
+  */
+  void set_file (std::ofstream & fout)
+  {
+    fout_ = &fout;
+  }
+
+  /**
+  * Setter for method event map
+  */
+  void set_method_event_map (method_event_map_type & method_event_map)
+  {
+    method_event_map_ = & method_event_map;
+  }
+
+  /**
+  * Setter for event helper map
+  */
+  void set_event_helper_map (event_helper_map_type & event_helper_map)
+  {
+    event_helper_map_ = & event_helper_map;
+  }
+
+  /**
+  * Setter for helper and return type map
+  */
+  void set_helper_returntype_map (helper_returntype_map_type & helper_return_type_map)
+  {
+    helper_return_type_map_ = & helper_return_type_map;
+  }
+
 private:
   std::string target_name_;
+
+  // File name to write output
+  std::ofstream * fout_;
+
+  // Map between events and methods
+  method_event_map_type * method_event_map_;
+
+  // Map between event and helper
+  event_helper_map_type * event_helper_map_;
+
+  // Map between helper and its return type
+  helper_returntype_map_type * helper_return_type_map_;
 };
 
 
@@ -219,6 +244,29 @@ private:
 */
 class Image_Inst : public OASIS::Pin::Image_Instrument <Image_Inst>
 {
+public:
+  // Constructor
+  Image_Inst (ofstream & fout, 
+              method_event_map_type & method_event_map,
+              std::vector<string> & target_method_list,
+              std::vector<string> & include_list,
+              std::vector<string> & exclude_list,
+              std::vector<string> & helper_list,
+              std::string & obv,
+              event_helper_map_type & event_helper_map)
+    :fout_ (fout),
+    method_event_map_ (method_event_map),
+    target_method_list_ (target_method_list),
+    include_list_ (include_list),
+    exclude_list_ (exclude_list),
+    helper_list_ (helper_list),
+    obv_ (obv),
+    helper_image_loaded_ (false),
+    event_helper_map_ (event_helper_map)
+  {
+    
+  }
+
 private:
   enum RTN_TYPE {SIGNATURE, METHOD_CALL, INVALID};
 
@@ -233,12 +281,12 @@ public:
     int push_method_count = 0;
 
     size_t separator = std::string::npos;
-    for (auto include : dynamic_event_monitor_utility::include_list)
+    for (auto include : include_list_)
     {
       separator = img.name ().find (include);
       if (separator != std::string::npos)
       {
-        dynamic_event_monitor_utility::fout << "Finding push method in " << img.name () <<std::endl;
+        fout_ << "Finding push method in " << img.name () <<std::endl;
 
         // the first iteration looks for target method signatures, method calls and their associated event types
         for (auto sec : img) 
@@ -252,42 +300,51 @@ public:
             std::string rtn_name = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_NAME_ONLY);
 
             RTN_TYPE rtn_type = is_valid_push_method (rtn_signature);
-            if (rtn_type == SIGNATURE)                                   // the routine is merely a target method signature; map it with its event type
+            
+            // the routine is merely a target method signature; map it with its event type
+            if (rtn_type == SIGNATURE)
             {
               ++ push_method_count;
               std::string event_type = get_push_event_type (rtn_signature);
-              dynamic_event_monitor_utility::method_event_map[rtn_name] = event_type;
+              method_event_map_[rtn_name] = event_type;
               event_list[event_type] = true;
 
-              if (dynamic_event_monitor_utility::helper_image_loaded)
+              if (helper_image_loaded_)
                 check_and_register_valid_helper_method ();
 
               if (DEBUG)
               {
-                dynamic_event_monitor_utility::fout << "Signature found: " << std::endl;
-                dynamic_event_monitor_utility::fout << "Image: " << img.name () << std::endl;
-                dynamic_event_monitor_utility::fout << "Sign: " << rtn_signature << std::endl;
-                dynamic_event_monitor_utility::fout << "Name: " << rtn_name << std::endl;
-                dynamic_event_monitor_utility::fout << "Associated event type: " << event_type << std::endl;
-                dynamic_event_monitor_utility::fout << std::endl;
+                fout_ << "Signature found: " << std::endl;
+                fout_ << "Image: " << img.name () << std::endl;
+                fout_ << "Sign: " << rtn_signature << std::endl;
+                fout_ << "Name: " << rtn_name << std::endl;
+                fout_ << "Associated event type: " << event_type << std::endl;
+                fout_ << std::endl;
               }
             }
-            else if (rtn_type == METHOD_CALL)                            // the routine is an actual method call; insert the analysis routine
+            // the routine is an actual method call; insert the analysis routine
+            else if (rtn_type == METHOD_CALL)
             {
+
               OASIS::Pin::Routine_Guard guard (rtn);
-              item_type helper_buffer (1);                               // buffers must be used; otherwise the analysis routine cannot be preserved
+              // buffers must be used; otherwise the analysis routine cannot be preserved
+              item_type helper_buffer (1);
               item_type::iterator helper = helper_buffer.begin ();
               helper->set_target_name (rtn_name);
+              helper->set_file (fout_);
+              helper->set_method_event_map (method_event_map_);
+              helper->set_event_helper_map (event_helper_map_);
+              helper->set_helper_returntype_map (helper_returntype_map_);
               helper->insert (IPOINT_BEFORE, rtn, 0);
               analysis_rtn_buffer_list_.push_back (helper_buffer);
 
               if (DEBUG)
               {
-                dynamic_event_monitor_utility::fout << "Method call found: " << std::endl;
-                dynamic_event_monitor_utility::fout << "Image: " << img.name () << std::endl;
-                dynamic_event_monitor_utility::fout << "Sign: " << rtn_signature << std::endl;
-                dynamic_event_monitor_utility::fout << "Name: " << rtn_name << std::endl;
-                dynamic_event_monitor_utility::fout << std::endl;
+                fout_ << "Method call found: " << std::endl;
+                fout_ << "Image: " << img.name () << std::endl;
+                fout_ << "Sign: " << rtn_signature << std::endl;
+                fout_ << "Name: " << rtn_name << std::endl;
+                fout_ << std::endl;
               }
             }
           }
@@ -297,17 +354,17 @@ public:
 
     // Load methods from the helper class.
     size_t sep = std::string::npos;
-    for (auto helper : dynamic_event_monitor_utility::helper_list)
+    for (auto helper : helper_list_)
     {
       sep = img.name ().find (helper);
       if (sep != std::string::npos)
       {
-        dynamic_event_monitor_utility::fout << "Finding helper method in " << img.name () <<std::endl;
+        fout_ << "Finding helper method in " << img.name () <<std::endl;
 
         // Load the methods and address from helper image, so that we can process when we discover events laters.
         load_helper_image_methods (img);
 
-        dynamic_event_monitor_utility::helper_image_loaded = true;
+        helper_image_loaded_ = true;
       }
     }
   }
@@ -324,7 +381,7 @@ public:
   RTN_TYPE is_valid_push_method (std::string rtn_signature)
   {
     size_t separator = std::string::npos;
-    for (auto method : dynamic_event_monitor_utility::target_method_list)
+    for (auto method : target_method_list_)
     {
       separator = rtn_signature.find ("::" + method);
       if (separator != std::string::npos)
@@ -383,8 +440,8 @@ public:
       // If it is not found, then default to OBV_, which is obv prefix for TAO middleware
       size_t obv_sep;
 
-      if (!dynamic_event_monitor_utility::obv.empty ())
-        obv_sep = event_type.find (dynamic_event_monitor_utility::obv);
+      if (!obv_.empty ())
+        obv_sep = event_type.find (obv_);
       else
         obv_sep = event_type.find ("OBV_");
 
@@ -400,7 +457,7 @@ public:
 
       //check if event is in event list and helper is already registered for the event.
       if ( (event_list.find (event_type) != event_list.end ()) 
-        && dynamic_event_monitor_utility::event_helper_map.find (event_type) == dynamic_event_monitor_utility::event_helper_map.end ())   
+        && event_helper_map_.find (event_type) == event_helper_map_.end ())   
       {
         std::string method_name = rtn_signature.substr (separator + 2, rtn_signature.length () - separator - 2);
 
@@ -413,11 +470,11 @@ public:
           || method_name.find ("truncation_") != std::string::npos)
           continue;
 
-        dynamic_event_monitor_utility::helper_addr_map_type helper_addr_map = dynamic_event_monitor_utility::event_helper_map[event_type];
+        helper_addr_map_type helper_addr_map = event_helper_map_[event_type];
         helper_addr_map[method_name] = rtn_addr;
-        dynamic_event_monitor_utility::event_helper_map[event_type] = helper_addr_map;
+        event_helper_map_[event_type] = helper_addr_map;
 
-        dynamic_event_monitor_utility::fout << "Registered event " << event_type << " with accessor method " << method_name << std::endl;
+        fout_ << "Registered event " << event_type << " with accessor method " << method_name << std::endl;
 
         find_helper_return_type (event_type, method_name);
       }
@@ -457,7 +514,7 @@ public:
             if (method_return_type.find("char const *") != std::string::npos)
             {
               cmd = factory.create_const_char_ptr_cmd ();
-              dynamic_event_monitor_utility::helper_return_type_map[method_name] = cmd;
+              helper_returntype_map_[method_name] = cmd;
             }
 
             //dynamic_event_monitor_utility::helper_return_type_map[method_name] = method_return_type;
@@ -480,7 +537,7 @@ public:
     {
       for (auto helper : helper_buffer)
       {
-        dynamic_event_monitor_utility::fout << "  Analysis routine for:"
+        fout_ << "  Analysis routine for:"
           << " method '" << helper.get_method_name () << "'"
           << " of component '" << helper.get_component_name () << "'"
           << " at layer '" << helper.get_component_layer () << "'"
@@ -516,20 +573,52 @@ public:
     }
   }
 
+public:
+  // File for writing the output
+  std::ofstream & fout_;
+
 private:
   typedef OASIS::Pin::Buffer <Event_Monitor> item_type;              // a buffer for a routine
   typedef std::list <item_type> list_type;                           // a list of buffers for routines
   list_type analysis_rtn_buffer_list_;                               // the list that carries all the buffers for routines
-  
-  std::unordered_map <std::string, bool> event_list;                   // map for registered event types
+
+  // map for registered event types
+  std::unordered_map <std::string, bool> event_list;
 
   // map that loads and stores all the methods in the helper image, to be registered later with events
   typedef std::unordered_map <std::string, ADDRINT> helper_method_map_type;
-  static helper_method_map_type helper_methods_map;
-};
+  helper_method_map_type helper_methods_map;
 
-// Defining static member of Image_Inst
-Image_Inst::helper_method_map_type Image_Inst::helper_methods_map;
+  // map between name of the target method and the event type passed into it
+  method_event_map_type & method_event_map_;
+
+  // list of the target layers to be instrumented
+  //std::vector<string> & target_layer_list;
+  
+  // list of the target method call to be instrumented
+  std::vector<string> & target_method_list_;
+
+  // list of the dlls to be included in instrumentation
+  std::vector<string> & include_list_;
+
+  // list of the dlls to be excluded in instrumentation
+  std::vector<string> & exclude_list_;
+  
+  // list of the dlls to be instrumetned to find helper methods.
+  std::vector<string> & helper_list_;
+
+  // Object by value prefix.
+  std::string & obv_;
+
+  // Check if helper image loaded.
+  bool helper_image_loaded_;
+
+  // Map between event and helper
+  event_helper_map_type & event_helper_map_;
+
+  // map between helper and its return types
+  helper_returntype_map_type helper_returntype_map_;
+};
 
 /*******************************
 * Tool
@@ -545,26 +634,34 @@ public:
   * Constructor.
   */
   dynamic_event_monitor (void)
+    : instrument_ (fout_, 
+    method_event_map_,
+    target_method_list_,
+    include_list_,
+    exclude_list_,
+    helper_list_,
+    obv,
+    event_helper_map_)
   { 
     std::stringstream methods_string (target_methods_);              // parse the target method argument
     std::string method;
     while (std::getline (methods_string, method, ','))
-      dynamic_event_monitor_utility::target_method_list.push_back(method);
+      target_method_list_.push_back(method);
 
     std::stringstream include_string (include_);              // parse the include dll argument
     std::string include;
     while (std::getline (include_string, include, ','))
-      dynamic_event_monitor_utility::include_list.push_back(include);
+      include_list_.push_back(include);
 
     std::stringstream exclude_string (exclude_);              // parse the include dll argument
     std::string exclude;
     while (std::getline (exclude_string, exclude, ','))
-      dynamic_event_monitor_utility::exclude_list.push_back(exclude);
+      exclude_list_.push_back(exclude);
 
     std::stringstream helper_string (helper_);              // parse the include dll argument
     std::string helper;
     while (std::getline (helper_string, helper, ','))
-      dynamic_event_monitor_utility::helper_list.push_back(helper);
+      helper_list_.push_back(helper);
 
     /*std::stringstream layers_string (target_layers_);                // parse the target layer argument
     std::string layer;
@@ -572,12 +669,10 @@ public:
     target_layer_list.push_back(layer);
     */
 
-    dynamic_event_monitor_utility::fout.open (outfile_.Value ().c_str (), ios_base::app);
+    fout_.open (outfile_.Value ().c_str (), ios_base::app);
 
     // Object by value prefix
-    dynamic_event_monitor_utility::obv = obv_.Value ().c_str ();
-
-    dynamic_event_monitor_utility::helper_image_loaded = false;
+    obv = obv_.Value ().c_str ();   
 
     this->init_symbols ();
 
@@ -593,46 +688,73 @@ public:
     if (DEBUG)
     {
       // Display this info only for include list
-      for (auto include : dynamic_event_monitor_utility::include_list)
+      for (auto include : include_list_)
       {
-        dynamic_event_monitor_utility::fout << std::endl << "Pintool information:" << std::endl;
+        fout_ << std::endl << "Pintool information:" << std::endl;
 
-        dynamic_event_monitor_utility::fout << "..Target method:" << std::endl;
-        for (auto method : dynamic_event_monitor_utility::target_method_list)
-          dynamic_event_monitor_utility::fout << "  " << method << std::endl;
+        fout_ << "..Target method:" << std::endl;
+        for (auto method : target_method_list_)
+          fout_ << "  " << method << std::endl;
 
-        dynamic_event_monitor_utility::fout << std::endl;
+        fout_ << std::endl;
 
         /*fout << "..Target layers:" << std::endl;
         for (auto layer : target_layer_list)
         fout << "  " << layer << std::endl;
 
-        fout << std::endl;*/
+        fout_ << std::endl;*/
 
-        dynamic_event_monitor_utility::fout << "..Helper methods list:" << std::endl;
+        fout_ << "..Helper methods list:" << std::endl;
         instrument_.output_helper_list ();
-        dynamic_event_monitor_utility::fout << std::endl;
+        fout_ << std::endl;
 
-        dynamic_event_monitor_utility::fout << "..Mapping between push method and event type:" << std::endl;
-        for (auto pair : dynamic_event_monitor_utility::method_event_map)
-          dynamic_event_monitor_utility::fout << "  " << pair.first << " <-> " << pair.second << std::endl;      
+        fout_ << "..Mapping between push method and event type:" << std::endl;
+        for (auto pair : method_event_map_)
+          fout_ << "  " << pair.first << " <-> " << pair.second << std::endl;      
 
-        dynamic_event_monitor_utility::fout << std::endl;
+        fout_ << std::endl;
 
-        dynamic_event_monitor_utility::fout << "..Helper methods:" << std::endl;
-        for (auto event : dynamic_event_monitor_utility::event_helper_map)
+        fout_ << "..Helper methods:" << std::endl;
+        for (auto event : event_helper_map_)
         {
-          dynamic_event_monitor_utility::fout << "  Event: " << event.first << std::endl;
+          fout_ << "  Event: " << event.first << std::endl;
           for (auto method : event.second)
-            dynamic_event_monitor_utility::fout << "    Method: " << method.first << " <-> " << method.second << std::endl;
+            fout_ << "    Method: " << method.first << " <-> " << method.second << std::endl;
         }
-        dynamic_event_monitor_utility::fout << std::endl;
+        fout_ << std::endl;
       }
     }
-    dynamic_event_monitor_utility::fout.close ();
+    fout_.close ();
   }
-
 private:
+  // file to write output 
+  std::ofstream fout_;
+
+  // map between name of the target method and the event type passed into it
+  method_event_map_type method_event_map_; 
+
+  // list of the target layers to be instrumented
+  //std::vector<string> target_layer_list;
+  
+  // list of the target method call to be instrumented
+  std::vector<string> target_method_list_;
+
+  // list of the dlls to be included in instrumentation
+  std::vector<string> include_list_;
+
+  // list of the dlls to be excluded in instrumentation
+  std::vector<string> exclude_list_;
+  
+  // list of the dlls to be instrumetned to find helper methods.
+  std::vector<string> helper_list_;
+
+  // Object by value prefix.
+  std::string obv;
+
+  // Map between event and helper
+  event_helper_map_type event_helper_map_;
+
+  // Knobs
   Image_Inst instrument_;
   static KNOB <string> target_layers_;
   static KNOB <string> target_methods_;
