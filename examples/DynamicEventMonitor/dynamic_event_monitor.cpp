@@ -39,7 +39,7 @@ typedef std::unordered_map <std::string, std::string> method_event_map_type;
 
 // map between event type and its helper methods
 typedef std::unordered_map <std::string, ADDRINT> helper_addr_map_type;
-typedef std::unordered_map <std::string, helper_addr_map_type> event_helper_map_type;
+typedef std::unordered_multimap <std::string, helper_addr_map_type> event_helper_map_type;
 
 // map between helper and return type.
 typedef std::unordered_map <std::string, data_type_cmd *> helper_returntype_map_type;
@@ -99,9 +99,17 @@ public:
   */
   void helper_methods_execution (std::string event_type, ADDRINT object_addr)
   {
-    if (event_helper_map_->find (event_type) != event_helper_map_->end ())
+    // Find all the helper addr map for the event
+    std::pair <std::unordered_multimap <std::string, helper_addr_map_type>::iterator,
+      std::unordered_multimap <std::string, helper_addr_map_type>::iterator> it;
+
+    it = event_helper_map_->equal_range (event_type);
+
+    // Iterate through all the helpers found.
+    std::unordered_multimap <std::string, helper_addr_map_type> ::iterator event_helper_it;
+    for (event_helper_it = it.first; event_helper_it != it.second; ++ event_helper_it)
     {
-      helper_addr_map_type helper_addr_map = (*event_helper_map_)[event_type];
+      helper_addr_map_type helper_addr_map = event_helper_it->second;
 
       for (auto method : helper_addr_map)
       {
@@ -117,20 +125,26 @@ public:
         __asm
         {
           mov ecx, object_addr
-          call helper_addr
-          mov result_addr, eax
+            call helper_addr
+            mov result_addr, eax
         }
 
         cmd->execute (result_addr, *fout_);
         //if (DEBUG)
-          //*fout_ << "  Return value: " << cmd->execute (result_addr) << std::endl;
+        //*fout_ << "  Return value: " << cmd->execute (result_addr) << std::endl;
       }
     }
+    //}
+    //}
+    /*if (event_helper_map_->find () != event_helper_map_->end ())
+    {
+
+    } 
     else
     {
-      if (DEBUG)
-        *fout_ << "..No helper method found." << std::endl;
-    }
+    if (DEBUG)
+    *fout_ << "..No helper method found." << std::endl;
+    }*/
   }
 
   /**
@@ -456,9 +470,8 @@ public:
       size_t sep2 = event_type.rfind ("::");
       std::string class_name = event_type.substr (0, sep2);
 
-      //check if event is in event list and helper is already registered for the event.
-      if ( (event_list.find (event_type) != event_list.end ()) 
-        && event_helper_map_.find (event_type) == event_helper_map_.end ())   
+      //check if event is in event list.
+      if ( (event_list.find (event_type) != event_list.end ()))   
       {
         std::string method_name = rtn_signature.substr (separator + 2, rtn_signature.length () - separator - 2);
 
@@ -471,9 +484,11 @@ public:
           || method_name.find ("truncation_") != std::string::npos)
           continue;
 
-        helper_addr_map_type helper_addr_map = event_helper_map_[event_type];
+        helper_addr_map_type helper_addr_map;
         helper_addr_map[method_name] = rtn_addr;
-        event_helper_map_[event_type] = helper_addr_map;
+
+        // Insert in event helper map, because one event can have multiple helpers.
+        event_helper_map_.insert(std::pair <std::string, helper_addr_map_type>(event_type, helper_addr_map));
 
         fout_ << "Registered event " << event_type << " with accessor method " << method_name << std::endl;
 
@@ -505,28 +520,35 @@ public:
           // If there is virtual, trim it
           if (method_return_type.find("virtual ") != std::string::npos)
             method_return_type = method_return_type.substr (8, method_return_type.length () - 8);
-
-          data_type_cmd * cmd  = 0;
-          data_type_cmd_factory factory;
-
+          
           // We don't need void return type.
           if (method_return_type.find ("void") == std::string::npos)
           {
-            if (method_return_type.find("char const *") != std::string::npos)
-            {
-              cmd = factory.create_const_char_ptr_cmd ();
-              helper_returntype_map_[method_name] = cmd;
-            }
-
-            //dynamic_event_monitor_utility::helper_return_type_map[method_name] = method_return_type;
-            //dynamic_event_monitor_utility::fout << "Return type of method is " << method_return_type << std::endl;
+            fout_ << "Return type of method "<< method_name << "is " << method_return_type << std::endl;
+            data_type_cmd * cmd  = create_data_type_cmd (method_return_type);
+            helper_returntype_map_[method_name] = cmd;
+          }
+          //dynamic_event_monitor_utility::helper_return_type_map[method_name] = method_return_type;
+         
           }
         }
-      }
       else
         continue;
-
     }
+  }
+
+  /**
+  * Create data type command for return type
+  */
+  data_type_cmd * create_data_type_cmd (std::string return_type)
+  {
+    data_type_cmd_factory factory;
+  
+    if (return_type.find("char const *") != std::string::npos)
+      return factory.create_const_char_ptr_cmd ();
+    else if (return_type.find("int") != std::string::npos)
+      return factory.create_long_cmd ();
+
   }
 
   /**

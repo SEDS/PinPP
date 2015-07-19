@@ -12,3 +12,8 @@ const_char_ptr_cmd * data_type_cmd_factory::create_const_char_ptr_cmd ()
 {
   return new const_char_ptr_cmd ();
 }
+
+long_cmd * data_type_cmd_factory::create_long_cmd ()
+{
+  return new long_cmd ();
+}
