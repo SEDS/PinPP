@@ -82,7 +82,8 @@ Generate the Pin++ workspace:
 
 If you are building Pin++ for a 32-bit architecture, then select
 ```ia32=1```. If you are building Pin++ for a 64-bit architecture,
-then select ```intel64=1```. You can not set both features to 1.
+then select ```intel64=1```. You can not set both features to 1, and 
+one must be set to 0.
 
 Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```)
 will be placed in ```$PINPP_ROOT/lib```.
