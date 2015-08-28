@@ -62,7 +62,13 @@ public:
 
   BOOL is_valid (void) const;
   BOOL is_dynamic (void) const;
+
+#if PIN_BUILD_NUMBER < 71313
   BOOL is_ifunc (void) const;
+#else
+  BOOL is_ifunc_implementation (void) const;
+  BOOL is_ifunc_resolver (void) const;
+#endif
 
   /// Value of the symbol.
   ADDRINT value (void) const;

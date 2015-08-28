@@ -1,6 +1,6 @@
 // $Id: inscount2.cpp 2286 2013-09-19 18:40:30Z hillj $
 
-#include "pin++/callback/Batch_Counter.h"
+#include "pin++/Batch_Counter.h"
 #include "pin++/Pintool.h"
 #include "pin++/Buffer.h"
 #include "pin++/Trace_Instrument.h"
