@@ -20,6 +20,6 @@ branches:
     - master
 
 script:
-  - ls MPC/config
+  - ls "MPC/config"
   - perl $MPC_ROOT/mwc.pl -type make -features ia32=1,intel64=1 "pin++.mwc"
   - make
