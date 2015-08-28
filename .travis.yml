@@ -5,15 +5,15 @@ compiler:
 
 env:
   global:
-    - MPC_ROOT=$TRAVIS_BUILD_DIR/MakefileProjectCreator
-    - PIN_ROOT=$TRAVIS_BUILD_DIR/pin-2.14-71313-gcc.4.4.7-linux
-    - PINPP_ROOT=$TRAVIS_BUILD_DIR/SEDS/PinPP
+    - MPC_ROOT=/tmp/MPC
+    - PIN_ROOT=/tmp/pin-2.14-71313-gcc.4.4.7-linux
+    - PINPP_ROOT=$TRAVIS_BUILD_DIR
     - LD_LIBRARY_PATH=$PINPP_ROOT/lib:$LD_LIBRARY_PATH
 
 before_install:
-  - git clone git://github.com/DOCGroup/MPC.git MakefileProjectCreator
+  - git clone git://github.com/DOCGroup/MPC.git /tmp
   - wget http://software.intel.com/sites/landingpage/pintool/downloads/pin-2.14-71313-gcc.4.4.7-linux.tar.gz -O /tmp/pin-2.14-71313-gcc.4.4.7-linux.tar.gz
-  - tar -xvf /tmp/pin-2.14-71313-gcc.4.4.7-linux.tar.gz
+  - tar -xvf /tmp/pin-2.14-71313-gcc.4.4.7-linux.tar.gz -C /tmp
 
 branches:
   only:
