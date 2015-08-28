@@ -5,7 +5,6 @@ compiler:
 
 env:
   global:
-    - MPC_ROOT=$TRAVIS_BUILD_DIR/MPC
     - PIN_ROOT=$TRAVIS_BUILD_DIR/pin-2.14-71313-gcc.4.4.7-linux
     - PINPP_ROOT=TRAVIS_BUILD_DIR/PinPP
     - LD_LIBRARY_PATH=$PINPP_ROOT/lib:$LD_LIBRARY_PATH
