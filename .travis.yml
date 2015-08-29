@@ -17,17 +17,12 @@ env:
     - LD_LIBRARY_PATH=$PINPP_ROOT/lib:$LD_LIBRARY_PATH
 
   matrix:
-    - CPP11=1
     - CPP11=0
 
 before_install:
   - git clone git://github.com/DOCGroup/MPC.git /tmp/MPC
   - wget http://software.intel.com/sites/landingpage/pintool/downloads/pin-2.14-71313-gcc.4.4.7-linux.tar.gz -O /tmp/pin.tar.gz
   - tar -xvf /tmp/pin.tar.gz -C /tmp
-
-branches:
-  only:
-    - master
 
 script:
   - perl $MPC_ROOT/mwc.pl -type make -features cpp11=$CPP11,ia32=0,intel64=1 "pin++.mwc"
