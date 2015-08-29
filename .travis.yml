@@ -2,6 +2,7 @@ sudo: false
 language: cpp
 compiler:
   - gcc
+  - clang
 
 env:
   global:
@@ -11,7 +12,7 @@ env:
     - LD_LIBRARY_PATH=$PINPP_ROOT/lib:$LD_LIBRARY_PATH
 
 before_install:
-  - git clone git://github.com/DOCGroup/MPC.git /tmp/MPC
+  - git clone git://github.com/hilljh82/MPC.git /tmp/MPC
   - wget http://software.intel.com/sites/landingpage/pintool/downloads/pin-2.14-71313-gcc.4.4.7-linux.tar.gz -O /tmp/pin-2.14-71313-gcc.4.4.7-linux.tar.gz
   - tar -xvf /tmp/pin-2.14-71313-gcc.4.4.7-linux.tar.gz -C /tmp
 
