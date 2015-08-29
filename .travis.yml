@@ -33,7 +33,7 @@ before_install:
 
 install:
   # C++11 compiler support
-  - if [ "$CXX" = "g++" ] && [ "$CPP11" == "1" ]; then sudo apt-get install g++-4.8 && export CXX="g++-4.8" && export CC="gcc-4.8" ; fi
+  - if [ "$CXX" = "g++" ] && [ "$CPP11" == "1" ]; then sudo apt-get install g++-4.9 && export CXX="g++-4.9" && export CC="gcc-4.9" ; fi
   - if [ "$CXX" == "clang++" ] && [ "$CPP11" == "1" ]; then sudo apt-get install --allow-unauthenticated clang-3.4 && export CXX="clang++-3.4" ; fi
 
 script:
