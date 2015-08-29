@@ -17,11 +17,9 @@ env:
   matrix:
     - PIN_VERSION=pin-2.14-71313-gcc.4.4.7-linux CPP11=0
     - PIN_VERSION=pin-2.14-71313-gcc.4.4.7-linux CPP11=1
-    - PIN_VERSION=pin-2.14-67254-gcc.4.4.7-linux CPP11=0
-    - PIN_VERSION=pin-2.14-67254-gcc.4.4.7-linux CPP11=1
 
 before_install:
-  - git clone git://github.com/DOCGroup/MPC.git /tmp/MPC
+  - git clone git://github.com/hilljh82/MPC.git /tmp/MPC
   - wget http://software.intel.com/sites/landingpage/pintool/downloads/$PIN_VERSION.tar.gz -O /tmp/$PIN_VERSION.tar.gz
   - tar -xvf /tmp/$PIN_VERSION.tar.gz -C /tmp
   - export PIN_ROOT=/tmp/$PIN_VERSION
