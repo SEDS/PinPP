@@ -21,7 +21,7 @@ use Pin++:
 
 * Perl, on Windows we suggest [ActivePerl](http://www.activestate.com/activeperl)
 * [GIT] (http://git-scm.com/downloads)
-* [Pin](http://software.intel.com/en-us/articles/pintool) (build 61206 to 71313)
+* [Pin](http://software.intel.com/en-us/articles/pintool) (build 71313 or greater)
 * [Makefile, Project, Workspace Creator](http://www.ociweb.com/products/mpc) (master)
   from its [GitHub](https://github.com/DOCGroup/MPC) repository.
 
