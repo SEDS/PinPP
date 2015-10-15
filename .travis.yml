@@ -25,6 +25,7 @@ env:
 
   matrix:
     - PIN_VERSION=pin-2.14-71313-gcc.4.4.7-linux CPP11=0
+    - PIN_VERSION=pin-2.14-71313-gcc.4.4.7-linux CPP11=1
 
 before_install:
   # setup required software
