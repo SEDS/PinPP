@@ -15,7 +15,6 @@ os:
 
 compiler:
   - gcc
-  - clang
 
 env:
   global:
