@@ -35,5 +35,6 @@ before_install:
   - export PIN_ROOT=/tmp/$PIN_VERSION
 
 script:
+  - g++ --version
   - perl $MPC_ROOT/mwc.pl -type make -features cpp11=$CPP11,ia32=0,intel64=1 "pin++.mwc"
   - make
