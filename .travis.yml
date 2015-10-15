@@ -37,4 +37,4 @@ before_install:
 script:
   - g++ --version
   - perl $MPC_ROOT/mwc.pl -type make -features cpp11=$CPP11,ia32=0,intel64=1 "pin++.mwc"
-  - make
+  - make CC=gcc-mp-4.9 CXX=g++-mp-4.9
