@@ -28,7 +28,7 @@ env:
 
 before_install:
   # setup required software
-  - git clone https://github.com/DOCGroup/MPC.git /tmp/MPC
+  - git clone https://github.com/hilljh82/MPC.git /tmp/MPC
   - wget http://software.intel.com/sites/landingpage/pintool/downloads/$PIN_VERSION.tar.gz -O /tmp/$PIN_VERSION.tar.gz
   - tar -xvf /tmp/$PIN_VERSION.tar.gz -C /tmp
   - export PIN_ROOT=/tmp/$PIN_VERSION
