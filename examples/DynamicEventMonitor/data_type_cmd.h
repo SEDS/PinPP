@@ -7,6 +7,7 @@
 #define _DATA_TYPE_CMD_H_
 
 #include <fstream>
+#include "pin++/Pintool.h"
 
 class data_type_cmd
 {
@@ -16,7 +17,7 @@ public:
 
   virtual ~ data_type_cmd(void);
 
-  virtual void execute (unsigned long addr, std::ofstream & fout) = 0;
+  virtual void execute (ADDRINT addr, std::ofstream & fout) = 0;
 };
 
 #endif

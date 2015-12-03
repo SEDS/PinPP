@@ -14,7 +14,7 @@ public:
 
   ~long_cmd (void);
 
-  void execute (unsigned long addr, std::ofstream & fout);
+  void execute (ADDRINT addr, std::ofstream & fout);
 };
 
 #endif

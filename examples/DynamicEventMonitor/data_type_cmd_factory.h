@@ -8,6 +8,8 @@
 #include "data_type_cmd.h"
 #include "const_char_ptr_cmd.h"
 #include "long_cmd.h"
+//#include "float_cmd.h"
+//#include "short_cmd.h"
 
 class data_type_cmd_factory
 {
@@ -19,6 +21,10 @@ public:
    const_char_ptr_cmd * create_const_char_ptr_cmd ();
 
    long_cmd * create_long_cmd ();
+
+   //float_cmd * create_float_cmd ();
+
+   //short_cmd * create_short_cmd ();
 };
 
 #endif

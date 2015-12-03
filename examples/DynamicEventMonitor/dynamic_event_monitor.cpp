@@ -1,5 +1,5 @@
 /**
-* Pintool that dynamically instrument the target method call at the specified layer.
+* Pintool that dynamically instrument the target method call.
 * 2014.07
 *
 */
@@ -9,6 +9,11 @@
 /*******************************
 * Dependencies
 *******************************/
+//#ifdef WIN32
+   // #include <Windows.h>
+//#else
+    //#include <unistd.h>
+//#endif
 
 #include "pin++/Image_Instrument.h"
 #include "pin++/Pintool.h"
@@ -16,12 +21,14 @@
 #include "pin++/Routine.h"
 #include "pin++/Symbol.h"
 #include "pin++/Buffer.h"
+#include "pin++/Copy.h"
 
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <time.h>
 
 #include "data_type_cmd.h"
 #include "data_type_cmd_factory.h"
@@ -51,19 +58,20 @@ typedef std::unordered_map <std::string, data_type_cmd *> helper_returntype_map_
 /**
 * Analysis routine that executes a helper method.
 */
-class Event_Monitor : public OASIS::Pin::Callback <Event_Monitor (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>
+class Event_Monitor : public OASIS::Pin::Callback <Event_Monitor (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)> //, OASIS::Pin::ARG_CONTEXT)>
 {
 public:
   Event_Monitor ()
     : fout_ (0),
     method_event_map_ (0),
-    helper_return_type_map_ (0)
+    helper_return_type_map_ (0),
+    eventtrace_ (0)
   {
   }
   /**
   * Analysis routine.
   */
-  void handle_analyze (ADDRINT object_addr)
+  void handle_analyze (ADDRINT object_addr) //, OASIS::Pin::Context & ctx)
   {
     if (object_addr == 0)
     {
@@ -97,7 +105,7 @@ public:
   * @param[in]      class_name       class name of the target object
   * @param[in]      object_addr      address of the target object
   */
-  void helper_methods_execution (std::string event_type, ADDRINT object_addr)
+  void helper_methods_execution (std::string event_type, ADDRINT object_addr) //, OASIS::Pin::Context & ctx)
   {
     // Find all the helper addr map for the event
     std::pair <std::unordered_multimap <std::string, helper_addr_map_type>::iterator,
@@ -122,30 +130,91 @@ public:
         if (DEBUG)
           *fout_ << "  Method: " << method.first << std::endl;
 
+        //ctx.set_reg (REG_ECX, object_addr);
         __asm
         {
           mov ecx, object_addr
-            call helper_addr
-            mov result_addr, eax
+          call helper_addr
+          mov result_addr, eax
         }
 
-        cmd->execute (result_addr, *fout_);
+        /* Print to even trace the following:
+         * Current date time
+         * Severity
+         * Host Name
+         * Thread id
+         * Message
+         **/
+        char machine_name [150];
+        *eventtrace_ << "Date Time : " << current_date_time () 
+                      << " Severity : 16854 " 
+                      //<< get_machine_name (machine_name);
+                      << " Thread id : " << PIN_GetTid ()
+                      << " Component : " << get_component_name () 
+                      << " Event : " << event_type
+                      << " Element : " << method.first
+                      << " Value : " ; 
+
+        if (cmd != 0)
+          cmd->execute (result_addr, *eventtrace_);
+        // = ctx.get_reg (REG_EAX);
+        //OASIS::Pin::Copy <ADDRINT> res ((void * ) result_addr);
+
+        if (cmd != 0)
+          cmd->execute (result_addr, *fout_);
         //if (DEBUG)
-        //*fout_ << "  Return value: " << cmd->execute (result_addr) << std::endl;
+        //*fout_ << " Return value: " << (float) result_addr << std::endl;
       }
     }
-    //}
-    //}
-    /*if (event_helper_map_->find () != event_helper_map_->end ())
-    {
-
-    } 
+    /*
     else
     {
     if (DEBUG)
     *fout_ << "..No helper method found." << std::endl;
     }*/
   }
+
+  /**
+  * Get the current date time in string format
+  */
+  const std::string current_date_time ()
+  {
+    time_t now = time (0);
+    struct tm tstruct;
+    char buf[50];
+    tstruct = *localtime(&now);
+    strftime (buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+  }
+
+  /**
+  * Get the host name 
+  */
+  //void get_machine_name (char * machine_name)
+  //{
+  //  char name [150];
+
+  //  #ifdef WIN32
+  //    char info[150];
+  //    unsigned long buf_char_count = 150;
+  //    memset (name, 0, 150);
+  //    if (GetComputerName (info, &buf_char_count));
+  //    {
+  //      for (int i = 0; i < 150; ++ i)
+  //        name[i] = info[i];
+  //    }
+  //    else
+  //    {
+  //      strcpy (name, "Unknown_Host_Name");
+  //    }
+  //  #else
+  //    memset (name, 0, 150)
+  //    gethostname (name, 150);
+  //  #endif
+
+  //    strncpy (machine_name, name, 150);
+  //}
 
   /**
   * Setter for the name of the push_ method to be instrumentated.
@@ -177,18 +246,6 @@ public:
   }
 
   /**
-  * Getter for the layer of the component of the target method to be instrumentated.
-  *
-  * @return      returns the name of the layer of the component.
-  */
-  std::string get_component_layer (void)
-  {
-    size_t separator1 = target_name_.find ("::");
-    size_t separator2 = target_name_.rfind ("_", separator1);
-    return target_name_.substr (separator2 + 1, separator1 - separator2 - 1);
-  }
-
-  /**
   * Getter for the name of the component of the target method to be instrumentated.
   *
   * @return      returns the name of the layer.
@@ -201,11 +258,19 @@ public:
   }
 
    /**
-  * Setter for ofstream pointer
+  * Setter for ofstream pointer of log file
   */
-  void set_file (std::ofstream & fout)
+  void set_logfile (std::ofstream & fout)
   {
     fout_ = &fout;
+  }
+
+  /**
+  * Setter for ofstream pointer of event trace
+  */
+  void set_eventtrace (std::ofstream & eventtrace)
+  {
+    eventtrace_ = &eventtrace;
   }
 
   /**
@@ -238,6 +303,9 @@ private:
   // File name to write output
   std::ofstream * fout_;
 
+  // File to write event trace
+  std::ofstream * eventtrace_;
+
   // Map between events and methods
   method_event_map_type * method_event_map_;
 
@@ -260,8 +328,10 @@ private:
 class Image_Inst : public OASIS::Pin::Image_Instrument <Image_Inst>
 {
 public:
+
   // Constructor
   Image_Inst (ofstream & fout, 
+              std::ofstream & eventtrace,
               method_event_map_type & method_event_map,
               std::vector<string> & target_method_list,
               std::vector<string> & include_list,
@@ -270,6 +340,7 @@ public:
               std::string & obv,
               event_helper_map_type & event_helper_map)
     :fout_ (fout),
+    eventtrace_ (eventtrace),
     method_event_map_ (method_event_map),
     target_method_list_ (target_method_list),
     include_list_ (include_list),
@@ -346,7 +417,8 @@ public:
               item_type helper_buffer (1);
               item_type::iterator helper = helper_buffer.begin ();
               helper->set_target_name (rtn_name);
-              helper->set_file (fout_);
+              helper->set_logfile (fout_);
+              helper->set_eventtrace (eventtrace_);
               helper->set_method_event_map (method_event_map_);
               helper->set_event_helper_map (event_helper_map_);
               helper->set_helper_returntype_map (helper_returntype_map_);
@@ -405,14 +477,6 @@ public:
 
     if (separator == std::string::npos)
       return INVALID;
-
-    /*bool valid = false;
-    for (auto layer : target_layer_list)
-    valid = valid || rtn_signature.find (layer) != std::string::npos;
-
-    if (!valid)
-    return INVALID;
-    */
 
     if (rtn_signature.find ("(", separator) != std::string::npos)
       return SIGNATURE;
@@ -524,14 +588,13 @@ public:
           // We don't need void return type.
           if (method_return_type.find ("void") == std::string::npos)
           {
-            fout_ << "Return type of method "<< method_name << "is " << method_return_type << std::endl;
+            fout_ << "Return signature of helper method is " << rtn_signature << std::endl;
+            fout_ << "Return type of method "<< method_name << " is " << method_return_type << std::endl;
             data_type_cmd * cmd  = create_data_type_cmd (method_return_type);
             helper_returntype_map_[method_name] = cmd;
-          }
-          //dynamic_event_monitor_utility::helper_return_type_map[method_name] = method_return_type;
-         
-          }
-        }
+          }         
+         }
+       }
       else
         continue;
     }
@@ -548,6 +611,15 @@ public:
       return factory.create_const_char_ptr_cmd ();
     else if (return_type.find("int") != std::string::npos)
       return factory.create_long_cmd ();
+    //else if (return_type.find("float") != std::string::npos)
+      //return factory.create_float_cmd ();
+    //else if (return_type.find("short") != std::string::npos)
+      //return factory.create_short_cmd ();
+    else
+    {
+      fout_ << "Return Data type is " << return_type << " Not supported" << std::endl;
+      return 0;
+    }
 
   }
 
@@ -563,7 +635,6 @@ public:
         fout_ << "  Analysis routine for:"
           << " method '" << helper.get_method_name () << "'"
           << " of component '" << helper.get_component_name () << "'"
-          << " at layer '" << helper.get_component_layer () << "'"
           << std::endl;
       }
     }
@@ -597,8 +668,11 @@ public:
   }
 
 public:
-  // File for writing the output
+  // File for writing the logs
   std::ofstream & fout_;
+
+  // File to write event trace
+  std::ofstream & eventtrace_;
 
 private:
   typedef OASIS::Pin::Buffer <Event_Monitor> item_type;              // a buffer for a routine
@@ -614,9 +688,6 @@ private:
 
   // map between name of the target method and the event type passed into it
   method_event_map_type & method_event_map_;
-
-  // list of the target layers to be instrumented
-  //std::vector<string> & target_layer_list;
   
   // list of the target method call to be instrumented
   std::vector<string> & target_method_list_;
@@ -658,6 +729,7 @@ public:
   */
   dynamic_event_monitor (void)
     : instrument_ (fout_, 
+    eventtrace_file_,
     method_event_map_,
     target_method_list_,
     include_list_,
@@ -686,13 +758,9 @@ public:
     while (std::getline (helper_string, helper, ','))
       helper_list_.push_back(helper);
 
-    /*std::stringstream layers_string (target_layers_);                // parse the target layer argument
-    std::string layer;
-    while (std::getline (layers_string, layer, ','))
-    target_layer_list.push_back(layer);
-    */
+    fout_.open (logfile_.Value ().c_str (), ios_base::app);
 
-    fout_.open (outfile_.Value ().c_str (), ios_base::app);
+    eventtrace_file_.open (eventtrace_.Value ().c_str (), ios_base::app);
 
     // Object by value prefix
     obv = obv_.Value ().c_str ();   
@@ -721,12 +789,6 @@ public:
 
         fout_ << std::endl;
 
-        /*fout << "..Target layers:" << std::endl;
-        for (auto layer : target_layer_list)
-        fout << "  " << layer << std::endl;
-
-        fout_ << std::endl;*/
-
         fout_ << "..Helper methods list:" << std::endl;
         instrument_.output_helper_list ();
         fout_ << std::endl;
@@ -748,16 +810,18 @@ public:
       }
     }
     fout_.close ();
+
+    eventtrace_file_.close ();
   }
 private:
-  // file to write output 
+  // file to write logs 
   std::ofstream fout_;
+
+  // File to write event trace
+  std::ofstream eventtrace_file_;
 
   // map between name of the target method and the event type passed into it
   method_event_map_type method_event_map_; 
-
-  // list of the target layers to be instrumented
-  //std::vector<string> target_layer_list;
   
   // list of the target method call to be instrumented
   std::vector<string> target_method_list_;
@@ -777,13 +841,15 @@ private:
   // Map between event and helper
   event_helper_map_type event_helper_map_;
 
-  // Knobs
+  // Instrumentation
   Image_Inst instrument_;
-  static KNOB <string> target_layers_;
+
+  // Knobs
   static KNOB <string> target_methods_;
   static KNOB <string> include_;
   static KNOB <string> exclude_;
-  static KNOB <string> outfile_;
+  static KNOB <string> logfile_;
+  static KNOB <string> eventtrace_;
   static KNOB <string> helper_;
   static KNOB <string> obv_;
 };
@@ -798,9 +864,6 @@ private:
 // example:
 // > $PIN_ROOT/pin -t $PINPP_ROOT/lib/dynamic_event_monitor.dll -l Context,Servant -m push -- <program>
 
-KNOB <string> dynamic_event_monitor::target_layers_ (KNOB_MODE_WRITEONCE, "pintool", "l", "Context,Servant",
-                                                     "(case sensitive) name of the layers of the components to be instrumented");
-
 KNOB <string> dynamic_event_monitor::target_methods_ (KNOB_MODE_WRITEONCE, "pintool", "m", "push_",
                                                       "(case sensitive) name of the method call to be instrumented");
 
@@ -813,8 +876,11 @@ KNOB <string> dynamic_event_monitor::helper_ (KNOB_MODE_WRITEONCE, "pintool", "i
 KNOB <string> dynamic_event_monitor::exclude_ (KNOB_MODE_WRITEONCE, "pintool", "e", "ACEd_",
                                                "(case sensitive) name of the dlls to be excluded");
 
-KNOB <string> dynamic_event_monitor::outfile_ (KNOB_MODE_WRITEONCE, "pintool", "f", "dynamic_event_monitor.out", 
-                                               "specify output file name");
+KNOB <string> dynamic_event_monitor::logfile_ (KNOB_MODE_WRITEONCE, "pintool", "lf", "Log_File.out", 
+                                               "specify log file name");
+
+KNOB <string> dynamic_event_monitor::eventtrace_ (KNOB_MODE_WRITEONCE, "pintool", "et", "Event_Trace.out", 
+                                               "specify file name for event trace");
 
 KNOB <string> dynamic_event_monitor::obv_ (KNOB_MODE_WRITEONCE, "pintool", "obv", "OBV_", 
                                                "Object by value prefix");
