@@ -8,7 +8,7 @@
 #include "data_type_cmd.h"
 #include "const_char_ptr_cmd.h"
 #include "long_cmd.h"
-//#include "float_cmd.h"
+#include "unsigned_short_cmd.h"
 //#include "short_cmd.h"
 
 class data_type_cmd_factory
@@ -22,7 +22,7 @@ public:
 
    long_cmd * create_long_cmd ();
 
-   //float_cmd * create_float_cmd ();
+   unsigned_short_cmd * create_unsigned_short_cmd ();
 
    //short_cmd * create_short_cmd ();
 };

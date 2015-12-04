@@ -18,10 +18,10 @@ long_cmd * data_type_cmd_factory::create_long_cmd ()
   return new long_cmd ();
 }
 
-//float_cmd * data_type_cmd_factory::create_float_cmd ()
-//{
-//  return new float_cmd ();
-//}
+unsigned_short_cmd * data_type_cmd_factory::create_unsigned_short_cmd ()
+{
+  return new unsigned_short_cmd ();
+}
 //
 //short_cmd * data_type_cmd_factory::create_short_cmd ()
 //{

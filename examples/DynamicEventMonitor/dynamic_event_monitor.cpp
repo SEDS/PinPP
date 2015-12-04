@@ -152,8 +152,7 @@ public:
                       << " Thread id : " << PIN_GetTid ()
                       << " Component : " << get_component_name () 
                       << " Event : " << event_type
-                      << " Element : " << method.first
-                      << " Value : " ; 
+                      << " Element : " << method.first << std::endl; 
 
         if (cmd != 0)
           cmd->execute (result_addr, *eventtrace_);
@@ -540,7 +539,9 @@ public:
         std::string method_name = rtn_signature.substr (separator + 2, rtn_signature.length () - separator - 2);
 
         // exclude constructor, destructor, middleware specific or operator reloading routines
-        if (method_name.find (class_name) != std::string::npos 
+        if (method_name.find (class_name) != std::string::npos
+          || event_type.find (method_name) != std::string::npos
+          || method_name.find ("~") != std::string::npos
           || method_name.find ("operator") != std::string::npos 
           || method_name.find ("destructor") != std::string::npos
           || method_name.find ("_copy_value") != std::string::npos
@@ -611,8 +612,8 @@ public:
       return factory.create_const_char_ptr_cmd ();
     else if (return_type.find("int") != std::string::npos)
       return factory.create_long_cmd ();
-    //else if (return_type.find("float") != std::string::npos)
-      //return factory.create_float_cmd ();
+    else if (return_type.find("unsigned short") != std::string::npos)
+      return factory.create_unsigned_short_cmd ();
     //else if (return_type.find("short") != std::string::npos)
       //return factory.create_short_cmd ();
     else
@@ -867,10 +868,10 @@ private:
 KNOB <string> dynamic_event_monitor::target_methods_ (KNOB_MODE_WRITEONCE, "pintool", "m", "push_",
                                                       "(case sensitive) name of the method call to be instrumented");
 
-KNOB <string> dynamic_event_monitor::include_ (KNOB_MODE_WRITEONCE, "pintool", "i", "StockBroker_exec,StockDistributor_svnt",
+KNOB <string> dynamic_event_monitor::include_ (KNOB_MODE_WRITEONCE, "pintool", "i", "",
                                                "(case sensitive) name of the dll to be included to find push method");
 
-KNOB <string> dynamic_event_monitor::helper_ (KNOB_MODE_WRITEONCE, "pintool", "ih", "Stock_Base_stub",
+KNOB <string> dynamic_event_monitor::helper_ (KNOB_MODE_WRITEONCE, "pintool", "ih", "",
                                               "(case sensitive) name of the dll to be included to find helper method");
 
 KNOB <string> dynamic_event_monitor::exclude_ (KNOB_MODE_WRITEONCE, "pintool", "e", "ACEd_",
