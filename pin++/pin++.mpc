@@ -1,4 +1,4 @@
-// $Id
+// -*- MPC -*-
 
 project (pin++) : pin {
   staticname    = pin++
@@ -40,6 +40,7 @@ project (pin++) : pin {
 
   Source_Files {
     Bbl.cpp
+    Constant_Sampling.cpp
     Image.cpp
     Ins.cpp
     Routine.cpp
@@ -57,7 +58,6 @@ project (pin++) : pin {
     Guard.inl
     Lock.inl
     Mutex.inl
-    Memory_Operand.inl
     Operand.inl
     RW_Mutex.inl
     Semaphore.inl

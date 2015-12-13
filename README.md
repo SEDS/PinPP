@@ -3,6 +3,8 @@ Pin++
 
 A C++ template meta-programmable framework for authoring Pintools
 
+[![Build Status](https://travis-ci.org/SEDS/PinPP.svg?branch=master)](https://travis-ci.org/SEDS/PinPP)
+
 Publications
 -------------------------
 * [Pin++: an object-oriented framework for writing pintools](http://dl.acm.org/citation.cfm?id=2658777)
@@ -21,7 +23,7 @@ use Pin++:
 
 * Perl, on Windows we suggest [ActivePerl](http://www.activestate.com/activeperl)
 * [GIT] (http://git-scm.com/downloads)
-* [Pin](http://software.intel.com/en-us/articles/pintool) (build 61206 to 67254)
+* [Pin](http://software.intel.com/en-us/articles/pintool) (build 71313 or greater)
 * [Makefile, Project, Workspace Creator](http://www.ociweb.com/products/mpc) (master)
   from its [GitHub](https://github.com/DOCGroup/MPC) repository.
 
@@ -32,8 +34,8 @@ To build the examples:
 If you building only the Pin++ library, then you do not have to worry
 about the requirements for building the examples.
 
-Tested Compilers
--------------------
+Tested Architectures, Compilers, and Platforms
+------------------------------------------------
 
 We have physically tested Pin++ with the following compilers:
 
@@ -82,7 +84,8 @@ Generate the Pin++ workspace:
 
 If you are building Pin++ for a 32-bit architecture, then select
 ```ia32=1```. If you are building Pin++ for a 64-bit architecture,
-then select ```intel64=1```. You can not set both features to 1.
+then select ```intel64=1```. You can not set both features to 1, and 
+one must be set to 0.
 
 Lastly, build the generated workspace. The Pin++ library (i.e., ```pin++[.a|.lib]```)
 will be placed in ```$PINPP_ROOT/lib```.

@@ -1,0 +1,19 @@
+project (issue38) : uses_cpp11, oasis_pintool {
+  sharedname = issue38
+
+  libout = .
+  dllout = .
+
+  Source_Files {
+    issue38.cpp
+  }
+}
+
+project (issue38_program) {
+  exename = program
+  install = .
+
+  Source_Files {
+    program.cpp
+  }
+}

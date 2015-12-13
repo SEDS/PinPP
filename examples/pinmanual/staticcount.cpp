@@ -12,25 +12,13 @@ public:
   {
     int count = 0;
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-	for each (OASIS::Pin::Section & section in img)
-#else
     for (OASIS::Pin::Section section : img)
-#endif
     {
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-	    for each (OASIS::Pin::Routine & rtn in section)
-#else
       for (OASIS::Pin::Routine & rtn : section)
-#endif
       {
         OASIS::Pin::Routine_Guard guard (rtn);
 
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-        for each (OASIS::Pin::Ins & ins in rtn)
-#else
         for (OASIS::Pin::Ins & ins : rtn)
-#endif
           ++ count;
       }
     }

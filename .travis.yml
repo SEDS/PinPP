@@ -1,0 +1,39 @@
+sudo: false
+language: cpp
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+
+    packages:
+      - gcc-4.9
+      - g++-4.9
+
+os:
+  - linux
+
+compiler:
+  - gcc-4.9
+
+env:
+  global:
+    - MPC_ROOT=/tmp/MPC
+    - PINPP_ROOT=$TRAVIS_BUILD_DIR
+    - LD_LIBRARY_PATH=$PINPP_ROOT/lib:$LD_LIBRARY_PATH
+
+  matrix:
+    - PIN_VERSION=pin-2.14-71313-gcc.4.4.7-linux CPP11=0
+    - PIN_VERSION=pin-2.14-71313-gcc.4.4.7-linux CPP11=1
+
+before_install:
+  # setup required software
+  - git clone https://github.com/DOCGroup/MPC.git /tmp/MPC
+  - wget http://software.intel.com/sites/landingpage/pintool/downloads/$PIN_VERSION.tar.gz -O /tmp/$PIN_VERSION.tar.gz
+  - tar -xvf /tmp/$PIN_VERSION.tar.gz -C /tmp
+  - export PIN_ROOT=/tmp/$PIN_VERSION
+
+script:
+  - g++ --version
+  - perl $MPC_ROOT/mwc.pl -type make -features cpp11=$CPP11,ia32=0,intel64=1 "pin++.mwc"
+  - make CC=gcc-4.9 CXX=g++-4.9

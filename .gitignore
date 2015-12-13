@@ -54,3 +54,9 @@ default.features
 .DS_Store
 *xcodeproj/
 *xcworkspace/
+
+program
+
+# Eclipse files
+.cdtproject
+.project

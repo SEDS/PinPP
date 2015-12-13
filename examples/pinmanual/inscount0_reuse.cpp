@@ -1,6 +1,6 @@
 // $Id: inscount0.cpp 2285 2013-09-18 05:24:04Z hillj $
 
-#include "pin++/callback/Counter.h"
+#include "pin++/Counter.h"
 #include "pin++/Instruction_Instrument.h"
 #include "pin++/Pintool.h"
 

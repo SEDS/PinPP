@@ -61,11 +61,25 @@ BOOL Symbol::is_dynamic (void) const
   return SYM_Dynamic (this->sym_);
 }
 
-inline
+#if PIN_BUILD_NUMBER < 71313
+inline 
 BOOL Symbol::is_ifunc (void) const
 {
   return SYM_IFunc (this->sym_);
 }
+#else
+inline
+BOOL Symbol::is_ifunc_implementation (void) const
+{
+  return SYM_IFuncImplementation (this->sym_);
+}
+
+inline 
+BOOL Symbol::is_ifunc_resolver (void) const 
+{
+  return SYM_IFuncResolver (this->sym_);
+}
+#endif
 
 inline
 ADDRINT Symbol::value (void) const
@@ -117,7 +131,13 @@ Symbols::~Symbols (void)
 inline
 Symbol::iterator_type Symbols::end (void) const
 {
-  return SYM_Invalid ();
+  return Symbol::invalid;
+}
+  
+inline
+Symbol::reverse_iterator_type Symbols::rend (void) const
+{
+  return Symbol::invalid;
 }
   
 } // namespace OASIS

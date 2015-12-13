@@ -36,6 +36,7 @@ public:
 
   /// Type definition of the iterator type.
   typedef Iterator2 <Symbol, &SYM_Prev, &SYM_Next> iterator_type;
+  typedef Iterator2 <Symbol, &SYM_Next, &SYM_Prev> reverse_iterator_type;
 
   /// Default constructor.
   Symbol (SYM & sym);
@@ -61,7 +62,13 @@ public:
 
   BOOL is_valid (void) const;
   BOOL is_dynamic (void) const;
+
+#if PIN_BUILD_NUMBER < 71313
   BOOL is_ifunc (void) const;
+#else
+  BOOL is_ifunc_implementation (void) const;
+  BOOL is_ifunc_resolver (void) const;
+#endif
 
   /// Value of the symbol.
   ADDRINT value (void) const;
@@ -82,18 +89,44 @@ private:
 // Forward decl.
 class Image;
   
+/**
+ * @class Symbols
+ *
+ * Adapter class that provides the interface expected for iteration. This class
+ * acts like a containerb by providing the begin() and end() methods.
+ */
 class OASIS_PIN_Export Symbols
 {
 public:
+  /**
+   * Initializing constructor.
+   *
+   * @param[in]       img         Source image
+   */
   Symbols (const Image & img);
+  
+  /**
+   * Copy constructor
+   *
+   * @param[in]       symbols     Source
+   */
   Symbols (const Symbols & symbols);
   
+  /// Destructor.
   ~Symbols (void);
+  
+  /// @{ Iterator Methods
   
   Symbol::iterator_type begin (void) const;
   Symbol::iterator_type end (void) const;
+
+  Symbol::reverse_iterator_type rbegin (void) const;
+  Symbol::reverse_iterator_type rend (void) const;
+  
+  /// @}
   
 private:
+  /// The target image for extracting the symbols.
   const Image & img_;
 };
   
