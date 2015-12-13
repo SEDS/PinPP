@@ -130,7 +130,6 @@ public:
         if (DEBUG)
           *fout_ << "  Method: " << method.first << std::endl;
 
-        //ctx.set_reg (REG_ECX, object_addr);
         __asm
         {
           mov ecx, object_addr
@@ -156,13 +155,9 @@ public:
 
         if (cmd != 0)
           cmd->execute (result_addr, *eventtrace_);
-        // = ctx.get_reg (REG_EAX);
-        //OASIS::Pin::Copy <ADDRINT> res ((void * ) result_addr);
 
         if (cmd != 0)
           cmd->execute (result_addr, *fout_);
-        //if (DEBUG)
-        //*fout_ << " Return value: " << (float) result_addr << std::endl;
       }
     }
     /*
@@ -410,7 +405,6 @@ public:
             // the routine is an actual method call; insert the analysis routine
             else if (rtn_type == METHOD_CALL)
             {
-
               OASIS::Pin::Routine_Guard guard (rtn);
               // buffers must be used; otherwise the analysis routine cannot be preserved
               item_type helper_buffer (1);
