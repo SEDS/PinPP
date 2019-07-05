@@ -27,6 +27,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <list>
 #include <unordered_map>
 #include <time.h>
 
@@ -128,12 +129,14 @@ public:
         if (logs_required_)
           *fout_ << "  Method: " << method.first << std::endl;
 
-        __asm
-        {
-          mov ecx, object_addr
-          call helper_addr
-          mov result_addr, eax
-        }
+        asm volatile(
+          "mov %1, %%ecx\n"
+          "call *%2\n"
+          "mov %%eax, %0\n"
+          : "=r" (result_addr)
+          : "r" (object_addr), "r" (helper_addr)
+          : "%eax", "%ecx"
+        );
 
         /* Print to even trace the following:
          * Current date time
@@ -602,6 +605,8 @@ public:
           // We don't need void return type.
           if (method_return_type.find ("void") == std::string::npos)
           {
+	    fout_ << "Return signature of helper method is " << rtn_signature << std::endl;
+	    fout_ << "Return type of method " << method_name << " is " << method_return_type << std::endl;
             data_type_cmd * cmd  = create_data_type_cmd (method_return_type);
             helper_returntype_map_[method_name] = cmd;
           }         
