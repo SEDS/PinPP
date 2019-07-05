@@ -27,12 +27,13 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <list>
 #include <unordered_map>
 #include <time.h>
 
 #include "data_type_cmd.h"
 #include "data_type_cmd_factory.h"
+
+#define DEBUG 1
 
 #include <fstream>
 
@@ -74,7 +75,7 @@ public:
   {
     if (object_addr == 0)
     {
-      if (logs_required_)
+      if (DEBUG)
         *fout_ << "..Error: the object passed in is null." << std::endl;
 
       return;
@@ -83,7 +84,7 @@ public:
     method_event_map_type::iterator push_event_iter = method_event_map_->find (target_name_);
     if (push_event_iter == method_event_map_->end ())
     {
-      if (logs_required_)
+      if (DEBUG)        
         *fout_ << "..Error: push method '" << target_name_ << "' not registered." << std::endl;
 
       return;
@@ -91,7 +92,7 @@ public:
 
     std::string event_type = push_event_iter->second;
 
-    if (logs_required_)
+    if (DEBUG)
       *fout_ << "..Intercepted a push method call '" << target_name_ << "' with event type '" << event_type << "'" << std::endl;
 
     helper_methods_execution (event_type, object_addr);
@@ -126,17 +127,15 @@ public:
         // Create a command for the return type.
         data_type_cmd * cmd = (*helper_return_type_map_)[method.first];
 
-        if (logs_required_)
+        if (DEBUG)
           *fout_ << "  Method: " << method.first << std::endl;
 
-        asm volatile(
-          "mov %1, %%ecx\n"
-          "call *%2\n"
-          "mov %%eax, %0\n"
-          : "=r" (result_addr)
-          : "r" (object_addr), "r" (helper_addr)
-          : "%eax", "%ecx"
-        );
+        __asm
+        {
+          mov ecx, object_addr
+          call helper_addr
+          mov result_addr, eax
+        }
 
         /* Print to even trace the following:
          * Current date time
@@ -155,12 +154,10 @@ public:
                       << " Element : " << method.first << std::endl; 
 
         if (cmd != 0)
-        {
           cmd->execute (result_addr, *eventtrace_);
 
-          if (logs_required_)
-            cmd->execute (result_addr, *fout_);
-        }          
+        if (cmd != 0)
+          cmd->execute (result_addr, *fout_);
       }
     }
     /*
@@ -294,14 +291,6 @@ public:
     helper_return_type_map_ = & helper_return_type_map;
   }
 
-  /**
-  * Setter for logs required
-  */
-  void set_logs_required (bool logs_required)
-  {
-    logs_required_ = logs_required;
-  }
-
 private:
   std::string target_name_;
 
@@ -319,9 +308,6 @@ private:
 
   // Map between helper and its return type
   helper_returntype_map_type * helper_return_type_map_;
-
-  // Logs required
-  bool logs_required_;
 };
 
 
@@ -346,8 +332,7 @@ public:
               std::vector<string> & exclude_list,
               std::vector<string> & helper_list,
               std::string & obv,
-              event_helper_map_type & event_helper_map,
-              bool & logs_required)
+              event_helper_map_type & event_helper_map)
     :fout_ (fout),
     eventtrace_ (eventtrace),
     method_event_map_ (method_event_map),
@@ -357,8 +342,7 @@ public:
     helper_list_ (helper_list),
     obv_ (obv),
     helper_image_loaded_ (false),
-    event_helper_map_ (event_helper_map),
-    logs_required_ (logs_required)
+    event_helper_map_ (event_helper_map)
   {
     
   }
@@ -377,17 +361,14 @@ public:
     int push_method_count = 0;
 
     size_t separator = std::string::npos;
-
-    // The first iteration looks for target method signatures, method calls and their associated event types
-    // In the include list.
     for (auto include : include_list_)
     {
       separator = img.name ().find (include);
       if (separator != std::string::npos)
       {
-        if (logs_required_)
-          fout_ << "Finding push method in " << img.name () <<std::endl;
+        fout_ << "Finding push method in " << img.name () <<std::endl;
 
+        // the first iteration looks for target method signatures, method calls and their associated event types
         for (auto sec : img) 
         {
           for (auto rtn : sec)
@@ -411,7 +392,7 @@ public:
               if (helper_image_loaded_)
                 check_and_register_valid_helper_method ();
 
-              if (logs_required_)
+              if (DEBUG)
               {
                 fout_ << "Signature found: " << std::endl;
                 fout_ << "Image: " << img.name () << std::endl;
@@ -429,7 +410,6 @@ public:
               item_type helper_buffer (1);
               item_type::iterator helper = helper_buffer.begin ();
               helper->set_target_name (rtn_name);
-              helper->set_logs_required (logs_required_);
               helper->set_logfile (fout_);
               helper->set_eventtrace (eventtrace_);
               helper->set_method_event_map (method_event_map_);
@@ -438,7 +418,7 @@ public:
               helper->insert (IPOINT_BEFORE, rtn, 0);
               analysis_rtn_buffer_list_.push_back (helper_buffer);
 
-              if (logs_required_)
+              if (DEBUG)
               {
                 fout_ << "Method call found: " << std::endl;
                 fout_ << "Image: " << img.name () << std::endl;
@@ -459,8 +439,7 @@ public:
       sep = img.name ().find (helper);
       if (sep != std::string::npos)
       {
-        if (logs_required_)
-          fout_ << "Finding helper method in " << img.name () <<std::endl;
+        fout_ << "Finding helper method in " << img.name () <<std::endl;
 
         // Load the methods and address from helper image, so that we can process when we discover events laters.
         load_helper_image_methods (img);
@@ -570,8 +549,7 @@ public:
         // Insert in event helper map, because one event can have multiple helpers.
         event_helper_map_.insert(std::pair <std::string, helper_addr_map_type>(event_type, helper_addr_map));
 
-        if (logs_required_)
-          fout_ << "Registered event " << event_type << " with accessor method " << method_name << std::endl;
+        fout_ << "Registered event " << event_type << " with accessor method " << method_name << std::endl;
 
         find_helper_return_type (event_type, method_name);
       }
@@ -605,8 +583,8 @@ public:
           // We don't need void return type.
           if (method_return_type.find ("void") == std::string::npos)
           {
-	    fout_ << "Return signature of helper method is " << rtn_signature << std::endl;
-	    fout_ << "Return type of method " << method_name << " is " << method_return_type << std::endl;
+            fout_ << "Return signature of helper method is " << rtn_signature << std::endl;
+            fout_ << "Return type of method "<< method_name << " is " << method_return_type << std::endl;
             data_type_cmd * cmd  = create_data_type_cmd (method_return_type);
             helper_returntype_map_[method_name] = cmd;
           }         
@@ -634,8 +612,7 @@ public:
       //return factory.create_short_cmd ();
     else
     {
-      if (logs_required_)
-        fout_ << "Return Data type is " << return_type << " Not supported" << std::endl;
+      fout_ << "Return Data type is " << return_type << " Not supported" << std::endl;
       return 0;
     }
 
@@ -650,11 +627,10 @@ public:
     {
       for (auto helper : helper_buffer)
       {
-        if (logs_required_)
-          fout_ << "  Analysis routine for:"
-            << " method '" << helper.get_method_name () << "'"
-            << " of component '" << helper.get_component_name () << "'"
-            << std::endl;
+        fout_ << "  Analysis routine for:"
+          << " method '" << helper.get_method_name () << "'"
+          << " of component '" << helper.get_component_name () << "'"
+          << std::endl;
       }
     }
   }
@@ -731,9 +707,6 @@ private:
 
   // map between helper and its return types
   helper_returntype_map_type helper_returntype_map_;
-
-  // Logs required
-  bool & logs_required_;
 };
 
 /*******************************
@@ -758,8 +731,7 @@ public:
     exclude_list_,
     helper_list_,
     obv,
-    event_helper_map_,
-    logs_required_)
+    event_helper_map_)
   { 
     std::stringstream methods_string (target_methods_);              // parse the target method argument
     std::string method;
@@ -781,10 +753,7 @@ public:
     while (std::getline (helper_string, helper, ','))
       helper_list_.push_back(helper);
 
-    logs_required_ = logs_.Value ();
-    
-    if (logs_required_)
-      fout_.open (logfile_.Value ().c_str (), ios_base::app);
+    fout_.open (logfile_.Value ().c_str (), ios_base::app);
 
     eventtrace_file_.open (eventtrace_.Value ().c_str (), ios_base::app);
 
@@ -793,7 +762,7 @@ public:
 
     this->init_symbols ();
 
-    if (logs_required_)
+    if (DEBUG)
       this->enable_fini_callback ();
   }
 
@@ -802,37 +771,40 @@ public:
   */
   void handle_fini (INT32 code)
   {
-    if (logs_required_)
+    if (DEBUG)
     {
-      fout_ << std::endl << "Pintool information:" << std::endl;
-
-      fout_ << "..Target method:" << std::endl;
-      for (auto method : target_method_list_)
-        fout_ << "  " << method << std::endl;
-
-      fout_ << std::endl;
-
-      fout_ << "..Helper methods list:" << std::endl;
-      instrument_.output_helper_list ();
-      fout_ << std::endl;
-
-      fout_ << "..Mapping between push method and event type:" << std::endl;
-      for (auto pair : method_event_map_)
-        fout_ << "  " << pair.first << " <-> " << pair.second << std::endl;      
-
-      fout_ << std::endl;
-
-      fout_ << "..Helper methods:" << std::endl;
-      for (auto event : event_helper_map_)
+      // Display this info only for include list
+      for (auto include : include_list_)
       {
-        fout_ << "  Event: " << event.first << std::endl;
-        for (auto method : event.second)
-          fout_ << "    Method: " << method.first << " <-> " << method.second << std::endl;
-      }
+        fout_ << std::endl << "Pintool information:" << std::endl;
 
-      fout_ << std::endl;
-      fout_.close ();
+        fout_ << "..Target method:" << std::endl;
+        for (auto method : target_method_list_)
+          fout_ << "  " << method << std::endl;
+
+        fout_ << std::endl;
+
+        fout_ << "..Helper methods list:" << std::endl;
+        instrument_.output_helper_list ();
+        fout_ << std::endl;
+
+        fout_ << "..Mapping between push method and event type:" << std::endl;
+        for (auto pair : method_event_map_)
+          fout_ << "  " << pair.first << " <-> " << pair.second << std::endl;      
+
+        fout_ << std::endl;
+
+        fout_ << "..Helper methods:" << std::endl;
+        for (auto event : event_helper_map_)
+        {
+          fout_ << "  Event: " << event.first << std::endl;
+          for (auto method : event.second)
+            fout_ << "    Method: " << method.first << " <-> " << method.second << std::endl;
+        }
+        fout_ << std::endl;
+      }
     }
+    fout_.close ();
 
     eventtrace_file_.close ();
   }
@@ -864,9 +836,6 @@ private:
   // Map between event and helper
   event_helper_map_type event_helper_map_;
 
-  // Logs required
-  bool logs_required_;
-
   // Instrumentation
   Image_Inst instrument_;
 
@@ -878,7 +847,6 @@ private:
   static KNOB <string> eventtrace_;
   static KNOB <string> helper_;
   static KNOB <string> obv_;
-  static KNOB <bool> logs_;
 };
 
 /*******************************
@@ -906,14 +874,11 @@ KNOB <string> dynamic_event_monitor::exclude_ (KNOB_MODE_WRITEONCE, "pintool", "
 KNOB <string> dynamic_event_monitor::logfile_ (KNOB_MODE_WRITEONCE, "pintool", "lf", "Log_File.out", 
                                                "specify log file name");
 
-KNOB <string> dynamic_event_monitor::eventtrace_ (KNOB_MODE_WRITEONCE, "pintool", "et", "Trace.out", 
+KNOB <string> dynamic_event_monitor::eventtrace_ (KNOB_MODE_WRITEONCE, "pintool", "et", "Event_Trace.out", 
                                                "specify file name for event trace");
 
 KNOB <string> dynamic_event_monitor::obv_ (KNOB_MODE_WRITEONCE, "pintool", "obv", "OBV_", 
                                                "Object by value prefix");
-
-KNOB <bool> dynamic_event_monitor::logs_ (KNOB_MODE_WRITEONCE, "pintool", "l", "1", 
-                                               "logs required?");
 /*******************************
 * Pintool declaration
 *******************************/
