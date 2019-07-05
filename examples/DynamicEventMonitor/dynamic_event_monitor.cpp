@@ -27,6 +27,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <list>
 #include <unordered_map>
 #include <time.h>
 
@@ -130,12 +131,14 @@ public:
         if (DEBUG)
           *fout_ << "  Method: " << method.first << std::endl;
 
-        __asm
-        {
-          mov ecx, object_addr
-          call helper_addr
-          mov result_addr, eax
-        }
+        asm volatile(
+          "mov %1, %%ecx\n"
+          "call *%2\n"
+          "mov %%eax, %0\n"
+          : "=r" (result_addr)
+          : "r" (object_addr), "r" (helper_addr)
+          : "%eax", "%ecx"
+        );
 
         /* Print to even trace the following:
          * Current date time
