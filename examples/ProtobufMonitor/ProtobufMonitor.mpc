@@ -1,0 +1,9 @@
+// ProtobufMonitor.mpc
+
+project (stubcount) : oasis_pintool {
+  sharedname    = stubcount
+
+  Source_Files {
+    stubcount.cpp
+  }
+}
