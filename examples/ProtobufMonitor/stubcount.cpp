@@ -33,27 +33,27 @@ public:
 
 class Instrument : public OASIS::Pin::Routine_Instrument <Instrument> {
 public:
-  typedef std::list <func_info> list_type;
+  typedef std::list <func_info*> list_type;
 
   Instrument(void) { }
 
   void handle_instrument (const OASIS::Pin::Routine & rtn) {
-	    func_info info;
-	    info.sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-	    info.returntype = "Status";
+	    func_info* info = new func_info;
+	    info->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+	    info->returntype = "Status";
 
     	    const std::string & image_name = rtn.section ().image ().name ();
 #if defined (TARGET_WINDOWS)
-	    info.image = image_name.substr (image_name.find_last_of ('\\') + 1);
+	    info->image = image_name.substr (image_name.find_last_of ('\\') + 1);
 #else
-	    info.image = image_name.substr (image_name.find_last_of ('/') + 1);
+	    info->image = image_name.substr (image_name.find_last_of ('/') + 1);
 #endif
 
             // Add the signature to the listing.
             this->rtn_signatures_.push_back(info);
   }
 
-  const list_type & rtn_signature (void) const {
+  const list_type & rtn_signatures (void) const {
     return this->rtn_signatures_;
   }
 
@@ -78,19 +78,23 @@ public:
     //the client context is a parameter to the stub call.
     std::regex stub_regex("(.*)(Stub)(.*)(ClientContext)(.*)");
 
-    Instrument::list_type inst_list = inst_.rtn_signature();
+    Instrument::list_type::const_iterator
+      iter = this->inst_.rtn_signatures().begin(),
+      iter_end = this->inst_.rtn_signatures().end();
 
-    for (func_info info : inst_list) {
+    for (; iter != iter_end; ++ iter) {
 
-      if (info.used > 0) {
+      if ((*iter)->used == 0)
+        continue;
+
+
        //only print info if the procedure has "Stub" and "ClientContext" in the string
-       if (std::regex_match(info.sign, stub_regex)) {
+       if (std::regex_match((*iter)->sign, stub_regex)) {
          this->fout_ << "{"
-         << "\"Procedure\": \"" << info.sign << "\","
-         << "\"ReturnType\": \"" << info.returntype << "\","
-         << "\"Image\": \"" << info.image << "\"}," << std::endl;
+         << "\"Procedure\": \"" << (*iter)->sign << "\","
+         << "\"ReturnType\": \"" << (*iter)->returntype << "\","
+         << "\"Image\": \"" << (*iter)->image << "\"}," << std::endl;
        }
-	}
     }
 
     this->fout_ << "]}" << std::endl;
