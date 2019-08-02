@@ -1,6 +1,6 @@
 // $Id: stubcount.cpp 11:28 AM 7/22/2019 nlui $
 
-#include "pin++/Image_Instrument.h"
+#include "pin++/Routine_Instrument.h"
 #include "pin++/Callback.h"
 #include "pin++/Pintool.h"
 #include "pin++/Section.h"
@@ -15,177 +15,42 @@
 #include <memory>
 #include <regex>
 
-template <class T>
-struct return_type;
+class func_info : public OASIS::Pin::Callback <func_info (void)> {
+public:
+	func_info(void)
+	  : used(0)
+	{ }
 
-template <class T, class... Args>
-struct return_type<T(*)(Args...)> {
-	typedef T type;
-};
-
-template <class T, class... Args>
-struct return_type<T(*)(Args..., ...)> {
-	typedef T type;
-};
-
-template<typename T>
-struct type_to_string {
-	static std::string str() {
-		return typeid(T).name();
-	}
-};
-
-template<>
-struct type_to_string<void> {
-	static std::string str() {
-		return std::string("void");
-	}
-};
-
-template<>
-struct type_to_string<short int> {
-	static std::string str() {
-		return std::string("short int");
-	}
-};
-
-template<>
-struct type_to_string<unsigned short int> {
-	static std::string str() {
-		return std::string("unsigned short int");
-	}
-};
-
-template<>
-struct type_to_string<unsigned int> {
-	static std::string str() {
-		return std::string("unsigned int");
-	}
-};
-
-template<>
-struct type_to_string<int> {
-	static std::string str() {
-		return std::string("int");
-	}
-};
-
-template<>
-struct type_to_string<long int> {
-	static std::string str() {
-		return std::string("long int");
-	}
-};
-
-template<>
-struct type_to_string<unsigned long int> {
-	static std::string str() {
-		return std::string("unsigned long int");
-	}
-};
-
-template<>
-struct type_to_string<long long int> {
-	static std::string str() {
-		return std::string("long long int");
-	}
-};
-
-template<>
-struct type_to_string<unsigned long long int> {
-	static std::string str() {
-		return std::string("unsigned long long int");
-	}
-};
-
-template<>
-struct type_to_string<char> {
-	static std::string str() {
-		return std::string("char");
-	}
-};
-
-template<>
-struct type_to_string<signed char> {
-	static std::string str() {
-		return std::string("signed char");
-	}
-};
-
-template<>
-struct type_to_string<unsigned char> {
-	static std::string str() {
-		return std::string("unsigned char");
-	}
-};
-
-template<>
-struct type_to_string<float> {
-	static std::string str() {
-		return std::string("float");
-	}
-};
-
-template<>
-struct type_to_string<double> {
-	static std::string str() {
-		return std::string("double");
-	}
-};
-
-template<>
-struct type_to_string<long double> {
-	static std::string str() {
-		return std::string("long double");
-	}
-};
-
-template<>
-struct type_to_string<bool> {
-	static std::string str() {
-		return std::string("bool");
-	}
-};
-
-template<>
-struct type_to_string<wchar_t> {
-	static std::string str() {
-		return std::string("wchar_t");
-	}
-};
-
-struct func_info {
 	std::string sign;
 	std::string returntype;
 	std::string image;
+	UINT64 used;
+
+  void handle_analyze (void) {
+    ++ this->used;
+  }
 };
 
-class Instrument : public OASIS::Pin::Image_Instrument <Instrument> {
+class Instrument : public OASIS::Pin::Routine_Instrument <Instrument> {
 public:
   typedef std::list <func_info> list_type;
 
   Instrument(void) { }
 
-  void handle_instrument (const OASIS::Pin::Image & img) {
-    for (auto sec : img) {
-        for (auto rtn : sec) {
-            if (!rtn.valid ())
-              continue;
-
-            std::string rtn_sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-	    auto p = rtn.function_ptr();
-	    std::string rtn_returntype = type_to_string<return_type<decltype(p)>::type>::str();
-	    std::string img_name = img.name();
-
+  void handle_instrument (const OASIS::Pin::Routine & rtn) {
 	    func_info info;
-	    info.sign = rtn_sign;
-	    info.returntype = rtn_returntype;
-	    info.image = img_name;
+	    info.sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+	    info.returntype = "Status";
+
+    	    const std::string & image_name = rtn.section ().image ().name ();
+#if defined (TARGET_WINDOWS)
+	    info.image = image_name.substr (image_name.find_last_of ('\\') + 1);
+#else
+	    info.image = image_name.substr (image_name.find_last_of ('/') + 1);
+#endif
 
             // Add the signature to the listing.
             this->rtn_signatures_.push_back(info);
-        }
-    }
   }
 
   const list_type & rtn_signature (void) const {
@@ -216,6 +81,8 @@ public:
     Instrument::list_type inst_list = inst_.rtn_signature();
 
     for (func_info info : inst_list) {
+
+      if (info.used > 0) {
        //only print info if the procedure has "Stub" and "ClientContext" in the string
        if (std::regex_match(info.sign, stub_regex)) {
          this->fout_ << "{"
@@ -223,6 +90,7 @@ public:
          << "\"ReturnType\": \"" << info.returntype << "\","
          << "\"Image\": \"" << info.image << "\"}," << std::endl;
        }
+	}
     }
 
     this->fout_ << "]}" << std::endl;
