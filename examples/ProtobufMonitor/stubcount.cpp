@@ -15,53 +15,102 @@
 #include <memory>
 #include <regex>
 
-class func_info : public OASIS::Pin::Callback <func_info (void)> {
+class ins_count : public OASIS::Pin::Callback <ins_count (void)>
+{
 public:
-	func_info(void)
-	  : used(0)
-	{ }
+  ins_count (void)
+    : count_ (0)
+  {
 
-	std::string sign;
-	std::string returntype;
-	std::string image;
-	UINT64 used;
-
-  void handle_analyze (void) {
-    ++ this->used;
-  }
-};
-
-class Instrument : public OASIS::Pin::Routine_Instrument <Instrument> {
-public:
-  typedef std::list <func_info*> list_type;
-
-  Instrument(void) { }
-
-  void handle_instrument (const OASIS::Pin::Routine & rtn) {
-	    func_info* info = new func_info;
-	    info->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-	    info->returntype = "Status";
-
-    	    const std::string & image_name = rtn.section ().image ().name ();
-#if defined (TARGET_WINDOWS)
-	    info->image = image_name.substr (image_name.find_last_of ('\\') + 1);
-#else
-	    info->image = image_name.substr (image_name.find_last_of ('/') + 1);
-#endif
-
-            // Add the signature to the listing.
-            this->rtn_signatures_.push_back(info);
   }
 
-  const list_type & rtn_signatures (void) const {
-    return this->rtn_signatures_;
+  void handle_analyze (void)
+  {
+    ++ this->count_;
+  }
+
+  UINT64 count (void) const
+  {
+    return this->count_;
   }
 
 private:
-  list_type rtn_signatures_;
+  UINT64 count_;
 };
 
-class stubcount : public OASIS::Pin::Tool <stubcount> {
+class routine_count : public OASIS::Pin::Callback <routine_count (void)>
+{
+public:
+  routine_count (void)
+    : rtnCount_ (0)
+  {
+
+  }
+
+  std::string name_;
+  std::string image_;
+  ADDRINT address_;
+  RTN rtn_;
+  UINT64 rtnCount_;
+  ins_count ins_count_;
+
+  void handle_analyze (void)
+  {
+    ++ this->rtnCount_;
+  }
+};
+
+class Instrument : public OASIS::Pin::Routine_Instrument <Instrument>
+{
+public:
+  typedef std::list <routine_count *> list_type;
+
+  void handle_instrument (const OASIS::Pin::Routine & rtn)
+  {
+    using OASIS::Pin::Section;
+    using OASIS::Pin::Image;
+
+    // Allocate a counter for this routine
+    routine_count * rc = new routine_count ();
+
+    // The RTN goes away when the image is unloaded, so save it now
+    // because we need it in the fini
+    rc->name_ = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+    std::cout << rtn.function_ptr() << std::endl;
+
+    const std::string & image_name = rtn.section ().image ().name ();
+#if defined (TARGET_WINDOWS)
+    rc->image_ = image_name.substr (image_name.find_last_of ('\\') + 1);
+#else
+    rc->image_ = image_name.substr (image_name.find_last_of ('/') + 1);
+#endif
+    rc->address_ = rtn.address ();
+
+    // Add the counter to the listing.
+    this->rtn_count_.push_back (rc);
+
+    OASIS::Pin::Routine_Guard guard (rtn);
+    rc->insert (IPOINT_BEFORE, rtn);
+
+#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
+    for each (OASIS::Pin::Ins & ins in rtn)
+#else
+    for (OASIS::Pin::Ins & ins : rtn)
+#endif
+      rc->ins_count_.insert (IPOINT_BEFORE, ins);
+  }
+
+  const list_type & rtn_count (void) const
+  {
+    return this->rtn_count_;
+  }
+
+private:
+  list_type rtn_count_;
+};
+
+class stubcount : public OASIS::Pin::Tool <stubcount>
+{
 public:
   stubcount (void)
     : fout_ ("stubcount.json")
@@ -70,31 +119,33 @@ public:
     this->enable_fini_callback ();
   }
 
-  void handle_fini (INT32) {
+  void handle_fini (INT32)
+  {
     this->fout_ << "{ \"data\": [" << std::endl;
+
+    Instrument::list_type::const_iterator
+      iter = this->inst_.rtn_count ().begin (),
+      iter_end = this->inst_.rtn_count ().end ();
 
     //regular expression for finding valid procedures
     //only want procedures that use a Stub followed by a ClientContext, this means
     //the client context is a parameter to the stub call.
     std::regex stub_regex("(.*)(Stub)(.*)(ClientContext)(.*)");
 
-    Instrument::list_type::const_iterator
-      iter = this->inst_.rtn_signatures().begin(),
-      iter_end = this->inst_.rtn_signatures().end();
-
-    for (; iter != iter_end; ++ iter) {
-
-      if ((*iter)->used == 0)
+    for (; iter != iter_end; ++ iter)
+    {
+      if ((*iter)->rtnCount_ == 0)
         continue;
 
-
-       //only print info if the procedure has "Stub" and "ClientContext" in the string
-       if (std::regex_match((*iter)->sign, stub_regex)) {
-         this->fout_ << "{"
-         << "\"Procedure\": \"" << (*iter)->sign << "\","
-         << "\"ReturnType\": \"" << (*iter)->returntype << "\","
-         << "\"Image\": \"" << (*iter)->image << "\"}," << std::endl;
-       }
+      //only print info if the procedure has "Stub" and "ClientContext" in the string
+      if (std::regex_match((*iter)->name_, stub_regex)) {
+        this->fout_ << "{"
+        << "\"Procedure\": \"" << (*iter)->name_ << "\","
+        << "\"Image\": \"" << (*iter)->image_ << "\","
+        << "\"Address\": \"" << hex << (*iter)->address_ << dec << "\","
+        << "\"Calls\": \"" << (*iter)->rtnCount_ << "\","
+        << "\"Instructions\": \"" << (*iter)->ins_count_.count () << "\"}," << std::endl;
+      }
     }
 
     this->fout_ << "]}" << std::endl;
