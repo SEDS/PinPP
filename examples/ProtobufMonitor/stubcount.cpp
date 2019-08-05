@@ -131,20 +131,29 @@ public:
     //only want procedures that use a Stub followed by a ClientContext, this means
     //the client context is a parameter to the stub call.
     std::regex stub_regex("(.*)(Stub)(.*)(ClientContext)(.*)");
+    std::regex clientctx_regex("(.*)(ClientContext::)(.*)");
 
     for (; iter != iter_end; ++ iter)
     {
       if ((*iter)->rtnCount_ == 0)
         continue;
 
-      //only print info if the procedure has "Stub" and "ClientContext" in the string
+      //print info that has "Stub" and "ClientContext" in the string
       if (std::regex_match((*iter)->name_, stub_regex)) {
         this->fout_ << "{"
         << "\"Procedure\": \"" << (*iter)->name_ << "\","
         << "\"Image\": \"" << (*iter)->image_ << "\","
         << "\"Address\": \"" << hex << (*iter)->address_ << dec << "\","
-        << "\"Calls\": \"" << (*iter)->rtnCount_ << "\","
-        << "\"Instructions\": \"" << (*iter)->ins_count_.count () << "\"}," << std::endl;
+        << "\"Callee\": \"" << "Stub" << "\"}," << std::endl;
+      }
+
+      //print info for all invoked ClientContext methods
+      if (std::regex_match((*iter)->name_, clientctx_regex)) {
+        this->fout_ << "{"
+        << "\"Procedure\": \"" << (*iter)->name_ << "\","
+        << "\"Image\": \"" << (*iter)->image_ << "\","
+        << "\"Address\": \"" << hex << (*iter)->address_ << dec << "\","
+        << "\"Callee\": \"" << "ClientContext" << "\"}," << std::endl;
       }
     }
 
