@@ -76,7 +76,7 @@ public:
     // The RTN goes away when the image is unloaded, so save it now
     // because we need it in the fini
     rc->name_ = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-    std::cout << rtn.function_ptr() << std::endl;
+
 
     const std::string & image_name = rtn.section ().image ().name ();
 #if defined (TARGET_WINDOWS)
