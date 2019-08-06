@@ -15,29 +15,6 @@
 #include <memory>
 #include <regex>
 
-class ins_count : public OASIS::Pin::Callback <ins_count (void)>
-{
-public:
-  ins_count (void)
-    : count_ (0)
-  {
-
-  }
-
-  void handle_analyze (void)
-  {
-    ++ this->count_;
-  }
-
-  UINT64 count (void) const
-  {
-    return this->count_;
-  }
-
-private:
-  UINT64 count_;
-};
-
 class routine_count : public OASIS::Pin::Callback <routine_count (void)>
 {
 public:
@@ -47,12 +24,11 @@ public:
 
   }
 
-  std::string name_;
-  std::string image_;
-  ADDRINT address_;
+  std::string sign_;
+  std::string ret_val_;
+  std::string callee_;
   RTN rtn_;
   UINT64 rtnCount_;
-  ins_count ins_count_;
 
   void handle_analyze (void)
   {
@@ -75,29 +51,14 @@ public:
 
     // The RTN goes away when the image is unloaded, so save it now
     // because we need it in the fini
-    rc->name_ = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-
-
-    const std::string & image_name = rtn.section ().image ().name ();
-#if defined (TARGET_WINDOWS)
-    rc->image_ = image_name.substr (image_name.find_last_of ('\\') + 1);
-#else
-    rc->image_ = image_name.substr (image_name.find_last_of ('/') + 1);
-#endif
-    rc->address_ = rtn.address ();
+    rc->sign_ = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+    rc->callee_ = rtn.section().name();
 
     // Add the counter to the listing.
     this->rtn_count_.push_back (rc);
 
     OASIS::Pin::Routine_Guard guard (rtn);
     rc->insert (IPOINT_BEFORE, rtn);
-
-#if defined (TARGET_WINDOWS) && (_MSC_VER == 1600)
-    for each (OASIS::Pin::Ins & ins in rtn)
-#else
-    for (OASIS::Pin::Ins & ins : rtn)
-#endif
-      rc->ins_count_.insert (IPOINT_BEFORE, ins);
   }
 
   const list_type & rtn_count (void) const
@@ -139,21 +100,17 @@ public:
         continue;
 
       //print info that has "Stub" and "ClientContext" in the string
-      if (std::regex_match((*iter)->name_, stub_regex)) {
+      if (std::regex_match((*iter)->sign_, stub_regex)) {
         this->fout_ << "{"
-        << "\"Procedure\": \"" << (*iter)->name_ << "\","
-        << "\"Image\": \"" << (*iter)->image_ << "\","
-        << "\"Address\": \"" << hex << (*iter)->address_ << dec << "\","
-        << "\"Callee\": \"" << "Stub" << "\"}," << std::endl;
+        << "\"Procedure\": \"" << (*iter)->sign_ << "\","
+        << "\"Callee\": \"" << (*iter)->callee_ << "\"}," << std::endl;
       }
 
       //print info for all invoked ClientContext methods
-      if (std::regex_match((*iter)->name_, clientctx_regex)) {
+      if (std::regex_match((*iter)->sign_, clientctx_regex)) {
         this->fout_ << "{"
-        << "\"Procedure\": \"" << (*iter)->name_ << "\","
-        << "\"Image\": \"" << (*iter)->image_ << "\","
-        << "\"Address\": \"" << hex << (*iter)->address_ << dec << "\","
-        << "\"Callee\": \"" << "ClientContext" << "\"}," << std::endl;
+        << "\"Procedure\": \"" << (*iter)->sign_ << "\","
+        << "\"Callee\": \"" << (*iter)->callee_ << "\"}," << std::endl;
       }
     }
 
