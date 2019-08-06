@@ -15,10 +15,10 @@
 #include <memory>
 #include <regex>
 
-class routine_count : public OASIS::Pin::Callback <routine_count (void)>
+class method_info : public OASIS::Pin::Callback <method_info (void)>
 {
 public:
-  routine_count (void)
+  method_info (void)
     : rtnCount_ (0)
   {
 
@@ -36,45 +36,65 @@ public:
   }
 };
 
+typedef std::list <method_info *> list_type;
+
 class Instrument : public OASIS::Pin::Routine_Instrument <Instrument>
 {
 public:
-  typedef std::list <routine_count *> list_type;
+  Instrument (list_type & out)
+    :out_(out),
+    stub_regex("(.*)(Stub::)(.*)(ClientContext)(.*)"),
+    clientctx_regex("(.*)(ClientContext::)(.*)")
+  { }
 
   void handle_instrument (const OASIS::Pin::Routine & rtn)
   {
     using OASIS::Pin::Section;
     using OASIS::Pin::Image;
 
-    // Allocate a counter for this routine
-    routine_count * rc = new routine_count ();
+    std::string sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
 
-    // The RTN goes away when the image is unloaded, so save it now
-    // because we need it in the fini
-    rc->sign_ = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-    rc->callee_ = rtn.section().name();
+    if (std::regex_match(sign, stub_regex_)) {
+      method_info * methinfo = new method_info ();
+      methinfo->sign_ = sign;
+      methinfo->callee_ = std:string("Stub");
 
-    // Add the counter to the listing.
-    this->rtn_count_.push_back (rc);
+      // Add the counter to the listing.
+      this->out_.push_back (methinfo);
 
-    OASIS::Pin::Routine_Guard guard (rtn);
-    rc->insert (IPOINT_BEFORE, rtn);
-  }
+      OASIS::Pin::Routine_Guard guard (rtn);
+      methinfo->insert (IPOINT_BEFORE, rtn);
+    }
 
-  const list_type & rtn_count (void) const
-  {
-    return this->rtn_count_;
+    if (std::regex_match((*iter)->sign_, clientctx_regex)) {
+      method_info * methinfo = new method_info ();
+      methinfo->sign_ = sign;
+      methinfo->callee_ = std:string("Client Context");
+
+      // Add the counter to the listing.
+      this->out_.push_back (methinfo);
+
+      OASIS::Pin::Routine_Guard guard (rtn);
+      methinfo->insert (IPOINT_BEFORE, rtn);
+    }
   }
 
 private:
-  list_type rtn_count_;
+  list_type & out_;
+
+  //regular expression for finding valid procedures
+  //only want procedures that use a Stub followed by a ClientContext, this means
+  //the client context is a parameter to the stub call.
+  std::regex stub_regex_;
+  std::regex clientctx_regex_;
 };
 
 class stubcount : public OASIS::Pin::Tool <stubcount>
 {
 public:
   stubcount (void)
-    : fout_ ("stubcount.json")
+    :inst_(output_list_),
+    fout_ ("stubcount.json")
   {
     this->init_symbols ();
     this->enable_fini_callback ();
@@ -84,15 +104,9 @@ public:
   {
     this->fout_ << "{ \"data\": [" << std::endl;
 
-    Instrument::list_type::const_iterator
-      iter = this->inst_.rtn_count ().begin (),
-      iter_end = this->inst_.rtn_count ().end ();
-
-    //regular expression for finding valid procedures
-    //only want procedures that use a Stub followed by a ClientContext, this means
-    //the client context is a parameter to the stub call.
-    std::regex stub_regex("(.*)(Stub)(.*)(ClientContext)(.*)");
-    std::regex clientctx_regex("(.*)(ClientContext::)(.*)");
+    list_type::const_iterator
+      iter = this->output_list_.begin (),
+      iter_end = this->output_list_.end ();
 
     for (; iter != iter_end; ++ iter)
     {
@@ -120,8 +134,8 @@ public:
   }
 
 private:
+  list_type output_list_;
   Instrument inst_;
-
   std::ofstream fout_;
 };
 
