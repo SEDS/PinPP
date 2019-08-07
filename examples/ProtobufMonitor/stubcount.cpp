@@ -43,59 +43,65 @@ typedef std::list <method_info *> list_type;
 class Instrument : public OASIS::Pin::Routine_Instrument <Instrument>
 {
 public:
-  Instrument (list_type & out)
-    :out_(out),
-    stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
-    clientctx_regex_("(.*)(ClientContext::)(.*)")
-  { }
-
-  void handle_instrument (const OASIS::Pin::Routine & rtn)
-  {
+  void handle_instrument (const OASIS::Pin::Routine & rtn) {
     using OASIS::Pin::Section;
     using OASIS::Pin::Image;
 
-    std::string sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+	method_info * methinfo = new method_info ();
+	methinfo->sign_ = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
 
-    if (std::regex_match(sign, stub_regex_)) {
-      method_info * methinfo = new method_info ();
-      methinfo->sign_ = sign;
-      methinfo->callee_ = std:string("Stub");
+	// Add the counter to the listing.
+	this->out_.push_back (methinfo);
 
-      // Add the counter to the listing.
-      this->out_.push_back (methinfo);
+	OASIS::Pin::Routine_Guard guard (rtn);
+	methinfo->insert (IPOINT_BEFORE, rtn);
+  }
 
-      OASIS::Pin::Routine_Guard guard (rtn);
-      methinfo->insert (IPOINT_BEFORE, rtn);
+  list_type & get_list (void) {
+    return this->out_;
+  }
 
-      //extract the args from this RPC method
-      extract_args(sign);
+private:
+  list_type out_;
+};
+
+class stubcount : public OASIS::Pin::Tool <stubcount>
+{
+public:
+  stubcount (void)
+    :fout_ ("stubcount.json"),
+    stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
+    clientctx_regex_("(.*)(ClientContext::)(.*)")
+  {
+    this->init_symbols ();
+    this->enable_fini_callback ();
+  }
+
+  void handle_fini (INT32) {
+    list_type & method_infos = inst_.get_list();
+
+    for (auto methinfo : method_infos) {
+      if (methinfo->rtnCount_ == 0)
+	continue;
+
+	if (std::regex_match(methinfo->sign_, stub_regex_)) {
+		methinfo->callee_ = std::string("Stub");
+		this->output_list_.push_back(methinfo);
+		this->extract_args(methinfo->sign_);
+   	}
+
+   	if (std::regex_match(methinfo->sign_, clientctx_regex_)) {
+		methinfo->callee_ = std::string("Client Context");
+		this->output_list_.push_back(methinfo);
+	}
     }
 
-    if (std::regex_match(sign, clientctx_regex_)) {
-      method_info * methinfo = new method_info ();
-      methinfo->sign_ = sign;
-      methinfo->callee_ = std:string("Client Context");
-
-      // Add the counter to the listing.
-      this->out_.push_back (methinfo);
-
-      OASIS::Pin::Routine_Guard guard (rtn);
-      methinfo->insert (IPOINT_BEFORE, rtn);
+    //Form method_info for methods invoked from args.
+    for (auto &pair : args_) {
+	std::cout << pair.first << std::endl;
     }
 
-    for (const auto &pair : args_) {
-      if (std::regex_match(sign, pair.second)) {
-        method_info * methinfo = new method_info ();
-        methinfo->sign_ = sign;
-        methinfo->callee_ = std:string(pair.first);
-
-        // Add the counter to the listing.
-        this->out_.push_back (methinfo);
-
-        OASIS::Pin::Routine_Guard guard (rtn);
-        methinfo->insert (IPOINT_BEFORE, rtn);
-      }
-    }
+    //this->print_out();
   }
 
 //extract_args - used to extract the arguments passed into a method and
@@ -130,14 +136,29 @@ void extract_args(std::string method) {
         if (args_.count(temp) == 0) {
             std::string regex_lit("(.*)(::)(.*)");
             regex_lit.insert(5, temp);
+		std::cout << regex_lit << std::endl;
             std::regex arg_regex(regex_lit);
             args_.insert(std::make_pair(temp, arg_regex));
         }
     }
 }
 
+void print_out(void) {
+    this->fout_ << "{ \"data\": [" << std::endl;
+    for (const auto &methinfo : output_list_) {
+        this->fout_ << "{"
+        << "\"Procedure\": \"" << methinfo->sign_ << "\","
+        << "\"Callee\": \"" << methinfo->callee_ << "\"}," << std::endl;
+    }
+
+    this->fout_ << "]}" << std::endl;
+    this->fout_.close ();
+}
+
 private:
-  list_type & out_;
+  list_type output_list_;
+  Instrument inst_;
+  std::ofstream fout_;
   std::map<std::string, std::regex> args_;
 
   //regular expression for finding valid procedures
@@ -145,56 +166,6 @@ private:
   //the client context is a parameter to the stub call.
   std::regex stub_regex_;
   std::regex clientctx_regex_;
-};
-
-class stubcount : public OASIS::Pin::Tool <stubcount>
-{
-public:
-  stubcount (void)
-    :inst_(output_list_),
-    fout_ ("stubcount.json")
-  {
-    this->init_symbols ();
-    this->enable_fini_callback ();
-  }
-
-  void handle_fini (INT32)
-  {
-    this->fout_ << "{ \"data\": [" << std::endl;
-
-    list_type::const_iterator
-      iter = this->output_list_.begin (),
-      iter_end = this->output_list_.end ();
-
-    for (; iter != iter_end; ++ iter)
-    {
-      if ((*iter)->rtnCount_ == 0)
-        continue;
-
-      //print info that has "Stub" and "ClientContext" in the string
-      if (std::regex_match((*iter)->sign_, stub_regex)) {
-        this->fout_ << "{"
-        << "\"Procedure\": \"" << (*iter)->sign_ << "\","
-        << "\"Callee\": \"" << (*iter)->callee_ << "\"}," << std::endl;
-      }
-
-      //print info for all invoked ClientContext methods
-      if (std::regex_match((*iter)->sign_, clientctx_regex)) {
-        this->fout_ << "{"
-        << "\"Procedure\": \"" << (*iter)->sign_ << "\","
-        << "\"Callee\": \"" << (*iter)->callee_ << "\"}," << std::endl;
-      }
-    }
-
-    this->fout_ << "]}" << std::endl;
-
-    this->fout_.close ();
-  }
-
-private:
-  list_type output_list_;
-  Instrument inst_;
-  std::ofstream fout_;
 };
 
 DECLARE_PINTOOL (stubcount);
