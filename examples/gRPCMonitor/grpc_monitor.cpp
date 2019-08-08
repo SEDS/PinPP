@@ -1,4 +1,4 @@
-// $Id: stubcount.cpp 11:28 AM 7/22/2019 nlui $
+// $Id: grpc_monitor.cpp 11:28 AM 7/22/2019 nlui $
 
 #include "pin++/Routine_Instrument.h"
 #include "pin++/Callback.h"
@@ -65,11 +65,11 @@ private:
   list_type out_;
 };
 
-class stubcount : public OASIS::Pin::Tool <stubcount>
+class grpc_monitor : public OASIS::Pin::Tool <grpc_monitor>
 {
 public:
-  stubcount (void)
-    :fout_ ("stubcount.json"),
+  grpc_monitor (void)
+    :fout_ ("message_trace.json"),
     stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
     clientctx_regex_("(.*)(ClientContext::)(.*)")
   {
@@ -196,4 +196,4 @@ private:
   std::regex clientctx_regex_;
 };
 
-DECLARE_PINTOOL (stubcount);
+DECLARE_PINTOOL (grpc_monitor);
