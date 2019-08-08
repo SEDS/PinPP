@@ -96,21 +96,17 @@ public:
       }
     }
 
-    for (auto &pair : args_) {
-      std::cout << pair.first << std::endl;
-    }
-
     //Form method_info for methods invoked from args.
-    // for (auto &methinfo : method_infos) {
-    //   for (auto &pair : args_) {
-    //     if (std::regex_match(methinfo->sign, pair.second)) {
-    //       methinfo->callee = pair.first;
-    //       this->output_list_.push_back(methinfo);
-    //     }
-    //   }
-    // }
+     for (auto &methinfo : method_infos) {
+       for (auto &pair : args_) {
+         if (std::regex_match(methinfo->sign, pair.second)) {
+           methinfo->callee = pair.first;
+           this->output_list_.push_back(methinfo);
+         }
+       }
+     }
 
-    //this->print_out();
+    this->print_out();
   }
 
   //replace_all - replace all occurences of sub in str with rep.
@@ -163,7 +159,6 @@ public:
           if (args_.count(temp) == 0) {
               std::string regex_lit("(.*)(::)(.*)");
               regex_lit.insert(5, temp);
-              std::cout << regex_lit << std::endl;
               std::regex arg_regex(regex_lit);
               args_.insert(std::make_pair(temp, arg_regex));
           }
