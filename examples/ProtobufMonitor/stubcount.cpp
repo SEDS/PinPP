@@ -82,66 +82,84 @@ public:
 
     for (auto methinfo : method_infos) {
       if (methinfo->rtnCount_ == 0)
-	continue;
+        continue;
 
-	if (std::regex_match(methinfo->sign_, stub_regex_)) {
-		methinfo->callee_ = std::string("Stub");
-		this->output_list_.push_back(methinfo);
-		this->extract_args(methinfo->sign_);
-   	}
+      if (std::regex_match(methinfo->sign_, stub_regex_)) {
+        methinfo->callee_ = std::string("Stub");
+        this->output_list_.push_back(methinfo);
+        this->extract_args(methinfo->sign_);
+      }
 
-   	if (std::regex_match(methinfo->sign_, clientctx_regex_)) {
-		methinfo->callee_ = std::string("Client Context");
-		this->output_list_.push_back(methinfo);
-	}
+      if (std::regex_match(methinfo->sign_, clientctx_regex_)) {
+        methinfo->callee_ = std::string("Client Context");
+        this->output_list_.push_back(methinfo);
+      }
     }
 
     //Form method_info for methods invoked from args.
     for (auto &pair : args_) {
-	std::cout << pair.first << std::endl;
+      std::cout << pair.first << std::endl;
     }
 
     //this->print_out();
   }
 
-//extract_args - used to extract the arguments passed into a method and
-//store in the args list.
-void extract_args(std::string method) {
-    std::vector<std::string::size_type> commas;
-    std::vector<std::string::size_type> substr_lengths;
+  //replace_all - replace all occurences of sub in str with rep.
+  //modified from https://stackoverflow.com/questions/20406744/how-to-find-and-replace-all-occurrences-of-a-substring-in-a-string
+  void replace_all(std::string & str, std::string sub, std::string rep) {
+      std::string::size_type pos = 0;
+      while ((pos = str.find(sub, pos)) != std::string::npos) {
+          str.replace(pos, sub.size(), rep);
+          pos += rep.size();
+      }
+  }
 
-    //find all comma positions. We don't use string.find() because
-    //we would need to know how many commas are in the string before hand and that requires a second loop through
-    //the string.
-    for (std::string::size_type i=0; i<method.length(); ++i) {
-        if (method[i] == ',') {
-            commas.push_back(i);
-        }
-    }
+  void extract_args(std::string method) {
+      std::vector<std::string::size_type> commas;
+      std::vector<std::string::size_type> substr_lengths;
 
-    for (std::string::size_type i=1; i<commas.size(); ++i) {
-        substr_lengths.push_back(commas[i] - commas[i-1] + 1);
+      //find all comma positions. We don't use string.find() because
+      //we would need to know how many commas are in the string before hand and that requires a second loop through
+      //the string.
+      for (std::string::size_type i=0; i<method.length(); ++i) {
+          if (method[i] == ',') {
+              commas.push_back(i);
+          }
+      }
 
-        //we use the location of last comma for the last arg's length
-        if (i == commas.size()-1) {
-            substr_lengths.push_back(commas[i]);
-        }
-    }
+      for (std::string::size_type i=1; i<commas.size(); ++i) {
+          substr_lengths.push_back(commas[i] - commas[i-1] + 1);
 
-    for (std::string::size_type i=0; i<substr_lengths.size(); ++i) {
-        std::string temp = method.substr(commas[i], substr_lengths[i]);
-        temp.replace(0, 2, "");
-        temp.replace(temp.size()-1, 1, "");
+          //we use the location of last comma for the last arg's length
+          if (i == commas.size()-1) {
+              substr_lengths.push_back(commas[i]);
+          }
+      }
 
-        if (args_.count(temp) == 0) {
-            std::string regex_lit("(.*)(::)(.*)");
-            regex_lit.insert(5, temp);
-		std::cout << regex_lit << std::endl;
-            std::regex arg_regex(regex_lit);
-            args_.insert(std::make_pair(temp, arg_regex));
-        }
-    }
-}
+      for (std::string::size_type i=0; i<substr_lengths.size(); ++i) {
+          std::string temp = method.substr(commas[i], substr_lengths[i]);
+
+          //remove commas on either side of args
+          temp.replace(0, 2, "");
+          temp.replace(temp.size()-1, 1, "");
+
+          //remove c++ keywords and symbols
+          replace_all(temp, "const", "");
+          replace_all(temp, "*", "");
+          replace_all(temp, "&", "");
+
+          //remove extra whitespace
+          replace_all(temp, " ", "");
+
+          if (args_.count(temp) == 0) {
+              std::string regex_lit("(.*)(::)(.*)");
+              regex_lit.insert(5, temp);
+              std::cout << regex_lit << std::endl;
+              std::regex arg_regex(regex_lit);
+              args_.insert(std::make_pair(temp, arg_regex));
+          }
+      }
+  }
 
 void print_out(void) {
     this->fout_ << "{ \"data\": [" << std::endl;
