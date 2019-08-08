@@ -26,9 +26,9 @@ public:
 
   }
 
-  std::string sign_;
-  std::string ret_val_;
-  std::string callee_;
+  std::string sign;
+  std::string ret_val;
+  std::string callee;
   RTN rtn_;
   UINT64 rtnCount_;
 
@@ -48,7 +48,7 @@ public:
     using OASIS::Pin::Image;
 
 	method_info * methinfo = new method_info ();
-	methinfo->sign_ = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+	methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
 
 	// Add the counter to the listing.
 	this->out_.push_back (methinfo);
@@ -80,26 +80,35 @@ public:
   void handle_fini (INT32) {
     list_type & method_infos = inst_.get_list();
 
-    for (auto methinfo : method_infos) {
+    for (auto &methinfo : method_infos) {
       if (methinfo->rtnCount_ == 0)
         continue;
 
-      if (std::regex_match(methinfo->sign_, stub_regex_)) {
-        methinfo->callee_ = std::string("Stub");
+      if (std::regex_match(methinfo->sign, stub_regex_)) {
+        methinfo->callee = std::string("Stub");
         this->output_list_.push_back(methinfo);
-        this->extract_args(methinfo->sign_);
+        this->extract_args(methinfo->sign);
       }
 
-      if (std::regex_match(methinfo->sign_, clientctx_regex_)) {
-        methinfo->callee_ = std::string("Client Context");
+      if (std::regex_match(methinfo->sign, clientctx_regex_)) {
+        methinfo->callee = std::string("Client Context");
         this->output_list_.push_back(methinfo);
       }
     }
 
-    //Form method_info for methods invoked from args.
     for (auto &pair : args_) {
       std::cout << pair.first << std::endl;
     }
+
+    //Form method_info for methods invoked from args.
+    // for (auto &methinfo : method_infos) {
+    //   for (auto &pair : args_) {
+    //     if (std::regex_match(methinfo->sign, pair.second)) {
+    //       methinfo->callee = pair.first;
+    //       this->output_list_.push_back(methinfo);
+    //     }
+    //   }
+    // }
 
     //this->print_out();
   }
@@ -165,8 +174,8 @@ void print_out(void) {
     this->fout_ << "{ \"data\": [" << std::endl;
     for (const auto &methinfo : output_list_) {
         this->fout_ << "{"
-        << "\"Procedure\": \"" << methinfo->sign_ << "\","
-        << "\"Callee\": \"" << methinfo->callee_ << "\"}," << std::endl;
+        << "\"Procedure\": \"" << methinfo->sign << "\","
+        << "\"Callee\": \"" << methinfo->callee << "\"}," << std::endl;
     }
 
     this->fout_ << "]}" << std::endl;
