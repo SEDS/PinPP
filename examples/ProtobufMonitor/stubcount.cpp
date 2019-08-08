@@ -166,11 +166,17 @@ public:
   }
 
 void print_out(void) {
+    list_type::const_iterator iter=output_list_.begin(), iter_end=output_list_.end();
+
     this->fout_ << "{ \"data\": [" << std::endl;
-    for (const auto &methinfo : output_list_) {
+    for (; iter != iter_end; ++iter) {
         this->fout_ << "{"
-        << "\"Procedure\": \"" << methinfo->sign << "\","
-        << "\"Callee\": \"" << methinfo->callee << "\"}," << std::endl;
+        << "\"Procedure\": \"" << (*iter)->sign << "\","
+        << "\"Callee\": \"" << (*iter)->callee << "\"}";
+
+	if (iter != std::prev(iter_end)){
+		this->fout_ << "," << std::endl;
+	}
     }
 
     this->fout_ << "]}" << std::endl;
