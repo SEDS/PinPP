@@ -17,6 +17,11 @@
 #include <memory>
 #include <regex>
 
+struct ins_info {
+	std::string diss;
+	std::string mnem;
+};
+
 class method_info : public OASIS::Pin::Callback <method_info (void)>
 {
 public:
@@ -27,7 +32,7 @@ public:
   }
 
   std::string sign;
-  std::string ret_val;
+  std::list<ins_info*> ins_infos;
   std::string callee;
   RTN rtn_;
   UINT64 rtnCount_;
@@ -49,6 +54,15 @@ public:
 
 	method_info * methinfo = new method_info ();
 	methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+
+	rtn.open();
+	for (auto &ins : rtn) {
+		ins_info * insinfo = new ins_info();
+		insinfo->diss = ins.disassemble();
+		insinfo->mnem = ins.mnemonic();
+		methinfo->ins_infos.push_back(insinfo);
+	}
+	rtn.close();
 
 	// Add the counter to the listing.
 	this->out_.push_back (methinfo);
@@ -173,6 +187,12 @@ void print_out(void) {
         this->fout_ << "{"
         << "\"Procedure\": \"" << (*iter)->sign << "\","
         << "\"Callee\": \"" << (*iter)->callee << "\"}";
+
+	std::cout << (*iter)->sign << std::endl;
+	for(auto &insinfo : (*iter)->ins_infos) {
+		std::cout << insinfo->diss << " | " << insinfo->mnem << std::endl;
+	}
+	std::cout << std::endl;
 
 	if (iter != std::prev(iter_end)){
 		this->fout_ << "," << std::endl;
