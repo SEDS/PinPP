@@ -17,11 +17,6 @@
 #include <memory>
 #include <regex>
 
-struct ins_info {
-	std::string diss;
-	std::string mnem;
-};
-
 class method_info : public OASIS::Pin::Callback <method_info (void)>
 {
 public:
@@ -32,8 +27,7 @@ public:
   }
 
   std::string sign;
-  std::list<ins_info*> ins_infos;
-  std::string callee;
+  std::string obj;
   RTN rtn_;
   UINT64 rtnCount_;
 
@@ -54,15 +48,6 @@ public:
 
 	method_info * methinfo = new method_info ();
 	methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-
-	rtn.open();
-	for (auto &ins : rtn) {
-		ins_info * insinfo = new ins_info();
-		insinfo->diss = ins.disassemble();
-		insinfo->mnem = ins.mnemonic();
-		methinfo->ins_infos.push_back(insinfo);
-	}
-	rtn.close();
 
 	// Add the counter to the listing.
 	this->out_.push_back (methinfo);
@@ -99,13 +84,13 @@ public:
         continue;
 
       if (std::regex_match(methinfo->sign, stub_regex_)) {
-        methinfo->callee = std::string("Stub");
+        methinfo->obj = std::string("Stub");
         this->output_list_.push_back(methinfo);
         this->extract_args(methinfo->sign);
       }
 
       if (std::regex_match(methinfo->sign, clientctx_regex_)) {
-        methinfo->callee = std::string("Client Context");
+        methinfo->obj = std::string("Client Context");
         this->output_list_.push_back(methinfo);
       }
     }
@@ -114,7 +99,7 @@ public:
      for (auto &methinfo : method_infos) {
        for (auto &pair : args_) {
          if (std::regex_match(methinfo->sign, pair.second)) {
-           methinfo->callee = pair.first;
+           methinfo->obj = pair.first;
            this->output_list_.push_back(methinfo);
          }
        }
@@ -186,13 +171,7 @@ void print_out(void) {
     for (; iter != iter_end; ++iter) {
         this->fout_ << "{"
         << "\"Procedure\": \"" << (*iter)->sign << "\","
-        << "\"Callee\": \"" << (*iter)->callee << "\"}";
-
-	std::cout << (*iter)->sign << std::endl;
-	for(auto &insinfo : (*iter)->ins_infos) {
-		std::cout << insinfo->diss << " | " << insinfo->mnem << std::endl;
-	}
-	std::cout << std::endl;
+        << "\"Object\": \"" << (*iter)->obj << "\"}";
 
 	if (iter != std::prev(iter_end)){
 		this->fout_ << "," << std::endl;
