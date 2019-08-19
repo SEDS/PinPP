@@ -17,23 +17,38 @@
 #include <memory>
 #include <regex>
 
-class method_info : public OASIS::Pin::Callback <method_info (void)>
-{
+class method_info : public OASIS::Pin::Callback <method_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)> {
 public:
   method_info (void)
     : rtnCount_ (0)
-  {
-
-  }
+  { }
 
   std::string sign;
   std::string obj;
+  std::string ret_val;
   RTN rtn_;
   UINT64 rtnCount_;
 
-  void handle_analyze (void)
-  {
+  void handle_analyze (ADDRINT object_addr) {
+    if (object_addr == 0) {
+      return;
+    }
+
     ++ this->rtnCount_;
+
+    //need to save func_address somehow
+    //need to convert VC inline assembly into GCC inline assembly
+    __asm
+    {
+      mov ecx, object_addr
+      push ecx
+      call func_addr
+      mov result_addr, eax
+      pop ebx
+    }
+
+  //need to create the commands
+    cmd.execute(result_addr, ret_val);
   }
 };
 
