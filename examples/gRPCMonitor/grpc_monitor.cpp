@@ -17,45 +17,23 @@
 #include <memory>
 #include <regex>
 
-class method_info : public OASIS::Pin::Callback <method_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)> {
+class method_info : public OASIS::Pin::Callback <method_info (void)>
+{
 public:
   method_info (void)
-    :address(0),
-    result(0),
-    input(0),
-    rtnCount_(0)
-  { }
+    : rtnCount_ (0)
+  {
+
+  }
 
   std::string sign;
   std::string obj;
-  std::string ret_val;
-  ADDRINT address;
-  ADDRINT result;
-  ADDRINT input;
   RTN rtn_;
   UINT64 rtnCount_;
 
-  void handle_analyze (ADDRINT object_addr) {
-    if (object_addr == 0) {
-      return;
-    }
-
+  void handle_analyze (void)
+  {
     ++ this->rtnCount_;
-    ADDRINT meth_addr = this->address;
-    ADDRINT result_addr = 0;
-
-    asm (
-      "mov %1, %%ecx\n"
-      "push %%ecx\n"
-      "call *%2\n"
-      "mov %%eax, %0\n"
-      "pop %%ebx"
-      : "=r"(result_addr)
-      : "r"(object_addr), "r"(meth_addr)
-    );
-
-    this->result = result_addr;
-    this->input = object_addr;
   }
 };
 
@@ -70,7 +48,6 @@ public:
 
 	method_info * methinfo = new method_info ();
 	methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
-  methinfo->address = rtn.address();
 
 	// Add the counter to the listing.
 	this->out_.push_back (methinfo);
@@ -193,8 +170,6 @@ void print_out(void) {
     this->fout_ << "{ \"data\": [" << std::endl;
     for (; iter != iter_end; ++iter) {
         this->fout_ << "{"
-        << "\"Input\": \"" << (*iter)->input << "\","
-        << "\"Result\": \"" << (*iter)->result << "\","
         << "\"Procedure\": \"" << (*iter)->sign << "\","
         << "\"Object\": \"" << (*iter)->obj << "\"}";
 
