@@ -20,12 +20,18 @@
 class method_info : public OASIS::Pin::Callback <method_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)> {
 public:
   method_info (void)
-    : rtnCount_ (0)
+    :address(0),
+    result(0),
+    input(0),
+    rtnCount_(0)
   { }
 
   std::string sign;
   std::string obj;
   std::string ret_val;
+  ADDRINT address;
+  ADDRINT result;
+  ADDRINT input;
   RTN rtn_;
   UINT64 rtnCount_;
 
@@ -35,20 +41,21 @@ public:
     }
 
     ++ this->rtnCount_;
+    ADDRINT meth_addr = this->address;
+    ADDRINT result_addr = 0;
 
-    //need to save func_address somehow
-    //need to convert VC inline assembly into GCC inline assembly
-    __asm
-    {
-      mov ecx, object_addr
-      push ecx
-      call func_addr
-      mov result_addr, eax
-      pop ebx
-    }
+    asm (
+      "mov %1, %%ecx\n"
+      "push %%ecx\n"
+      "call *%2\n"
+      "mov %%eax, %0\n"
+      "pop %%ebx"
+      : "=r"(result_addr)
+      : "r"(object_addr), "r"(meth_addr)
+    );
 
-  //need to create the commands
-    cmd.execute(result_addr, ret_val);
+    this->result = result_addr;
+    this->input = object_addr;
   }
 };
 
@@ -63,6 +70,7 @@ public:
 
 	method_info * methinfo = new method_info ();
 	methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+  methinfo->address = rtn.address();
 
 	// Add the counter to the listing.
 	this->out_.push_back (methinfo);
@@ -185,6 +193,8 @@ void print_out(void) {
     this->fout_ << "{ \"data\": [" << std::endl;
     for (; iter != iter_end; ++iter) {
         this->fout_ << "{"
+        << "\"Input\": \"" << (*iter)->input << "\","
+        << "\"Result\": \"" << (*iter)->result << "\","
         << "\"Procedure\": \"" << (*iter)->sign << "\","
         << "\"Object\": \"" << (*iter)->obj << "\"}";
 
