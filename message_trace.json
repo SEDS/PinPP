@@ -1,0 +1,4 @@
+{ "data": [
+{"Result": "0","Procedure": "helloworld::Greeter::Stub::SayHello(grpc_impl::ClientContext*, helloworld::HelloRequest const&, helloworld::HelloReply*)","Object": "Stub"},
+{"Result": "0","Procedure": "helloworld::Greeter::Stub::SayHelloAgain(grpc_impl::ClientContext*, helloworld::HelloRequest const&, helloworld::HelloReply*)","Object": "Stub"},
+]}

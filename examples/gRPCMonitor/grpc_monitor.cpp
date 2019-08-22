@@ -39,22 +39,6 @@ public:
     }
 
     ++ this->rtnCount_;
-
-    asm volatile (
-      "mov %1 %%edi\n"
-      "push %%edi\n"
-      "mov %2 %%edi\n"
-      "push %%edi\n"
-      "mov %3 %%edi\n"
-      "push %%edi\n"
-      "call *%4\n"
-      "mov %%eax %0\n"
-      "pop %%edi\n"
-      "pop %%edi\n"
-      "pop %%edi\n"
-      : "=r"(this->result)
-      : "r"(this->input3), "r"(this->input2), "r"(this->input1), "r"(this->address)
-    );
   }
 };
 
@@ -73,7 +57,7 @@ public:
 
    std::string signature = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
 
-    if (std::regex_match(temp, stub_regex_)) {
+    if (std::regex_match(signature, stub_regex_)) {
       method_info * methinfo = new method_info ();
       methinfo->sign = signature;
       methinfo->obj = std::string("Stub");
@@ -117,13 +101,16 @@ void print_out(void) {
 
     this->fout_ << "{ \"data\": [" << std::endl;
     for (; iter != iter_end; ++iter) {
-        this->fout_ << "{"
-        << "\"Result\": \"" << std::hex << (*iter)->result << "\","
-        << "\"Procedure\": \"" << (*iter)->sign << "\","
-        << "\"Object\": \"" << (*iter)->obj << "\"}";
 
-	if (iter != std::prev(iter_end)){
-		this->fout_ << "," << std::endl;
+	if ((*iter)->rtnCount_ > 0) {
+		this->fout_ << "{"
+		<< "\"Result\": \"" << std::hex << (*iter)->result << "\","
+		<< "\"Procedure\": \"" << (*iter)->sign << "\","
+		<< "\"Object\": \"" << (*iter)->obj << "\"}";
+
+		if (iter != std::prev(iter_end)){
+			this->fout_ << "," << std::endl;
+		}
 	}
     }
 
