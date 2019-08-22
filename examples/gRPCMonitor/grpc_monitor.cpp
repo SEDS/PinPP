@@ -17,7 +17,7 @@
 #include <memory>
 #include <regex>
 
-class method_info : public OASIS::Pin::Callback <method_info (void)>
+class method_info : public OASIS::Pin::Callback <method_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE, OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE, OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>
 {
 public:
   method_info (void)
@@ -28,32 +28,62 @@ public:
 
   std::string sign;
   std::string obj;
+  ADDRINT address;
+  ADDRINT result;
   RTN rtn_;
   UINT64 rtnCount_;
 
-  void handle_analyze (void)
-  {
+  void handle_analyze (ADDRINT input1, ADDRINT input2, ADDRINT input3) {
+    if (input1 == 0 || input2 == 0 || input3 == 0) {
+      return;
+    }
+
     ++ this->rtnCount_;
+
+    asm volatile (
+      "mov %1 %%edi\n"
+      "push %%edi\n"
+      "mov %2 %%edi\n"
+      "push %%edi\n"
+      "mov %3 %%edi\n"
+      "push %%edi\n"
+      "call *%4\n"
+      "mov %%eax %0\n"
+      "pop %%edi\n"
+      "pop %%edi\n"
+      "pop %%edi\n"
+      : "=r"(this->result)
+      : "r"(this->input3), "r"(this->input2), "r"(this->input1), "r"(this->address)
+    );
   }
 };
 
 typedef std::list <method_info *> list_type;
 
-class Instrument : public OASIS::Pin::Routine_Instrument <Instrument>
-{
+class Instrument : public OASIS::Pin::Routine_Instrument <Instrument>  {
 public:
+  Instrument (void)
+    :stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
+    clientctx_regex_("(.*)(ClientContext::)(.*)")
+  { }
+
   void handle_instrument (const OASIS::Pin::Routine & rtn) {
     using OASIS::Pin::Section;
     using OASIS::Pin::Image;
 
-	method_info * methinfo = new method_info ();
-	methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+   std::string signature = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
 
-	// Add the counter to the listing.
-	this->out_.push_back (methinfo);
+    if (std::regex_match(temp, stub_regex_)) {
+      method_info * methinfo = new method_info ();
+      methinfo->sign = signature;
+      methinfo->obj = std::string("Stub");
+      methinfo->address = rtn.address();
+      methinfo->rtn_ = rtn;
+      this->out_.push_back(methinfo);
 
-	OASIS::Pin::Routine_Guard guard (rtn);
-	methinfo->insert (IPOINT_BEFORE, rtn);
+      OASIS::Pin::Routine_Guard guard (rtn);
+      methinfo->insert (IPOINT_BEFORE, rtn, 0, 1, 2);
+    }
   }
 
   list_type & get_list (void) {
@@ -62,15 +92,15 @@ public:
 
 private:
   list_type out_;
+  std::regex stub_regex_;
+  std::regex clientctx_regex_;
 };
 
 class grpc_monitor : public OASIS::Pin::Tool <grpc_monitor>
 {
 public:
   grpc_monitor (void)
-    :fout_ ("message_trace.json"),
-    stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
-    clientctx_regex_("(.*)(ClientContext::)(.*)")
+    :fout_ ("message_trace.json")
   {
     this->init_symbols ();
     this->enable_fini_callback ();
@@ -78,90 +108,8 @@ public:
 
   void handle_fini (INT32) {
     list_type & method_infos = inst_.get_list();
-
-    for (auto &methinfo : method_infos) {
-      if (methinfo->rtnCount_ == 0)
-        continue;
-
-      if (std::regex_match(methinfo->sign, stub_regex_)) {
-        methinfo->obj = std::string("Stub");
-        this->output_list_.push_back(methinfo);
-        this->extract_args(methinfo->sign);
-      }
-
-      if (std::regex_match(methinfo->sign, clientctx_regex_)) {
-        methinfo->obj = std::string("Client Context");
-        this->output_list_.push_back(methinfo);
-      }
-    }
-
-    //Form method_info for methods invoked from args.
-     for (auto &methinfo : method_infos) {
-       for (auto &pair : args_) {
-         if (std::regex_match(methinfo->sign, pair.second)) {
-           methinfo->obj = pair.first;
-           this->output_list_.push_back(methinfo);
-         }
-       }
-     }
-
+    this->output_list_ = method_infos;
     this->print_out();
-  }
-
-  //replace_all - replace all occurences of sub in str with rep.
-  //modified from https://stackoverflow.com/questions/20406744/how-to-find-and-replace-all-occurrences-of-a-substring-in-a-string
-  void replace_all(std::string & str, std::string sub, std::string rep) {
-      std::string::size_type pos = 0;
-      while ((pos = str.find(sub, pos)) != std::string::npos) {
-          str.replace(pos, sub.size(), rep);
-          pos += rep.size();
-      }
-  }
-
-  void extract_args(std::string method) {
-      std::vector<std::string::size_type> commas;
-      std::vector<std::string::size_type> substr_lengths;
-
-      //find all comma positions. We don't use string.find() because
-      //we would need to know how many commas are in the string before hand and that requires a second loop through
-      //the string.
-      for (std::string::size_type i=0; i<method.length(); ++i) {
-          if (method[i] == ',') {
-              commas.push_back(i);
-          }
-      }
-
-      for (std::string::size_type i=1; i<commas.size(); ++i) {
-          substr_lengths.push_back(commas[i] - commas[i-1] + 1);
-
-          //we use the location of last comma for the last arg's length
-          if (i == commas.size()-1) {
-              substr_lengths.push_back(commas[i]);
-          }
-      }
-
-      for (std::string::size_type i=0; i<substr_lengths.size(); ++i) {
-          std::string temp = method.substr(commas[i], substr_lengths[i]);
-
-          //remove commas on either side of args
-          temp.replace(0, 2, "");
-          temp.replace(temp.size()-1, 1, "");
-
-          //remove c++ keywords and symbols
-          replace_all(temp, "const", "");
-          replace_all(temp, "*", "");
-          replace_all(temp, "&", "");
-
-          //remove extra whitespace
-          replace_all(temp, " ", "");
-
-          if (args_.count(temp) == 0) {
-              std::string regex_lit("(.*)(::)(.*)");
-              regex_lit.insert(5, temp);
-              std::regex arg_regex(regex_lit);
-              args_.insert(std::make_pair(temp, arg_regex));
-          }
-      }
   }
 
 void print_out(void) {
@@ -170,6 +118,7 @@ void print_out(void) {
     this->fout_ << "{ \"data\": [" << std::endl;
     for (; iter != iter_end; ++iter) {
         this->fout_ << "{"
+        << "\"Result\": \"" << std::hex << (*iter)->result << "\","
         << "\"Procedure\": \"" << (*iter)->sign << "\","
         << "\"Object\": \"" << (*iter)->obj << "\"}";
 
@@ -186,13 +135,6 @@ private:
   list_type output_list_;
   Instrument inst_;
   std::ofstream fout_;
-  std::map<std::string, std::regex> args_;
-
-  //regular expression for finding valid procedures
-  //only want procedures that use a Stub followed by a ClientContext, this means
-  //the client context is a parameter to the stub call.
-  std::regex stub_regex_;
-  std::regex clientctx_regex_;
 };
 
 DECLARE_PINTOOL (grpc_monitor);
