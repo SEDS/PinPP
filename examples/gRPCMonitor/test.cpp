@@ -19,7 +19,8 @@ private:
 };
 
 int nyalia(Foo f1) {
-	return f1.get() + 123;
+	Foo f2(f1.get() + 123);
+	return f2.get();
 }
 
 int main(void) {
@@ -36,16 +37,14 @@ int main(void) {
 	//from the methods.
 	//more info here https://stackoverflow.com/questions/20551472/returning-object-data-from-c-method-called-in-assembly
 
-	//on windows, this returns a memory address.
-	//thus I probably need to store the values in other registers temporarily.
-	__asm
-	{
-		mov edi, f1
-		push edi
-		call nyalia
-		mov n, eax
-		pop edi
-	};
+	asm volatile(
+		"push %1\n"
+		"call *%2\n"
+		"mov %%eax, %0\n"
+		"pop %%edi\n"
+		: "=r" (n)
+		: "r" (f1), "r" (&nyalia)
+	);
 
 	std::cout << n << std::endl;
 
