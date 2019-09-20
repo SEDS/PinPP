@@ -60,3 +60,6 @@ program
 # Eclipse files
 .cdtproject
 .project
+
+# VS Code files
+.vscode/
