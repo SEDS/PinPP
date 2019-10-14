@@ -19,6 +19,10 @@
 
 class method_info {
   public:
+	method_info(void)
+		:rtnCount_(0)
+	{ }
+
     std::string sign;
     std::string obj;
     std::string target;
@@ -30,10 +34,7 @@ class count_info : public OASIS::Pin::Callback <count_info (void)>, public metho
 {
 public:
   count_info (void)
-    : rtnCount_ (0)
-  {
-
-  }
+  { }
 
   void handle_analyze (void)
   {
@@ -49,15 +50,12 @@ OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public method_info
 {
   public:
   channel_info (void)
-    : rtnCount_ (0)
-  {
+  { }
 
-  }
-
-  void handle_analyze (char const* str, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5)
+  void handle_analyze (ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5)
   {
     ++ this->rtnCount_;
-    std::cout << "Target address is --> " << str << std::endl;
+    std::cout << "Target address is --> " << (char const*)arg1 << std::endl;
   }
 };
 
@@ -75,20 +73,26 @@ public:
     using OASIS::Pin::Image;
 
     method_info * methinfo = nullptr;
+	std::string rtn_sign(OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE));
 
     if (rtn_sign.find(channel_create_substr_) != std::string::npos) {
-      methinfo = new channel_info ();
-    } else {
-      methinfo = new method_info ();
-    }
+      channel_info * chaninfo = new channel_info();
+	chaninfo->sign = rtn_sign;
+	OASIS::Pin::Routine_Guard guard(rtn);
+	chaninfo->insert (IPOINT_BEFORE, rtn, 0, 1, 2, 3, 4);
 
-    methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
+	methinfo = chaninfo;
+    } else {
+      count_info * cinfo = new count_info();
+	cinfo->sign = rtn_sign;
+	OASIS::Pin::Routine_Guard guard(rtn);
+	cinfo->insert (IPOINT_BEFORE, rtn);
+
+	methinfo = cinfo;
+    }
 
     // Add the counter to the listing.
     this->out_.push_back (methinfo);
-
-    OASIS::Pin::Routine_Guard guard (rtn);
-    methinfo->insert (IPOINT_BEFORE, rtn);
   }
 
   list_type & get_list (void) {
