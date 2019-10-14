@@ -17,7 +17,8 @@ BlockingUnaryCall() wrapper is used within the Client Side Stub::SayHello() meth
 SayHello() method is called from application layer in the clients main file.
 
 After investigation, I confirmed that the grpc_channel struct gets the target address (at some point they parse the string for the port but I don't know where),
-see file channel.h:93.
+see file channel.h:93. Also, the procedure grpc_channel_create() takes the target address as a C str (const char *) as the first parameter.
+We may be able to extract the target address from this procedure.
 
 
 In the proccout trace, I see that GenericSerialize() and GenericDeserialized() are called everytime for the marshalling

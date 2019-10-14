@@ -17,23 +17,47 @@
 #include <memory>
 #include <regex>
 
-class method_info : public OASIS::Pin::Callback <method_info (void)>
+class method_info {
+  public:
+    std::string sign;
+    std::string obj;
+    std::string target;
+    RTN rtn_;
+    UINT64 rtnCount_;
+};
+
+class count_info : public OASIS::Pin::Callback <count_info (void)>, public method_info
 {
 public:
-  method_info (void)
+  count_info (void)
     : rtnCount_ (0)
   {
 
   }
 
-  std::string sign;
-  std::string obj;
-  RTN rtn_;
-  UINT64 rtnCount_;
-
   void handle_analyze (void)
   {
     ++ this->rtnCount_;
+  }
+};
+
+class channel_info : public OASIS::Pin::Callback <channel_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public method_info
+{
+  public:
+  channel_info (void)
+    : rtnCount_ (0)
+  {
+
+  }
+
+  void handle_analyze (char const* str, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5)
+  {
+    ++ this->rtnCount_;
+    std::cout << "Target address is --> " << str << std::endl;
   }
 };
 
@@ -42,11 +66,22 @@ typedef std::list <method_info *> list_type;
 class Instrument : public OASIS::Pin::Routine_Instrument <Instrument>
 {
 public:
+  Instrument(void)
+    :channel_create_substr_("grpc_channel_create(char const*")
+  { }
+
   void handle_instrument (const OASIS::Pin::Routine & rtn) {
     using OASIS::Pin::Section;
     using OASIS::Pin::Image;
 
-    method_info * methinfo = new method_info ();
+    method_info * methinfo = nullptr;
+
+    if (rtn_sign.find(channel_create_substr_) != std::string::npos) {
+      methinfo = new channel_info ();
+    } else {
+      methinfo = new method_info ();
+    }
+
     methinfo->sign = OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE);
 
     // Add the counter to the listing.
@@ -62,6 +97,7 @@ public:
 
 private:
   list_type out_;
+  std::string channel_create_substr_;
 };
 
 class grpc_monitor : public OASIS::Pin::Tool <grpc_monitor>
