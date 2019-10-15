@@ -85,19 +85,16 @@ namespace Pin {
 
 
     struct SDMM_Tool_Knobs {
-        static std::string include_;
-        static std::string helper_;
-        static std::string target_methods_;
-        static std::string obv_;
+        std::string include_;
+        std::string helper_;
+        std::string target_methods_;
+        std::string obv_;
         static KNOB <string> config_file_name_;
     };
 
     template <typename MIDDLETYPE>
     class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool<MIDDLETYPE>> {
-    
-    static const int TOTAL_OPTIONS = 3;
-    enum HEADER_TYPES {MIDDLEWARE, INCLUDE, HELPER};
-    
+
     public:
     typedef typename MIDDLETYPE::list_type list_type;
 
@@ -130,7 +127,7 @@ namespace Pin {
             target_method_list_.push_back(method);
 
         // Object by value prefix
-        obv = knobs_.obv_.Value().c_str();
+        obv = knobs_.obv_.c_str();
 
         this->init_symbols();
         this->enable_fini_callback();
@@ -158,8 +155,7 @@ namespace Pin {
     }
 
     void parse_config_file() {
-        std::ifstream config_file(knobs_.config_file_name_.c_str());
-        std::string confg_options[TOTAL_OPTIONS];
+        std::ifstream config_file(knobs_.config_file_name_.Value().c_str());
 
         knobs_.include_ = "";
         knobs_.helper_ = "";
@@ -182,7 +178,7 @@ namespace Pin {
                     } else if (key.find("INCLUDE") != std::string::npos) {
                         knobs_.include_ = value;
                     } else if (key.find("HELPER") != std::string::npos) {
-                        knobs_.helper_ = value);
+                        knobs_.helper_ = value;
                     }
                 }
             }
@@ -198,7 +194,7 @@ namespace Pin {
         //obv - Object by value prefix
         //inst_ - the instrumentation object  
         std::ofstream fout_;
-        static SDMM_Tool_Knobs knobs_;
+        SDMM_Tool_Knobs knobs_;
         std::vector<string> include_list_;
         std::vector<string> helper_list_;
         std::vector<string> target_method_list_;
