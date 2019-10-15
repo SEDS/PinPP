@@ -85,15 +85,19 @@ namespace Pin {
 
 
     struct SDMM_Tool_Knobs {
-        // Knobs
-        static KNOB <string> include_;
-        static KNOB <string> helper_;
-        static KNOB <string> target_methods_;
-        static KNOB <string> obv_;
+        static std::string include_;
+        static std::string helper_;
+        static std::string target_methods_;
+        static std::string obv_;
+        static KNOB <string> config_file_name_;
     };
 
     template <typename MIDDLETYPE>
     class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool<MIDDLETYPE>> {
+    
+    static const int TOTAL_OPTIONS = 3;
+    enum HEADER_TYPES {MIDDLEWARE, INCLUDE, HELPER};
+    
     public:
     typedef typename MIDDLETYPE::list_type list_type;
 
@@ -104,6 +108,9 @@ namespace Pin {
         target_method_list_,
         obv)
     {
+        // parse the configuration file
+        parse_config_file();
+
         // parse the include dll argument
         std::stringstream include_string (knobs_.include_);
         std::string include;
@@ -150,6 +157,38 @@ namespace Pin {
         std::cout << "Output Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;      
     }
 
+    void parse_config_file() {
+        std::ifstream config_file(knobs_.config_file_name_.c_str());
+        std::string confg_options[TOTAL_OPTIONS];
+
+        knobs_.include_ = "";
+        knobs_.helper_ = "";
+        knobs_.target_methods_ = "push_";
+        knobs_.obv_ = "OBV_";
+
+        if (config_file.is_open()) {
+            std::string line;
+            std::string header_sep("=");
+
+            while (std::getline(config_file, line)) {
+                size_t pos = line.find(header_sep);
+
+                if (pos != std::string::npos) {
+                    std::string key(line.substr(0, pos));
+                    std::string value(line.substr(pos+1));
+
+                    if (key.find("MIDDLEWARE") != std::string::npos) {
+                        std::cout << "Using Middleware --> " << value << std::endl;
+                    } else if (key.find("INCLUDE") != std::string::npos) {
+                        knobs_.include_ = value;
+                    } else if (key.find("HELPER") != std::string::npos) {
+                        knobs_.helper_ = value);
+                    }
+                }
+            }
+        }
+    }
+
     private:
         //fout_ - the output file
         //knobs_ the command line arguments for SDMM
@@ -159,7 +198,7 @@ namespace Pin {
         //obv - Object by value prefix
         //inst_ - the instrumentation object  
         std::ofstream fout_;
-        SDMM_Tool_Knobs knobs_;
+        static SDMM_Tool_Knobs knobs_;
         std::vector<string> include_list_;
         std::vector<string> helper_list_;
         std::vector<string> target_method_list_;
@@ -178,14 +217,5 @@ namespace Pin {
 
 // example:
 // > $PIN_ROOT/pin -t $PINPP_ROOT/lib/sdmm.dll -l Context,Servant -m push -- <program>
-KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::include_ (KNOB_MODE_WRITEONCE, "pintool", "i", "",
-                                            "(case sensitive) name of the dll to be included to find push method");
-
-KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::helper_ (KNOB_MODE_WRITEONCE, "pintool", "ih", "",
-                                            "(case sensitive) name of the dll to be included to find helper method");
-
-KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::target_methods_ (KNOB_MODE_WRITEONCE, "pintool", "m", "push_",
-                                            "(case sensitive) name of the method call to be instrumented");
-
-KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::obv_ (KNOB_MODE_WRITEONCE, "pintool", "obv", "OBV_", 
-                                            "Object by value prefix");
+KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::config_file_name_ (KNOB_MODE_WRITEONCE, "pintool", "conf", "config.sdmm", 
+                                            "The name of the configuration file SDMM should use");

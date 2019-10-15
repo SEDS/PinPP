@@ -1,0 +1,3 @@
+MIDDLEWARE = gRPC
+INCLUDE = greeter_client
+HELPER = greeter_client
