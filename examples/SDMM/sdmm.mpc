@@ -1,0 +1,28 @@
+// sdmm.mpc
+// Standard-based Distributed Middleware Monitor (SDMM)
+
+project (sdmm) : oasis_pintool {
+  sharedname    = sdmm
+
+  Source_Files {
+    sdmm.cpp
+    data_type_cmd.cpp
+    const_char_ptr_cmd.cpp
+    data_type_cmd_factory.cpp
+    long_cmd.cpp
+    unsigned_short_cmd.cpp
+  }
+
+  Header_files {
+    sdmm_tool.h
+    middleware.h
+    corba_middleware.h
+    grpc_middleware.h
+    writer.h
+    data_type_cmd.h
+    const_char_ptr_cmd.h
+    data_type_cmd_factory.h
+    long_cmd.h
+    unsigned_short_cmd.h
+  }
+}

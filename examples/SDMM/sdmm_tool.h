@@ -1,0 +1,191 @@
+#include "pin++/Image_Instrument.h"
+#include "grpc_middleware.h"
+#include "corba_middleware.h"
+#include "writer.h"
+#include "pin++/Pintool.h"
+#include "pin++/Image.h"
+#include "pin++/Section.h"
+#include "pin++/Routine.h"
+
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string.h>
+#include <string>
+#include <list>
+#include <vector>
+#include <map>
+#include <memory>
+#include <regex>
+#include <ctime>
+
+namespace OASIS {
+namespace Pin {
+
+    template <typename MIDDLETYPE>
+    class SDMM_Instrument : public OASIS::Pin::Image_Instrument <SDMM_Instrument<MIDDLETYPE>> {
+    public:
+        typedef typename MIDDLETYPE::list_type list_type;
+
+        SDMM_Instrument(std::vector<std::string> & include_list,
+                std::vector<std::string> & helper_list,
+                std::vector<std::string> & method_list,
+                std::string & obv)
+            :include_list_(include_list),
+            helper_list_(helper_list),
+            middleware_(method_list,
+            obv)
+        { }
+
+        void handle_instrument (const OASIS::Pin::Image & img) {
+            std::clock_t start = std::clock ();
+            size_t seperator = std::string::npos;
+
+            this->middleware_.analyze_img(img);
+
+            for (auto include : include_list_) {
+                seperator = img.name ().find (include);
+
+                if (seperator != std::string::npos) {
+                    for (auto sec : img) {
+                        for (auto rtn : sec) {
+                            if (!rtn.valid())
+                                continue;
+
+                            this->middleware_.analyze_rtn(rtn);
+                        }
+                    }
+                }
+            }
+
+            size_t sep = std::string::npos;
+            for (auto helper : helper_list_) {
+                sep = img.name ().find (helper);
+
+                if (sep != std::string::npos) {
+                    this->middleware_.handle_helpers(img);
+                }
+            }
+            std::clock_t end = std::clock ();
+            std::cout << "Instrument Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
+        }
+
+        list_type & get_list(void) {
+            return this->middleware_.get_list();
+        }
+
+    private:
+        //include_list_ - list of the dlls to be included in instrumentation
+        //helper_list_ - list of the dlls to be instrumetned to find helper methods.
+        //middleware_ - the standards based distributed middlware to use such as CORBA or gRPC
+        std::vector<std::string> & include_list_;
+        std::vector<std::string> & helper_list_;
+        MIDDLETYPE middleware_;
+    };
+
+
+    struct SDMM_Tool_Knobs {
+        // Knobs
+        static KNOB <string> include_;
+        static KNOB <string> helper_;
+        static KNOB <string> target_methods_;
+        static KNOB <string> obv_;
+    };
+
+    template <typename MIDDLETYPE>
+    class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool<MIDDLETYPE>> {
+    public:
+    typedef typename MIDDLETYPE::list_type list_type;
+
+    SDMM_Tool (void)
+        :fout_("trace.json"),
+        inst_(include_list_,
+        helper_list_,
+        target_method_list_,
+        obv)
+    {
+        // parse the include dll argument
+        std::stringstream include_string (knobs_.include_);
+        std::string include;
+        while (std::getline (include_string, include, ','))
+            include_list_.push_back(include);
+
+        // parse the helper dll argument
+        std::stringstream helper_string (knobs_.helper_);
+        std::string helper;
+        while (std::getline (helper_string, helper, ','))
+            helper_list_.push_back(helper);
+
+        // parse the target method argument
+        std::stringstream methods_string (knobs_.target_methods_);
+        std::string method;
+        while (std::getline (methods_string, method, ','))
+            target_method_list_.push_back(method);
+
+        // Object by value prefix
+        obv = knobs_.obv_.Value().c_str();
+
+        this->init_symbols();
+        this->enable_fini_callback();
+    }
+
+    void handle_fini (INT32 code) {
+        std::clock_t start = std::clock ();
+        list_type & info_items = inst_.get_list();
+        typename list_type::const_iterator iter=info_items.begin(), iter_end=info_items.end();
+
+        this->fout_ << "{ \"data\": [" << std::endl;
+
+        for (; iter != iter_end; ++iter) {
+            (*iter)->write_to(fout_);
+
+            if (iter != std::prev(iter_end)) {
+                this->fout_ << "," << std::endl;
+            }
+        }
+
+        this->fout_ << "]}" << std::endl;
+        this->fout_.close ();
+        std::clock_t end = std::clock ();
+        std::cout << "Output Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;      
+    }
+
+    private:
+        //fout_ - the output file
+        //knobs_ the command line arguments for SDMM
+        //include_list_ - list of the dlls to be included in instrumentation
+        //helper_list_ - list of the dlls to be instrumetned to find helper methods
+        //target_method_list_ - list of the target method call to be instrumented
+        //obv - Object by value prefix
+        //inst_ - the instrumentation object  
+        std::ofstream fout_;
+        SDMM_Tool_Knobs knobs_;
+        std::vector<string> include_list_;
+        std::vector<string> helper_list_;
+        std::vector<string> target_method_list_;
+        std::string obv;
+        SDMM_Instrument<MIDDLETYPE> inst_;
+    };
+}
+}
+
+/*******************************
+* KNOB declaration
+*******************************/
+
+// syntax:
+// > $PIN_ROOT/pin -t $PINPP_ROOT/lib/sdmm.dll -l <layer1>,<layer2>,... -m <method> -- <program>
+
+// example:
+// > $PIN_ROOT/pin -t $PINPP_ROOT/lib/sdmm.dll -l Context,Servant -m push -- <program>
+KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::include_ (KNOB_MODE_WRITEONCE, "pintool", "i", "",
+                                            "(case sensitive) name of the dll to be included to find push method");
+
+KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::helper_ (KNOB_MODE_WRITEONCE, "pintool", "ih", "",
+                                            "(case sensitive) name of the dll to be included to find helper method");
+
+KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::target_methods_ (KNOB_MODE_WRITEONCE, "pintool", "m", "push_",
+                                            "(case sensitive) name of the method call to be instrumented");
+
+KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::obv_ (KNOB_MODE_WRITEONCE, "pintool", "obv", "OBV_", 
+                                            "Object by value prefix");
