@@ -1,0 +1,8 @@
+project (empty) : oasis_pintool {
+  sharedname    = empty
+
+  Source_Files {
+    empty.cpp
+  }
+
+}
