@@ -329,8 +329,7 @@ namespace Pin {
     public:
         //list_type - a list of buffers for routines
         typedef std::list <item_type> analysis_rtn_list_type;
-        typedef std::list <Writer *> list_type;
-
+        
         CORBA_Middleware(std::vector<std::string> & method_list, std::string & obv)
             :target_method_list_(method_list),
             obv_(obv),
@@ -528,7 +527,7 @@ namespace Pin {
             }
         }
 
-        list_type & get_list(void) {
+        virtual list_type & get_list(void) {
           return this->output_list_;
         }
     private:
@@ -556,8 +555,6 @@ namespace Pin {
         helper_returntype_map_type helper_returntype_map_;
         std::string img_name_;
     };
-
-    typedef CORBA_Middleware CORBA;
 
 }
 }

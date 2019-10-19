@@ -72,8 +72,6 @@ namespace Pin {
 
   class gRPC_Middleware : public Middleware {
   public:
-    typedef std::list <method_info *> list_type;
-
     gRPC_Middleware(std::vector<std::string> & method_list, std::string & obv)
       :stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
       clientctx_regex_("(.*)(ClientContext::)(.*)"),
@@ -190,7 +188,7 @@ namespace Pin {
       }
     }
 
-    list_type & get_list(void) {
+    virtual list_type & get_list(void) {
       std::cout << "Analyze_rtn total Time Consumption: " << total_ET.get() << std::endl;
       std::cout << "Method Info total Time Consumption: " << accum_meth_info.get() << std::endl;
       return this->output_list_;
@@ -207,8 +205,6 @@ namespace Pin {
     double max_ET;
     time_accumulator total_ET;
   };
-
-  typedef gRPC_Middleware gRPC;
 
 }
 }
