@@ -22,20 +22,18 @@
 namespace OASIS {
 namespace Pin {
 
-    template <typename MIDDLETYPE>
-    class SDMM_Instrument : public OASIS::Pin::Image_Instrument <SDMM_Instrument<MIDDLETYPE>> {
+    class SDMM_Instrument : public OASIS::Pin::Image_Instrument <SDMM_Instrument> {
     public:
-        typedef typename MIDDLETYPE::list_type list_type;
 
         SDMM_Instrument(std::vector<std::string> & include_list,
-                std::vector<std::string> & helper_list,
-                std::vector<std::string> & method_list,
-                std::string & obv)
+                std::vector<std::string> & helper_list)
             :include_list_(include_list),
-            helper_list_(helper_list),
-            middleware_(method_list,
-            obv)
+            helper_list_(helper_list)
         { }
+
+        void set_middleware(std::shared_ptr<Middleware> middleware) {
+            this->middleware_ = middleware;
+        }
 
         void handle_instrument (const OASIS::Pin::Image & img) {
             std::clock_t start = std::clock ();
@@ -70,40 +68,34 @@ namespace Pin {
             std::cout << "Instrument Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
         }
 
-        list_type & get_list(void) {
-            return this->middleware_.get_list();
-        }
-
     private:
         //include_list_ - list of the dlls to be included in instrumentation
         //helper_list_ - list of the dlls to be instrumetned to find helper methods.
         //middleware_ - the standards based distributed middlware to use such as CORBA or gRPC
         std::vector<std::string> & include_list_;
         std::vector<std::string> & helper_list_;
-        MIDDLETYPE middleware_;
+        std::shared_ptr<Middleware> middleware_;
     };
 
+    enum MIDDLEWARE_TYPE {CORBA, gRPC};
 
     struct SDMM_Tool_Knobs {
         std::string include_;
         std::string helper_;
         std::string target_methods_;
         std::string obv_;
+        MIDDLEWARE_TYPE middle_type_;
         static KNOB <string> config_file_name_;
     };
 
-    template <typename MIDDLETYPE>
-    class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool<MIDDLETYPE>> {
+    class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool> {
 
     public:
-    typedef typename MIDDLETYPE::list_type list_type;
 
     SDMM_Tool (void)
         :fout_("trace.json"),
         inst_(include_list_,
-        helper_list_,
-        target_method_list_,
-        obv)
+        helper_list_)
     {
         // parse the configuration file
         parse_config_file();
@@ -129,13 +121,22 @@ namespace Pin {
         // Object by value prefix
         obv = knobs_.obv_.c_str();
 
+        if (knobs_.middle_type_ == MIDDLEWARE_TYPE::CORBA) {
+            middleware_ = std::shared_ptr<Middleware>(new CORBA(target_method_list_, obv));
+        } else if (knobs_.middle_type_ == MIDDLEWARE_TYPE::gRPC) {
+            middleware_ = std::shared_ptr<Middleware>(new gRPC(target_method_list_, obv));
+        }
+
+        inst_.set_middleware(middleware_);
+
         this->init_symbols();
         this->enable_fini_callback();
     }
 
     void handle_fini (INT32 code) {
         std::clock_t start = std::clock ();
-        list_type & info_items = inst_.get_list();
+        typedef Middleware::list_type list_type;
+        list_type & info_items = middleware_.get_list();
         typename list_type::const_iterator iter=info_items.begin(), iter_end=info_items.end();
 
         this->fout_ << "{ \"data\": [" << std::endl;
@@ -174,6 +175,12 @@ namespace Pin {
                     std::string value(line.substr(pos+1));
 
                     if (key.find("MIDDLEWARE") != std::string::npos) {
+                        if (value.find("CORBA")) {
+                            knobs_.middle_type_ = MIDDLEWARE_TYPE::CORBA;
+                        } else if (value.find("gRPC")) {
+                            knobs_.middle_type_ = MIDDLEWARE_TYPE::gRPC;
+                        }
+
                         std::cout << "Using Middleware --> " << value << std::endl;
                     } else if (key.find("INCLUDE") != std::string::npos) {
                         knobs_.include_ = value;
@@ -199,7 +206,8 @@ namespace Pin {
         std::vector<string> helper_list_;
         std::vector<string> target_method_list_;
         std::string obv;
-        SDMM_Instrument<MIDDLETYPE> inst_;
+        std::shared_ptr<Middleware> middleware_;
+        SDMM_Instrument inst_;
     };
 }
 }
