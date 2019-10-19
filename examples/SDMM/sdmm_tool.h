@@ -39,7 +39,7 @@ namespace Pin {
             std::clock_t start = std::clock ();
             size_t seperator = std::string::npos;
 
-            this->middleware_.analyze_img(img);
+            this->middleware_->analyze_img(img);
 
             for (auto include : include_list_) {
                 seperator = img.name ().find (include);
@@ -50,7 +50,7 @@ namespace Pin {
                             if (!rtn.valid())
                                 continue;
 
-                            this->middleware_.analyze_rtn(rtn);
+                            this->middleware_->analyze_rtn(rtn);
                         }
                     }
                 }
@@ -61,7 +61,7 @@ namespace Pin {
                 sep = img.name ().find (helper);
 
                 if (sep != std::string::npos) {
-                    this->middleware_.handle_helpers(img);
+                    this->middleware_->handle_helpers(img);
                 }
             }
             std::clock_t end = std::clock ();
@@ -122,9 +122,9 @@ namespace Pin {
         obv = knobs_.obv_.c_str();
 
         if (knobs_.middle_type_ == MIDDLEWARE_TYPE::CORBA) {
-            middleware_ = std::shared_ptr<Middleware>(new CORBA(target_method_list_, obv));
+            middleware_ = std::shared_ptr<Middleware>(new CORBA_Middleware(target_method_list_, obv));
         } else if (knobs_.middle_type_ == MIDDLEWARE_TYPE::gRPC) {
-            middleware_ = std::shared_ptr<Middleware>(new gRPC(target_method_list_, obv));
+            middleware_ = std::shared_ptr<Middleware>(new gRPC_Middleware(target_method_list_, obv));
         }
 
         inst_.set_middleware(middleware_);
@@ -136,7 +136,7 @@ namespace Pin {
     void handle_fini (INT32 code) {
         std::clock_t start = std::clock ();
         typedef Middleware::list_type list_type;
-        list_type & info_items = middleware_.get_list();
+        list_type & info_items = middleware_->get_list();
         typename list_type::const_iterator iter=info_items.begin(), iter_end=info_items.end();
 
         this->fout_ << "{ \"data\": [" << std::endl;
