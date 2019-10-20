@@ -43,31 +43,48 @@ namespace Pin {
 
   static time_accumulator accum_meth_info;
 
-  class method_info : public OASIS::Pin::Callback <method_info (void)>, public Writer {
+  class method_info : public Writer {
   public:
-    method_info (void)
-      : rtnCount_ (0)
+    method_info (std::string signature, std::string call_object)
+      : sign_(signature),
+      obj_(call_object)
     { }
 
-    std::string sign;
-    std::string obj;
-    RTN rtn_;
-    UINT64 rtnCount_;
+    virtual void write_to(std::ostream & out) {
+      out << "{"
+      << "\"Method\": \"" << this->sign_ << "\","
+      << "\"Object\": \"" << this->obj_ << "\"}";
+    }
+  private:
+    std::string sign_;
+    std::string obj_;
+  };
 
-    void handle_analyze (void)
-    {
-      std::clock_t start = std::clock ();
-      ++ this->rtnCount_;
-      std::clock_t end = std::clock ();
+  class address_info : public OASIS::Pin::Callback <address_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+  OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+  OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+  OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+  OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer
+  {
+    public:
+    address_info (void)
+    { }
+
+    void handle_analyze (ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5) {
+      std::clock_t start = std::clock();
+      server_address_ = (char const*)arg1;
+      std::clock_t end = std::clock();
       double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
       accum_meth_info.increase(ET);
     }
 
     virtual void write_to(std::ostream & out) {
       out << "{"
-      << "\"Method\": \"" << this->sign << "\","
-      << "\"Object\": \"" << this->obj << "\"}";
+      << "\"Server Address\": \"" << this->server_address_ << "\"}";
     }
+
+    private:
+      std::string server_address_;
   };
 
   class gRPC_Middleware : public Middleware {
@@ -75,6 +92,7 @@ namespace Pin {
     gRPC_Middleware(std::vector<std::string> & method_list, std::string & obv)
       :stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
       clientctx_regex_("(.*)(ClientContext::)(.*)"),
+      channel_create_substr_("grpc_channel_create(char const*")
       max_ET(0.0)
     {  }
 
@@ -168,16 +186,19 @@ namespace Pin {
         }
       }
 
-      if (calling_object != "N/A") {
-        method_info * methinfo = new method_info ();
-        methinfo->sign = signature;
-        methinfo->obj = calling_object;
+      if (signature.find(channel_create_substr_) != std::string::npos) {
+        address_info * a_info = new address_info();
+
+        this->output_list_.push_back((Writer *) a_info);
+
+        OASIS::Pin::Routine_Guard guard (rtn);
+        a_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2, 3, 4);
+        
+      } else if (calling_object != "N/A") {
+        Writer * methinfo = new method_info (signature, calling_object);
         
         // Add the counter to the listing.
         this->output_list_.push_back (methinfo);
-
-        OASIS::Pin::Routine_Guard guard (rtn);
-        methinfo->insert (IPOINT_BEFORE, rtn);
       }
       std::clock_t end = std::clock ();
       double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
@@ -202,6 +223,7 @@ namespace Pin {
     std::map<std::string, std::regex> args_;
     std::regex stub_regex_;
     std::regex clientctx_regex_;
+    std::string channel_create_substr_;
     double max_ET;
     time_accumulator total_ET;
   };
