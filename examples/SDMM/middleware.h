@@ -14,7 +14,7 @@ namespace Pin {
     public:
         typedef std::list <Writer *> list_type;
 
-	virtual std::string name(void) = 0;
+	    virtual std::string name(void) = 0;
         virtual void handle_helpers(const OASIS::Pin::Image & img) = 0;
         virtual void analyze_img(const OASIS::Pin::Image & img) = 0;
         virtual void analyze_rtn(const OASIS::Pin::Routine & rtn) = 0;
