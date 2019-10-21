@@ -26,31 +26,40 @@ namespace Pin {
     public:
 
         SDMM_Instrument(std::vector<std::string> & include_list,
-                std::vector<std::string> & helper_list)
+                std::vector<std::string> & helper_list,
+		std::vector<std::string> & method_list,
+		std::string & obv,
+		MIDDLEWARE_TYPE & middle_type)
             :include_list_(include_list),
-            helper_list_(helper_list)
+            helper_list_(helper_list),
+	    middle_type_(middle_type),
+	    corba_middle_(method_list, obv),
+	    gRPC_middle_(method_list,obv)
         { }
-
-        void set_middleware(std::shared_ptr<Middleware> middleware) {
-            this->middleware_ = middleware;
-        }
 
         void handle_instrument (const OASIS::Pin::Image & img) {
             std::clock_t start = std::clock ();
+	    Middleware* middleware_ = nullptr;
+	    if (middle_type_ == CORBA) {
+		middleware_ = &corba_middle_;
+	    } else if (middle_type_ == gRPC) {
+		middleware_ = &gRPC_middle_;
+	    }
+
             size_t seperator = std::string::npos;
 
-            this->middleware_->analyze_img(img);
+            middleware_->analyze_img(img);
 
             for (auto include : include_list_) {
                 seperator = img.name ().find (include);
 
-                if (seperator != std::string::npos) {
+	       if (seperator != std::string::npos) {
                     for (auto sec : img) {
                         for (auto rtn : sec) {
                             if (!rtn.valid())
                                 continue;
 
-                            this->middleware_->analyze_rtn(rtn);
+                            middleware_->analyze_rtn(rtn);
                         }
                     }
                 }
@@ -61,12 +70,19 @@ namespace Pin {
                 sep = img.name ().find (helper);
 
                 if (sep != std::string::npos) {
-                    this->middleware_->handle_helpers(img);
+                    middleware_->handle_helpers(img);
                 }
             }
             std::clock_t end = std::clock ();
             std::cout << "Instrument Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
         }
+
+	typename Middleware::list_type & get_list(void) {
+		if (middle_type_ == CORBA)
+			return this->corba_middle_.get_list();
+		else if (middle_type_ == gRPC)
+			return this->gRPC_middle_.get_list();
+	}
 
     private:
         //include_list_ - list of the dlls to be included in instrumentation
@@ -74,10 +90,10 @@ namespace Pin {
         //middleware_ - the standards based distributed middlware to use such as CORBA or gRPC
         std::vector<std::string> & include_list_;
         std::vector<std::string> & helper_list_;
-        std::shared_ptr<Middleware> middleware_;
+        MIDDLEWARE_TYPE & middle_type_;
+	CORBA_Middleware corba_middle_;
+	gRPC_Middleware gRPC_middle_;
     };
-
-    enum MIDDLEWARE_TYPE {CORBA, gRPC};
 
     struct SDMM_Tool_Knobs {
         std::string include_;
@@ -95,7 +111,10 @@ namespace Pin {
     SDMM_Tool (void)
         :fout_("trace.json"),
         inst_(include_list_,
-        helper_list_)
+        helper_list_,
+	target_method_list_,
+	obv,
+	knobs_.middle_type_)
     {
         // parse the configuration file
         parse_config_file();
@@ -121,14 +140,6 @@ namespace Pin {
         // Object by value prefix
         obv = knobs_.obv_.c_str();
 
-        if (knobs_.middle_type_ == MIDDLEWARE_TYPE::CORBA) {
-            middleware_ = std::shared_ptr<Middleware>(new CORBA_Middleware(target_method_list_, obv));
-        } else if (knobs_.middle_type_ == MIDDLEWARE_TYPE::gRPC) {
-            middleware_ = std::shared_ptr<Middleware>(new gRPC_Middleware(target_method_list_, obv));
-        }
-
-        inst_.set_middleware(middleware_);
-
         this->init_symbols();
         this->enable_fini_callback();
     }
@@ -136,7 +147,7 @@ namespace Pin {
     void handle_fini (INT32 code) {
         std::clock_t start = std::clock ();
         typedef Middleware::list_type list_type;
-        list_type & info_items = middleware_->get_list();
+        list_type & info_items = inst_.get_list();
         typename list_type::const_iterator iter=info_items.begin(), iter_end=info_items.end();
 
         this->fout_ << "{ \"data\": [" << std::endl;
@@ -190,6 +201,8 @@ namespace Pin {
                 }
             }
         }
+
+	config_file.close();
     }
 
     private:
@@ -206,7 +219,6 @@ namespace Pin {
         std::vector<string> helper_list_;
         std::vector<string> target_method_list_;
         std::string obv;
-        std::shared_ptr<Middleware> middleware_;
         SDMM_Instrument inst_;
     };
 }

@@ -92,7 +92,7 @@ namespace Pin {
     gRPC_Middleware(std::vector<std::string> & method_list, std::string & obv)
       :stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
       clientctx_regex_("(.*)(ClientContext::)(.*)"),
-      channel_create_substr_("grpc_channel_create(char const*")
+      channel_create_substr_("grpc_channel_create(char const*"),
       max_ET(0.0)
     {  }
 

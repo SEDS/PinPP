@@ -8,6 +8,8 @@
 
 namespace OASIS {
 namespace Pin {
+
+    enum MIDDLEWARE_TYPE {CORBA, gRPC};
     
     class Middleware {
     public:
