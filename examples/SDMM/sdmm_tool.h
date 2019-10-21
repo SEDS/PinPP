@@ -22,36 +22,36 @@
 namespace OASIS {
 namespace Pin {
 
-    class SDMM_Instrument : public OASIS::Pin::Image_Instrument <SDMM_Instrument> {
+    class SDMM_Instrument : public OASIS::Pin::Image_Instrument <SDMM_Instrument>
+    {
     public:
 
         SDMM_Instrument(std::vector<std::string> & include_list,
                 std::vector<std::string> & helper_list,
 		std::vector<std::string> & method_list,
 		std::string & obv,
-		MIDDLEWARE_TYPE & middle_type)
+		std::string & middle_type)
             :include_list_(include_list),
             helper_list_(helper_list),
-	    middle_type_(middle_type),
 	    corba_middle_(method_list, obv),
-	    gRPC_middle_(method_list,obv)
+	    gRPC_middle_(method_list, obv),
+	    middle_type_(middle_type)
         { }
 
         void handle_instrument (const OASIS::Pin::Image & img) {
             std::clock_t start = std::clock ();
 	    Middleware* middleware_ = nullptr;
-	    if (middle_type_ == CORBA) {
+	    if (middle_type_ == "CORBA") {
 		middleware_ = &corba_middle_;
-	    } else if (middle_type_ == gRPC) {
+	    } else if (middle_type_ == "gRPC") {
 		middleware_ = &gRPC_middle_;
 	    }
-
             size_t seperator = std::string::npos;
 
             middleware_->analyze_img(img);
 
             for (auto include : include_list_) {
-                seperator = img.name ().find (include);
+                seperator = img.name().find(include);
 
 	       if (seperator != std::string::npos) {
                     for (auto sec : img) {
@@ -78,9 +78,9 @@ namespace Pin {
         }
 
 	typename Middleware::list_type & get_list(void) {
-		if (middle_type_ == CORBA)
+		if (middle_type_ == "CORBA")
 			return this->corba_middle_.get_list();
-		else if (middle_type_ == gRPC)
+		else if (middle_type_ == "gRPC")
 			return this->gRPC_middle_.get_list();
 	}
 
@@ -90,9 +90,9 @@ namespace Pin {
         //middleware_ - the standards based distributed middlware to use such as CORBA or gRPC
         std::vector<std::string> & include_list_;
         std::vector<std::string> & helper_list_;
-        MIDDLEWARE_TYPE & middle_type_;
 	CORBA_Middleware corba_middle_;
 	gRPC_Middleware gRPC_middle_;
+	std::string & middle_type_;
     };
 
     struct SDMM_Tool_Knobs {
@@ -100,11 +100,12 @@ namespace Pin {
         std::string helper_;
         std::string target_methods_;
         std::string obv_;
-        MIDDLEWARE_TYPE middle_type_;
+        std::string middle_type_;
         static KNOB <string> config_file_name_;
     };
 
-    class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool> {
+    class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool>
+    {
 
     public:
 
@@ -173,6 +174,7 @@ namespace Pin {
         knobs_.helper_ = "";
         knobs_.target_methods_ = "push_";
         knobs_.obv_ = "OBV_";
+	knobs_.middle_type_ = "N/A";
 
         if (config_file.is_open()) {
             std::string line;
@@ -182,17 +184,18 @@ namespace Pin {
                 size_t pos = line.find(header_sep);
 
                 if (pos != std::string::npos) {
-                    std::string key(line.substr(0, pos));
-                    std::string value(line.substr(pos+1));
+			//pos-1 and pos+2 accounts for whitespace
+                    std::string key(line.substr(0, pos-1));
+                    std::string value(line.substr(pos+2));
 
                     if (key.find("MIDDLEWARE") != std::string::npos) {
-                        if (value.find("CORBA")) {
-                            knobs_.middle_type_ = MIDDLEWARE_TYPE::CORBA;
-                        } else if (value.find("gRPC")) {
-                            knobs_.middle_type_ = MIDDLEWARE_TYPE::gRPC;
+                        if (value.find("CORBA") != std::string::npos) {
+                            knobs_.middle_type_ = "CORBA";
+                        } else if (value.find("gRPC") != std::string::npos) {
+                            knobs_.middle_type_ = "gRPC";
                         }
 
-                        std::cout << "Using Middleware --> " << value << std::endl;
+                        std::cout << "Using Middleware --> " << knobs_.middle_type_ << std::endl;
                     } else if (key.find("INCLUDE") != std::string::npos) {
                         knobs_.include_ = value;
                     } else if (key.find("HELPER") != std::string::npos) {

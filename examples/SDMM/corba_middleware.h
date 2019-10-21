@@ -336,6 +336,10 @@ namespace Pin {
             helper_image_loaded_(false)
         { }
 
+	virtual std::string name(void) {
+		return "CORBA Middleware";
+	}
+
         RTN_TYPE is_valid_push_method (std::string rtn_signature) {
             size_t separator = std::string::npos;
             for (auto method : target_method_list_) {

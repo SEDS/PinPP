@@ -96,6 +96,10 @@ namespace Pin {
       max_ET(0.0)
     {  }
 
+	virtual std::string name(void) {
+		return "gRPC Middleware";
+	}
+
     virtual void handle_helpers(const OASIS::Pin::Image & img) {
       //doesn't do anything
     }
