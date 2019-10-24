@@ -135,9 +135,9 @@ namespace Pin {
         //remove extra whitespace
         replace_all(arg, " ", "");
 
-        if (args_.count(temp) == 0) {
-          std::string arg_substr(temp + "::");
-          args_[temp] = arg_substr;
+        if (args_.count(arg) == 0) {
+          std::string arg_substr(arg + "::");
+          args_[arg] = arg_substr;
         }
       }
     }
