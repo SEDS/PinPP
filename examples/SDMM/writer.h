@@ -10,6 +10,7 @@ namespace Pin {
     class Writer {
     public:
         virtual void write_to(std::ostream & out) = 0;
+	virtual bool has_info(void) = 0;
     };
 
 }

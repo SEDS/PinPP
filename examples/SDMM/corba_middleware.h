@@ -60,6 +60,10 @@ namespace Pin {
             << "\"Return Type\": \"" << this->return_type << "\","
             << "\"Information Class\": \"Event Info\"}";
         }
+
+	virtual bool has_info(void) {
+		return true;
+	}
     };
 
     struct signature_helper_info : public Writer {
@@ -82,6 +86,10 @@ namespace Pin {
             << "\"Return Type\": \"" << this->return_type << "\","
             << "\"Information Class\": \"Sign Help Info\"}";
         }
+
+	virtual bool has_info(void) {
+		return true;
+	}
     };
 
     struct signature_info : public Writer {
@@ -108,6 +116,10 @@ namespace Pin {
             out << "\"Event Type\": \"" << this->event_type << "\",";
             out << "\"Information Class\": \"Sign Info\"}";
         }
+
+	virtual bool has_info(void) {
+		return true;
+	}
     };
 
     struct helper_method_info : public Writer {
@@ -130,6 +142,10 @@ namespace Pin {
             << "\"Method Name\": \"" << this->method_name << "\","
             << "\"Information Class\": \"Method Info\"}";
         }
+
+	virtual bool has_info(void) {
+		return true;
+	}
     };
 
     /**

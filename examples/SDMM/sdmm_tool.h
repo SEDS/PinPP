@@ -131,14 +131,12 @@ namespace Pin {
         std::clock_t start = std::clock ();
         typedef Middleware::list_type list_type;
         list_type & info_items = inst_.get_list();
-        typename list_type::const_iterator iter=info_items.begin(), iter_end=info_items.end();
 
         this->fout_ << "{ \"data\": [" << std::endl;
 
-        for (; iter != iter_end; ++iter) {
-            (*iter)->write_to(fout_);
-
-            if (iter != std::prev(iter_end)) {
+        for (auto &item : info_items) {
+            if (item->has_info()) {
+                item->write_to(fout_);
                 this->fout_ << "," << std::endl;
             }
         }

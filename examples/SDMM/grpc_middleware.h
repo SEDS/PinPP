@@ -43,36 +43,54 @@ namespace Pin {
 
   static time_accumulator accum_meth_info;
 
-  class method_info : public Writer {
+  class method_info : public OASIS::Pin::Callback <method_info (void)>, public Writer {
   public:
     method_info (std::string signature, std::string call_object)
       : sign_(signature),
-      obj_(call_object)
+      obj_(call_object),
+	count_(0)
     { }
 
+    void handle_analyze (void) {
+      std::clock_t start = std::clock();
+    ++ this->count_;
+      std::clock_t end = std::clock();
+      double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
+      accum_meth_info.increase(ET);
+    }
+
     virtual void write_to(std::ostream & out) {
+	if (count_ > 0) {
       out << "{"
       << "\"Method\": \"" << this->sign_ << "\","
-      << "\"Object\": \"" << this->obj_ << "\"}";
+      << "\"Object\": \"" << this->obj_ << "\","
+      << "\"Call Count\": \"" << this->count_ << "\"}";
+	}
+    }
+
+    virtual bool has_info(void) {
+      return count_;
     }
   private:
     std::string sign_;
     std::string obj_;
+	UINT64 count_;
   };
 
   class address_info : public OASIS::Pin::Callback <address_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
-  OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer
-  {
+  OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer {
     public:
     address_info (void)
+	:count_(0)
     { }
 
     void handle_analyze (ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5) {
       std::clock_t start = std::clock();
       server_address_ = (char const*)arg1;
+    ++ this->count_;
       std::clock_t end = std::clock();
       double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
       accum_meth_info.increase(ET);
@@ -80,11 +98,17 @@ namespace Pin {
 
     virtual void write_to(std::ostream & out) {
       out << "{"
-      << "\"Server Address\": \"" << this->server_address_ << "\"}";
+      << "\"Server Address\": \"" << this->server_address_ << "\""
+      << "\"Call Count\": \"" << this->count_ << "\"}"; 
+    }
+
+    virtual bool has_info(void) {
+      return count_;
     }
 
     private:
       std::string server_address_;
+	UINT64 count_;
   };
 
   class gRPC_Middleware : public Middleware {
@@ -108,40 +132,6 @@ namespace Pin {
       //doesn't do anything
     }
 
-        //replace_all - replace all occurences of sub in str with rep.
-    //modified from https://stackoverflow.com/questions/20406744/how-to-find-and-replace-all-occurrences-of-a-substring-in-a-string
-    void replace_all(std::string & str, std::string sub, std::string rep) {
-      std::string::size_type pos = 0;
-      while ((pos = str.find(sub, pos)) != std::string::npos) {
-        str.replace(pos, sub.size(), rep);
-        pos += rep.size();
-      }
-    }
-
-    void extract_args(std::string method) {
-      std::stringstream method_string(method);
-      std::string arg;
-
-      //skip the first argument, it is the Client Context and we're already detecting all methods on it
-      std::getline(method_string, arg, ',');
-
-      //read the rest of the arguments
-      while(std::getline(method_string, arg, ',')) {
-        //remove c++ keywords and symbols
-        replace_all(arg, "const", "");
-        replace_all(arg, "*", "");
-        replace_all(arg, "&", "");
-
-        //remove extra whitespace
-        replace_all(arg, " ", "");
-
-        if (args_.count(arg) == 0) {
-          std::string arg_substr(arg + "::");
-          args_[arg] = arg_substr;
-        }
-      }
-    }
-
     virtual void analyze_rtn(const OASIS::Pin::Routine & rtn) {
       std::clock_t start = std::clock ();
       using OASIS::Pin::Section;
@@ -153,19 +143,11 @@ namespace Pin {
       //check if the method is a RPC method on the Client Stub
       if (std::regex_match(signature, stub_regex_)) {
         calling_object = std::string("Stub");
-        this->extract_args(signature);
       }
 
       //check if the method belongs to the Client Context
       if (signature.find(clientctx_substr_) != std::string::npos) {
-        calling_object = std::string("Client Context");
-      }
-
-      //check if the method belongs to one of the input RPC input arugments we've encountered thus far
-      for (auto &pair : args_) {
-        if (signature.find(pair.second)) {
-          calling_object = pair.first;
-        }
+        calling_object = std::string("ClientContext");
       }
 
       if (signature.find(channel_create_substr_) != std::string::npos) {
@@ -177,10 +159,11 @@ namespace Pin {
         a_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2, 3, 4);
         
       } else if (calling_object != "N/A") {
-        Writer * methinfo = new method_info (signature, calling_object);
+        method_info * m_info = new method_info (signature, calling_object);
         
-        // Add the counter to the listing.
-        this->output_list_.push_back (methinfo);
+        this->output_list_.push_back ((Writer *) m_info);
+	OASIS::Pin::Routine_Guard guard (rtn);
+	m_info->insert (IPOINT_BEFORE, rtn);
       }
       std::clock_t end = std::clock ();
       double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
@@ -198,12 +181,10 @@ namespace Pin {
     }
   private:
     //output_list_ - the output list
-    //args_ - a map between RPC input arguments and the regular expression used to identify its methods
     //stub_regex_ - regular expression for identifying Stub methods
     //clientctx_substr_ - substring for identifying ClientContext methods
     //channel_create_substr_ - substring for identifying the channel creation factory method
     list_type output_list_;
-    std::map<std::string, std::string> args_;
     std::regex stub_regex_;
     std::string clientctx_substr_;
     std::string channel_create_substr_;
