@@ -91,7 +91,7 @@ namespace Pin {
   public:
     gRPC_Middleware(std::vector<std::string> & method_list, std::string & obv)
       :stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
-      clientctx_regex_("(.*)(ClientContext::)(.*)"),
+      clientctx_substr_("ClientContext::"),
       channel_create_substr_("grpc_channel_create(char const*"),
       max_ET(0.0)
     {  }
@@ -119,47 +119,25 @@ namespace Pin {
     }
 
     void extract_args(std::string method) {
-      std::vector<std::string::size_type> commas;
-      std::vector<std::string::size_type> substr_lengths;
+      std::stringstream method_string(method);
+      std::string arg;
 
-      //find all comma positions. We don't use string.find() because
-      //we would need to know how many commas are in the string before hand and that requires a second loop through
-      //the string.
-      for (std::string::size_type i=0; i<method.length(); ++i) {
-        if (method[i] == ',') {
-          commas.push_back(i);
-        }
-      }
+      //skip the first argument, it is the Client Context and we're already detecting all methods on it
+      std::getline(method_string, arg, ',');
 
-      for (std::string::size_type i=1; i<commas.size(); ++i) {
-        substr_lengths.push_back(commas[i] - commas[i-1] + 1);
-
-        //we use the location of last comma for the last arg's length
-        if (i == commas.size()-1) {
-          substr_lengths.push_back(commas[i]);
-        }
-      }
-
-      for (std::string::size_type i=0; i<substr_lengths.size(); ++i) {
-        std::string temp = method.substr(commas[i], substr_lengths[i]);
-
-        //remove commas on either side of args
-        temp.replace(0, 2, "");
-        temp.replace(temp.size()-1, 1, "");
-
+      //read the rest of the arguments
+      while(std::getline(method_string, arg, ',')) {
         //remove c++ keywords and symbols
-        replace_all(temp, "const", "");
-        replace_all(temp, "*", "");
-        replace_all(temp, "&", "");
+        replace_all(arg, "const", "");
+        replace_all(arg, "*", "");
+        replace_all(arg, "&", "");
 
         //remove extra whitespace
-        replace_all(temp, " ", "");
+        replace_all(arg, " ", "");
 
         if (args_.count(temp) == 0) {
-          std::string regex_lit("(.*)(::)(.*)");
-          regex_lit.insert(5, temp);
-          std::regex arg_regex(regex_lit);
-          args_.insert(std::make_pair(temp, arg_regex));
+          std::string arg_substr(temp + "::");
+          args_[temp] = arg_substr;
         }
       }
     }
@@ -179,13 +157,13 @@ namespace Pin {
       }
 
       //check if the method belongs to the Client Context
-      if (std::regex_match(signature, clientctx_regex_)) {
+      if (signature.find(clientctx_substr_) != std::string::npos) {
         calling_object = std::string("Client Context");
       }
 
       //check if the method belongs to one of the input RPC input arugments we've encountered thus far
       for (auto &pair : args_) {
-        if (std::regex_match(signature, pair.second)) {
+        if (signature.find(pair.second)) {
           calling_object = pair.first;
         }
       }
@@ -222,11 +200,12 @@ namespace Pin {
     //output_list_ - the output list
     //args_ - a map between RPC input arguments and the regular expression used to identify its methods
     //stub_regex_ - regular expression for identifying Stub methods
-    //clientctx_regex_ - regulat expression for identifying ClientContext methods
+    //clientctx_substr_ - substring for identifying ClientContext methods
+    //channel_create_substr_ - substring for identifying the channel creation factory method
     list_type output_list_;
-    std::map<std::string, std::regex> args_;
+    std::map<std::string, std::string> args_;
     std::regex stub_regex_;
-    std::regex clientctx_regex_;
+    std::string clientctx_substr_;
     std::string channel_create_substr_;
     double max_ET;
     time_accumulator total_ET;

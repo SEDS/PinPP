@@ -16,7 +16,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <regex>
 #include <ctime>
 
 namespace OASIS {
@@ -97,9 +96,8 @@ namespace Pin {
     SDMM_Tool (void)
         :fout_("trace.json"),
         CORBA_(target_method_list_, obv),
-	gRPC_(target_method_list_, obv),
-        inst_(include_list_,
-        helper_list_)
+	    gRPC_(target_method_list_, obv),
+        inst_(include_list_, helper_list_)
     {
         // parse the configuration file
         parse_config_file();
@@ -205,7 +203,7 @@ namespace Pin {
         std::vector<string> target_method_list_;
         std::string obv;
         CORBA_Middleware CORBA_;
-	gRPC_Middleware gRPC_;
+	    gRPC_Middleware gRPC_;
         SDMM_Instrument inst_;
     };
 }
