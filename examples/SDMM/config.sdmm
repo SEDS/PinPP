@@ -1,3 +1,3 @@
 MIDDLEWARE = gRPC
-INCLUDE = greeter_client,libgrpc.so.7
-HELPER = greeter_client,libgrpc.so.7
+INCLUDE = fake_grpc
+HELPER = fake_grpc
