@@ -52,20 +52,16 @@ namespace Pin {
     { }
 
     void handle_analyze (void) {
-      std::clock_t start = std::clock();
-    ++ this->count_;
-      std::clock_t end = std::clock();
-      double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
-      accum_meth_info.increase(ET);
+      ++this->count_;
     }
 
     virtual void write_to(std::ostream & out) {
-	if (count_ > 0) {
-      out << "{"
-      << "\"Method\": \"" << this->sign_ << "\","
-      << "\"Object\": \"" << this->obj_ << "\","
-      << "\"Call Count\": \"" << this->count_ << "\"}";
-	}
+      if (count_ > 0) {
+        out << "{"
+        << "\"Method\": \"" << this->sign_ << "\","
+        << "\"Object\": \"" << this->obj_ << "\","
+        << "\"Call Count\": \"" << this->count_ << "\"}";
+      }
     }
 
     virtual bool has_info(void) {
@@ -74,7 +70,7 @@ namespace Pin {
   private:
     std::string sign_;
     std::string obj_;
-	UINT64 count_;
+	  UINT64 count_;
   };
 
   class address_info : public OASIS::Pin::Callback <address_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
@@ -82,18 +78,14 @@ namespace Pin {
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer {
-    public:
+  public:
     address_info (void)
-	:count_(0)
+	    :count_(0)
     { }
 
     void handle_analyze (ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5) {
-      std::clock_t start = std::clock();
       server_address_ = (char const*)arg1;
-    ++ this->count_;
-      std::clock_t end = std::clock();
-      double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
-      accum_meth_info.increase(ET);
+      ++this->count_;
     }
 
     virtual void write_to(std::ostream & out) {
@@ -106,9 +98,9 @@ namespace Pin {
       return count_;
     }
 
-    private:
-      std::string server_address_;
-	UINT64 count_;
+  private:
+    std::string server_address_;
+	  UINT64 count_;
   };
 
   class gRPC_Middleware : public Middleware {
@@ -116,13 +108,12 @@ namespace Pin {
     gRPC_Middleware(std::vector<std::string> & method_list, std::string & obv)
       :stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
       clientctx_substr_("ClientContext::"),
-      channel_create_substr_("grpc_channel_create(char const*"),
-      max_ET(0.0)
+      channel_create_substr_("grpc_channel_create(char const*")
     {  }
 
-	virtual std::string name(void) {
-		return "gRPC Middleware";
-	}
+    virtual std::string name(void) {
+      return "gRPC Middleware";
+    }
 
     virtual void handle_helpers(const OASIS::Pin::Image & img) {
       //doesn't do anything
@@ -133,7 +124,6 @@ namespace Pin {
     }
 
     virtual void analyze_rtn(const OASIS::Pin::Routine & rtn) {
-      std::clock_t start = std::clock ();
       using OASIS::Pin::Section;
       using OASIS::Pin::Image;
 
@@ -162,15 +152,8 @@ namespace Pin {
         method_info * m_info = new method_info (signature, calling_object);
         
         this->output_list_.push_back ((Writer *) m_info);
-	OASIS::Pin::Routine_Guard guard (rtn);
-	m_info->insert (IPOINT_BEFORE, rtn);
-      }
-      std::clock_t end = std::clock ();
-      double ET = 1000.0 * (end - start) / CLOCKS_PER_SEC;
-      total_ET.increase(ET);
-      if (ET > max_ET) {
-        max_ET = ET;
-        std::cout << "Analyze_rtn Time Consumption: " << max_ET << std::endl;
+        OASIS::Pin::Routine_Guard guard (rtn);
+        m_info->insert (IPOINT_BEFORE, rtn);
       }
     }
 
@@ -188,10 +171,7 @@ namespace Pin {
     std::regex stub_regex_;
     std::string clientctx_substr_;
     std::string channel_create_substr_;
-    double max_ET;
-    time_accumulator total_ET;
   };
-
 }
 }
 
