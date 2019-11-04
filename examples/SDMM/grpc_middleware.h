@@ -158,8 +158,6 @@ namespace Pin {
     }
 
     virtual list_type & get_list(void) {
-      std::cout << "Analyze_rtn total Time Consumption: " << total_ET.get() << std::endl;
-      std::cout << "Method Info total Time Consumption: " << accum_meth_info.get() << std::endl;
       return this->output_list_;
     }
   private:
