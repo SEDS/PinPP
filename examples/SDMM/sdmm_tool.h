@@ -144,7 +144,8 @@ namespace Pin {
         this->fout_ << "]}" << std::endl;
         this->fout_.close ();
         std::clock_t end = std::clock ();
-        std::cout << "Output Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;      
+        std::cout << "Output Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
+        std::cout << "Callback Time consumption: " << accum_meth_info.get() << std::endl;
     }
 
     void parse_config_file() {

@@ -52,7 +52,11 @@ namespace Pin {
     { }
 
     void handle_analyze (void) {
+      std::clock_t start = std::clock ();
       ++this->count_;
+      std::clock_t end = std::clock ();
+      double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
+      accum_meth_info.increase(time);
     }
 
     virtual void write_to(std::ostream & out) {
@@ -84,8 +88,12 @@ namespace Pin {
     { }
 
     void handle_analyze (ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5) {
+      std::clock_t start = std::clock ();
       server_address_ = (char const*)arg1;
       ++this->count_;
+      std::clock_t end = std::clock ();
+      double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
+      accum_meth_info.increase(time);
     }
 
     virtual void write_to(std::ostream & out) {
