@@ -1,6 +1,7 @@
 #include "pin++/Image_Instrument.h"
 #include "grpc_middleware.h"
 #include "corba_middleware.h"
+#include "dds_middleware.h"
 #include "writer.h"
 #include "pin++/Pintool.h"
 #include "pin++/Image.h"
@@ -173,6 +174,8 @@ namespace Pin {
                             inst_.set_middleware(&CORBA_);
                         } else if (value.find("gRPC") != std::string::npos) {
                             inst_.set_middleware(&gRPC_);
+                        } else if (value.find("DDS") != std::string::npos) {
+                            inst_.set_middleware(&DDS_);
                         }
 
                         std::cout << "Using Middleware --> " << value << std::endl;
@@ -203,6 +206,7 @@ namespace Pin {
         std::string obv;
         CORBA_Middleware CORBA_;
 	    gRPC_Middleware gRPC_;
+        DDS_Middleware DDS_;
         SDMM_Instrument inst_;
     };
 }
