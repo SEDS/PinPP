@@ -14,34 +14,12 @@
 #include <string>
 #include <ctime>
 #include <iostream>
-#include <mutex>
 
 #ifndef DDS_MIDDLEWARE_H
 #define DDS_MIDDLEWARE_H
 
 namespace OASIS {
 namespace Pin {
-
-  class time_accumulator {
-  public:
-    time_accumulator(void)
-      :time_(0.0)
-    { }
-
-    void increase (double time) {
-      std::unique_lock<std::mutex> lock(mutex_);
-      time_ += time;
-    }
-
-    double get (void) {
-      return time_;
-    }
-  private:
-    std::mutex mutex_;
-    double time_;
-  };
-
-  static time_accumulator accum_meth_info;
 
   template<typename ARG2TYPE>
   class marshaller_info : public OASIS::Pin::Callback <marshaller_info<ARG2TYPE> (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
@@ -120,12 +98,12 @@ namespace Pin {
 	UINT64 count_;
   };
 
-  class address_info : public OASIS::Pin::Callback <address_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+  class credentials_info : public OASIS::Pin::Callback <credentials_info (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer {
   public:
-    address_info (std::string signature, std::string call_object)
+    credentials_info (std::string signature, std::string call_object)
 	    :sign_(signature),
         obj_(call_object),
         count_(0)
@@ -193,17 +171,17 @@ namespace Pin {
       if (signature.find(ace_inet_set_) != std::string::npos) {
         calling_object = std::string("ACE_INET_Addr");
 
-        address_info *a_info = new address_info(signature, calling_object);
-        this->output_list_.push_back((Writer *) a_info);
+        credentials_info *c_info = new credentials_info(signature, calling_object);
+        this->output_list_.push_back((Writer *) c_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);
-        a_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2, 3);
+        c_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2, 3);
       }
 
       if (signature.find(marshaller_string_) != std::string::npos) {
         calling_object = std::string("OpenDDS:DCPS::operator<<");
 
-        marshaller_info<char const*> *m_info = new method_info (signature, calling_object);
+        marshaller_info<char const*> *m_info = new marshaller_info<char const*> (signature, calling_object);
         this->output_list_.push_back ((Writer *) m_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);
@@ -213,7 +191,7 @@ namespace Pin {
       if (signature.find(marshaller_int_) != std::string::npos) {
         calling_object = std::string("OpenDDS:DCPS::operator<<");
 
-        marshaller_info<int> *m_info = new method_info (signature, calling_object);
+        marshaller_info<int> *m_info = new marshaller_info<int> (signature, calling_object);
         this->output_list_.push_back ((Writer *) m_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);

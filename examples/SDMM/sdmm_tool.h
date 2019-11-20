@@ -97,7 +97,8 @@ namespace Pin {
     SDMM_Tool (void)
         :fout_("trace.json"),
         CORBA_(target_method_list_, obv),
-	    gRPC_(target_method_list_, obv),
+	gRPC_(target_method_list_, obv),
+	DDS_(target_method_list_, obv),
         inst_(include_list_, helper_list_)
     {
         // parse the configuration file
@@ -132,6 +133,8 @@ namespace Pin {
         std::clock_t start = std::clock ();
         typedef Middleware::list_type list_type;
         list_type & info_items = inst_.get_list();
+
+	std::cout << "here " << std::endl;
 
         this->fout_ << "{ \"data\": [" << std::endl;
 
@@ -205,7 +208,7 @@ namespace Pin {
         std::vector<string> target_method_list_;
         std::string obv;
         CORBA_Middleware CORBA_;
-	    gRPC_Middleware gRPC_;
+	gRPC_Middleware gRPC_;
         DDS_Middleware DDS_;
         SDMM_Instrument inst_;
     };

@@ -18,6 +18,7 @@ project (sdmm) : oasis_pintool {
     middleware.h
     corba_middleware.h
     grpc_middleware.h
+    dds_middleware.h
     writer.h
     data_type_cmd.h
     const_char_ptr_cmd.h

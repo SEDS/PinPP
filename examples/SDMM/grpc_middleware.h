@@ -14,34 +14,12 @@
 #include <string>
 #include <ctime>
 #include <iostream>
-#include <mutex>
 
 #ifndef GRPC_MIDDLEWARE_H
 #define GRPC_MIDDLEWARE_H
 
 namespace OASIS {
 namespace Pin {
-
-  class time_accumulator {
-  public:
-    time_accumulator(void)
-      :time_(0.0)
-    { }
-
-    void increase (double time) {
-      std::unique_lock<std::mutex> lock(mutex_);
-      time_ += time;
-    }
-
-    double get (void) {
-      return time_;
-    }
-  private:
-    std::mutex mutex_;
-    double time_;
-  };
-
-  static time_accumulator accum_meth_info;
 
   class method_info : public OASIS::Pin::Callback <method_info (void)>, public Writer {
   public:
