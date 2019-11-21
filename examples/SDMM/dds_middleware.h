@@ -26,15 +26,14 @@ namespace Pin {
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer {
   public:
     marshaller_info (std::string signature, std::string call_object)
-	    :value_(nullptr),
-        sign_(signature),
+	    :sign_(signature),
         obj_(call_object),
         count_(0)
     { }
 
     void handle_analyze (ADDRINT arg1, ADDRINT arg2) {
       std::clock_t start = std::clock ();
-      value_ = (ARG2TYPE*)arg2;
+      values_.push_back((ARG2TYPE)arg2);
       ++this->count_;
       std::clock_t end = std::clock ();
       double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
@@ -43,8 +42,13 @@ namespace Pin {
 
     virtual void write_to(std::ostream & out) {
       out << "{"
-      << "\"Value\": " << *this->value_ << ","
-      << "\"Method\": \"" << this->sign_ << "\","
+      << "\"Values\": [";
+	
+	for (ARG2TYPE &item : this->values_) {
+		out << item << ", ";
+	}
+
+      out << "], \"Method\": \"" << this->sign_ << "\","
       << "\"Object\": \"" << this->obj_ << "\","
       << "\"Call Count\": " << this->count_ << "}"; 
     }
@@ -54,14 +58,14 @@ namespace Pin {
     }
 
   private:
-    ARG2TYPE *value_;
+    std::list<ARG2TYPE> values_;
     std::string sign_;
     std::string obj_;
 	UINT64 count_;
   };
 
   template<>
-  class marshaller_info <char const*> : public OASIS::Pin::Callback <marshaller_info<char const*> (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
+  class marshaller_info <const char*> : public OASIS::Pin::Callback <marshaller_info<const char*> (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer {
   public:
     marshaller_info (std::string signature, std::string call_object)
@@ -72,7 +76,7 @@ namespace Pin {
 
     void handle_analyze (ADDRINT arg1, ADDRINT arg2) {
       std::clock_t start = std::clock ();
-      value_ = (char const*)arg2;
+      values_.push_back(std::string((const char*)arg2));
       ++this->count_;
       std::clock_t end = std::clock ();
       double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
@@ -81,8 +85,13 @@ namespace Pin {
 
     virtual void write_to(std::ostream & out) {
       out << "{"
-      << "\"Value\": \"" << this->value_ << "\","
-      << "\"Method\": \"" << this->sign_ << "\","
+      << "\"Values\": [";
+
+	for (std::string &item : this->values_) {
+		out << "\"" << item << "\", ";
+	}
+
+      out << "], \"Method\": \"" << this->sign_ << "\","
       << "\"Object\": \"" << this->obj_ << "\","
       << "\"Call Count\": " << this->count_ << "}"; 
     }
@@ -92,7 +101,7 @@ namespace Pin {
     }
 
   private:
-    std::string value_;
+    std::list<std::string> values_;
     std::string sign_;
     std::string obj_;
 	UINT64 count_;
@@ -104,15 +113,17 @@ namespace Pin {
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer {
   public:
     credentials_info (std::string signature, std::string call_object)
-	    :sign_(signature),
+	    :port_(0),
+	publisher_address_("sample.address.edu"),
+	sign_(signature),
         obj_(call_object),
         count_(0)
     { }
 
     void handle_analyze (ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4) {
       std::clock_t start = std::clock ();
-      port_ = (unsigned short*)arg1;
-      server_address_ = (char const*)arg2;
+      port_ = (unsigned short)arg1;
+      //publisher_address_.assign((char const*)arg2);
       ++this->count_;
       std::clock_t end = std::clock ();
       double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
@@ -121,8 +132,8 @@ namespace Pin {
 
     virtual void write_to(std::ostream & out) {
       out << "{"
-      << "\"Port\": " << *this->port_ << ","
-      << "\"Server Address\": \"" << this->server_address_ << "\","
+      << "\"Port\": " << this->port_ << ","
+      << "\"Publisher Address\": \"" << this->publisher_address_ << "\","
       << "\"Method\": \"" << this->sign_ << "\","
       << "\"Object\": \"" << this->obj_ << "\","
       << "\"Call Count\": " << this->count_ << "}"; 
@@ -133,8 +144,8 @@ namespace Pin {
     }
 
   private:
-    unsigned short *port_;
-    std::string server_address_;
+    unsigned short port_;
+    std::string publisher_address_;
     std::string sign_;
     std::string obj_;
 	UINT64 count_;
@@ -179,9 +190,9 @@ namespace Pin {
       }
 
       if (signature.find(marshaller_string_) != std::string::npos) {
-        calling_object = std::string("OpenDDS:DCPS::operator<<");
+        calling_object = std::string("OpenDDS::DCPS");
 
-        marshaller_info<char const*> *m_info = new marshaller_info<char const*> (signature, calling_object);
+        marshaller_info<const char*> *m_info = new marshaller_info<const char*> (signature, calling_object);
         this->output_list_.push_back ((Writer *) m_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);
@@ -189,7 +200,7 @@ namespace Pin {
       }
 
       if (signature.find(marshaller_int_) != std::string::npos) {
-        calling_object = std::string("OpenDDS:DCPS::operator<<");
+        calling_object = std::string("OpenDDS::DCPS");
 
         marshaller_info<int> *m_info = new marshaller_info<int> (signature, calling_object);
         this->output_list_.push_back ((Writer *) m_info);

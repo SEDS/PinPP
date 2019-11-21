@@ -134,8 +134,6 @@ namespace Pin {
         typedef Middleware::list_type list_type;
         list_type & info_items = inst_.get_list();
 
-	std::cout << "here " << std::endl;
-
         this->fout_ << "{ \"data\": [" << std::endl;
 
         for (auto &item : info_items) {
