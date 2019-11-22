@@ -5,7 +5,7 @@
 #include "writer.h"
 
 //Path to ADT definition
-#include "../OpenDDS/DevGuideExamples/DCPS/Messenger/MessengerC.h"
+#include "/home/nyalia/OpenDDS-3.13.3/DevGuideExamples/DCPS/Messenger/MessengerC.h"
 
 #include <fstream>
 #include <list>
@@ -35,8 +35,10 @@ namespace Pin {
 
     void handle_analyze (ADDRINT arg1, ADDRINT arg2) {
       std::clock_t start = std::clock ();
+	std::cout << "here" << std::endl;
+	const Messenger::Message* ptr = (const Messenger::Message*)arg1;
       Messenger::Message msg;
-      msg = (Messenger::Message const)arg1;
+      msg = *ptr;
       values_.push_back(msg);
       ++this->count_;
       std::clock_t end = std::clock ();

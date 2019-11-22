@@ -3,6 +3,8 @@
 
 project (sdmm) : oasis_pintool {
   sharedname    = sdmm
+  includes	+= /home/nyalia/ACE_wrappers /home/nyalia/ACE_wrappers/TAO
+  libpaths	+= /home/nyalia/ACE_wrappers/lib /home/nyalia/ACE_wrappers/TAO/lib /home/nyalia/OpenDDS-3.13.3/lib
 
   Source_Files {
     sdmm.cpp
