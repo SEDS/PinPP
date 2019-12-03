@@ -84,17 +84,23 @@ namespace Pin {
       //does the signature match one of the substrings we're looking for?
       if (signature.find(datawriter_write_) != std::string::npos && signature.find("DataWriterImpl_T") != std::string::npos) {
         calling_object = std::string("OpenDDS::DCPS::DataWriterImpl_T<Messenger::Message>");
-      }
-
-      if (signature.find(datareader_takenextsample_) != std::string::npos) {
-        calling_object = std::string("OpenDDS::DCPS::DataReaderImpl_T<Messenger::Message>");
-      }
 
         dds_method_info * dds_info = new dds_method_info(signature, calling_object);
         this->output_list_.push_back((Writer *) dds_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);
         dds_info->insert (IPOINT_BEFORE, rtn);
+      }
+
+      if (signature.find(datareader_takenextsample_) != std::string::npos) {
+        calling_object = std::string("OpenDDS::DCPS::DataReaderImpl_T<Messenger::Message>");
+
+        dds_method_info * dds_info = new dds_method_info(signature, calling_object);
+        this->output_list_.push_back((Writer *) dds_info);
+
+        OASIS::Pin::Routine_Guard guard (rtn);
+        dds_info->insert (IPOINT_BEFORE, rtn);
+      }
     }
 
     virtual list_type & get_list(void) {
