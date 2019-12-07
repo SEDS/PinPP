@@ -70,7 +70,7 @@ namespace Pin {
     void handle_analyze (ADDRINT arg1, ADDRINT arg2, ADDRINT arg3, ADDRINT arg4, ADDRINT arg5) {
       std::clock_t start = std::clock ();
       ++this->count_;
-      this->topic_name_ = (char const*)arg1;
+      this->topics_.push_back(std::string((const char*)arg2));
       std::clock_t end = std::clock ();
       double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
       accum_meth_info.increase(time);
@@ -81,8 +81,14 @@ namespace Pin {
         out << "{"
         << "\"Method\": \"" << this->sign_ << "\","
         << "\"Object\": \"" << this->obj_ << "\","
-        << "\"Topic Name\": \"" << this->topic_name_ << "\","
-        << "\"Call Count\": \"" << this->count_ << "\"}";
+        << "\"Call Count\": \"" << this->count_ << "\","
+        << "\"Topics\": [";
+
+	for (std::string &topic : topics_) {
+		out << "\"" << topic << "\",";
+	}
+	
+	out << "]}" << std::endl;
       }
     }
 
@@ -90,7 +96,7 @@ namespace Pin {
       return count_;
     }
   private:
-    std::string topic_name_;
+    std::list<std::string> topics_;
     std::string sign_;
     std::string obj_;
 	  UINT64 count_;
@@ -101,7 +107,7 @@ namespace Pin {
     DDS_Middleware(std::vector<std::string> & method_list, std::string & obv)
       :datawriter_write_("::write("),
       datareader_takenextsample_("::take_next_sample("),
-      create_topic_("::create_topic(char const*, char const*, DDS::TopicQos const&, DDS::TopicListener*, unsigned int)")
+      create_topic_("::create_topic(")
     {  }
 
     virtual std::string name(void) {
@@ -165,6 +171,7 @@ namespace Pin {
     list_type output_list_;
     std::string datawriter_write_;
     std::string datareader_takenextsample_;
+    std::string create_topic_;
   };
 }
 }
