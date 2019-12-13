@@ -66,7 +66,8 @@ namespace Pin {
                 }
             }
             std::clock_t end = std::clock ();
-            std::cout << "Instrument Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
+		double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
+		accum_data_coll.increase(time);
         }
 
 	typename Middleware::list_type & get_list(void) {
@@ -147,7 +148,8 @@ namespace Pin {
         this->fout_.close ();
         std::clock_t end = std::clock ();
         std::cout << "Output Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
-        std::cout << "Callback Time consumption: " << accum_meth_info.get() << std::endl;
+        accum_data_coll.increase(accum_meth_info.get());
+	std::cout << "Data Collection Time consumption: " << accum_data_coll.get() << " (ms)" << std::endl;
     }
 
     void parse_config_file() {

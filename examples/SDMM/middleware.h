@@ -42,6 +42,7 @@ namespace Pin {
   };
 
   static time_accumulator accum_meth_info;
+  static time_accumulator accum_data_coll;
     
 }
 }
