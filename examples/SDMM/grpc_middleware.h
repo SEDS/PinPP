@@ -27,13 +27,14 @@ namespace Pin {
       :sign_(signature),
       obj_(call_object),
       count_(0),
-	data_("sample")
+      data_("sample")
     { }
 
     void handle_analyze (ADDRINT addr) {
       std::clock_t start = std::clock ();
       ++this->count_;
-      std::cout << addr << std::endl;
+      //StringFromAddrint - is a conversion method defined in Pin
+      std::cout << StringFromAddrint(addr) << std::endl;
       std::clock_t end = std::clock ();
       double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
       accum_meth_info.increase(time);
