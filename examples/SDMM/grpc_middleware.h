@@ -21,12 +21,49 @@
 namespace OASIS {
 namespace Pin {
 
-  class method_info : public OASIS::Pin::Callback <method_info (void)>, public Writer {
+  class grpc_data : public OASIS::Pin::Callback <grpc_data (OASIS::Pin::ARG_FUNCRET_EXITPOINT_VALUE)>, public Writer {
   public:
-    method_info (std::string signature, std::string call_object)
-      : sign_(signature),
+    grpc_data (std::string signature, std::string call_object)
+      :sign_(signature),
       obj_(call_object),
-	count_(0)
+      count_(0)
+    { }
+
+    void handle_analyze (ADDRINT addr) {
+      std::clock_t start = std::clock ();
+      ++this->count_;
+      data_ = (const std::string&)addr;
+      std::clock_t end = std::clock ();
+      double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
+      accum_meth_info.increase(time);
+    }
+
+    virtual void write_to(std::ostream & out) {
+      if (count_ > 0) {
+        out << "{"
+        << "\"Method\": \"" << this->sign_ << "\","
+        << "\"Object\": \"" << this->obj_ << "\","
+        << "\"Data\": \"" << this->data_ << "\","
+        << "\"Call Count\": \"" << this->count_ << "\"}";
+      }
+    }
+
+    virtual bool has_info(void) {
+      return count_;
+    }
+  private:
+    std::string sign_;
+    std::string obj_;
+	  UINT64 count_;
+    std::string data_;
+  };
+
+  class grpc_general : public OASIS::Pin::Callback <grpc_general (void)>, public Writer {
+  public:
+    grpc_general (std::string signature, std::string call_object)
+      :sign_(signature),
+      obj_(call_object),
+      count_(0)
     { }
 
     void handle_analyze (void) {
@@ -94,7 +131,9 @@ namespace Pin {
     gRPC_Middleware(std::vector<std::string> & method_list, std::string & obv)
       :stub_regex_("(.*)(Stub::)(.*)(ClientContext)(.*)"),
       clientctx_substr_("ClientContext::"),
-      channel_create_substr_("grpc_channel_create(char const*")
+      channel_create_substr_("grpc_channel_create(char const*"),
+      name_substr_("HelloRequest::name()"),
+      message_substr_("HelloReply::message()")
     {  }
 
     virtual std::string name(void) {
@@ -134,8 +173,20 @@ namespace Pin {
         OASIS::Pin::Routine_Guard guard (rtn);
         a_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2, 3, 4);
         
+      } else if (signature.find(name_substr_) != std::string::npos) {
+        grpc_data * data_info = new grpc_data (signature, calling_object);
+        
+        this->output_list_.push_back ((Writer *)data_info);
+        OASIS::Pin::Routine_Guard guard (rtn);
+        data_info->insert (IPOINT_AFTER, rtn);
+      } else if (signature.find(message_substr_) != std::string::npos) {
+        grpc_data * data_info = new grpc_data (signature, calling_object);
+        
+        this->output_list_.push_back ((Writer *) data_info);
+        OASIS::Pin::Routine_Guard guard (rtn);
+        data_info->insert (IPOINT_AFTER, rtn);
       } else if (calling_object != "N/A") {
-        method_info * m_info = new method_info (signature, calling_object);
+        grpc_general * m_info = new grpc_general (signature, calling_object);
         
         this->output_list_.push_back ((Writer *) m_info);
         OASIS::Pin::Routine_Guard guard (rtn);
@@ -155,6 +206,8 @@ namespace Pin {
     std::regex stub_regex_;
     std::string clientctx_substr_;
     std::string channel_create_substr_;
+    std::string name_substr_;
+    std::string message_substr_;
   };
 }
 }
