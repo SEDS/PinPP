@@ -26,13 +26,14 @@ namespace Pin {
     grpc_data (std::string signature, std::string call_object)
       :sign_(signature),
       obj_(call_object),
-      count_(0)
+      count_(0),
+	data_("sample")
     { }
 
     void handle_analyze (ADDRINT addr) {
       std::clock_t start = std::clock ();
       ++this->count_;
-      data_ = (const std::string&)addr;
+      std::cout << addr << std::endl;
       std::clock_t end = std::clock ();
       double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
       accum_meth_info.increase(time);
@@ -113,7 +114,7 @@ namespace Pin {
 
     virtual void write_to(std::ostream & out) {
       out << "{"
-      << "\"Server Address\": \"" << this->server_address_ << "\""
+      << "\"Server Address\": \"" << this->server_address_ << "\","
       << "\"Call Count\": \"" << this->count_ << "\"}"; 
     }
 
@@ -174,12 +175,16 @@ namespace Pin {
         a_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2, 3, 4);
         
       } else if (signature.find(name_substr_) != std::string::npos) {
+	calling_object = std::string("HelloRequest");
+	std::cout << calling_object << " | " << signature << std::endl;
         grpc_data * data_info = new grpc_data (signature, calling_object);
         
         this->output_list_.push_back ((Writer *)data_info);
         OASIS::Pin::Routine_Guard guard (rtn);
         data_info->insert (IPOINT_AFTER, rtn);
       } else if (signature.find(message_substr_) != std::string::npos) {
+	calling_object = std::string("HelloReply");
+	std::cout << calling_object << " | " << signature << std::endl;
         grpc_data * data_info = new grpc_data (signature, calling_object);
         
         this->output_list_.push_back ((Writer *) data_info);
