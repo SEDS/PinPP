@@ -1,8 +1,0 @@
-project (fake_grpc) {
-  exename = fake_grpc
-  install = .
-  
-  Source_Files {
-    fake_grpc.cpp
-  }
-}
