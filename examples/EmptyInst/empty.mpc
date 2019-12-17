@@ -6,3 +6,16 @@ project (empty) : oasis_pintool {
   }
 
 }
+
+project (nyalia) {
+  exename = nyalia
+  install = .
+
+  specific(make) {
+    compile_flags += -g -std=c++11
+  }
+
+  Source_Files {
+    nyalia.cpp
+  }
+}
