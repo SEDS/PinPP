@@ -1,5 +1,6 @@
 #include "pin.H"
 #include <iostream>
+#include <string>
 
 /* ===================================================================== */
 
@@ -8,7 +9,7 @@
 /* Analysis routines                                                     */
 /* ===================================================================== */
  
-VOID HandleNyalia(CHAR * name, int a, int b, int c)
+VOID HandleNyalia(CHAR * name, std::string a, int b, int c)
 {
   std::cout << name << " | ";
   std::cout << a << " | ";
@@ -23,13 +24,13 @@ VOID HandleNyalia(CHAR * name, int a, int b, int c)
    
 VOID Image(IMG img, VOID *v)
 {
-    RTN nyalia_rtn = RTN_FindByName(img, "_Z6Nyaliaiii");
+    RTN nyalia_rtn = RTN_FindByName(img, "_Z6NyaliaSsii");
     
     if (RTN_Valid(nyalia_rtn))
     {
         RTN_Open(nyalia_rtn);
         RTN_InsertCall(nyalia_rtn, IPOINT_BEFORE, (AFUNPTR)HandleNyalia,
-                       IARG_ADDRINT, "_Z6Nyaliaiii",
+                       IARG_ADDRINT, "_Z6NyaliaSsii",
                        IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
                        IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
                        IARG_FUNCARG_ENTRYPOINT_VALUE, 2,

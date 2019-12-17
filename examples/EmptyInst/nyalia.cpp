@@ -1,6 +1,7 @@
 #include <iostream>
+#include <string>
 
-void Nyalia(int a, int b, int c) {
+void Nyalia(std::string a, int b, int c) {
     std::cout << "Actual: ";
     std::cout << a << " | ";
     std::cout << b << " | ";
@@ -9,7 +10,7 @@ void Nyalia(int a, int b, int c) {
 
 int main(void) {
 
-    Nyalia(10, 1000, -30);
+    Nyalia(std::string("CS363"), 1000, -30);
 
     return 0;
 };
