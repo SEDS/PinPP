@@ -1,0 +1,30 @@
+project (testpin) : oasis_pintool {
+  sharedname    = testpin
+
+  Source_Files {
+    test_pin.cpp
+  }
+
+}
+
+project (testpinpp) : oasis_pintool {
+  sharedname    = testpinpp
+
+  Source_Files {
+    test_pinpp.cpp
+  }
+
+}
+
+project (nyalia) {
+  exename = nyalia
+  install = .
+
+  specific(make) {
+    compile_flags += -g -std=c++11
+  }
+
+  Source_Files {
+    nyalia.cpp
+  }
+}
