@@ -29,29 +29,29 @@ class Instrument : public OASIS::Pin::Image_Instrument <Instrument> {
 public:
 	void handle_instrument (const OASIS::Pin::Image & img) {
 		for (auto sec : img) {
-		for (auto rtn : sec) {
-			if (!rtn.valid())
-				continue;
+			for (auto rtn : sec) {
+				if (!rtn.valid())
+					continue;
 
-			using OASIS::Pin::Section;
-			using OASIS::Pin::Image;
+				using OASIS::Pin::Section;
+				using OASIS::Pin::Image;
 
-			std::string signature(rtn.name ());
-			if (signature.find("_Z6NyaliaRSsii") != std::string::npos) {
-				HandleNyalia * m_info = new HandleNyalia;
-		
-				this->output_list_.push_back (m_info);
-				OASIS::Pin::Routine_Guard guard (rtn);
-				m_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2);
+				std::string signature(rtn.name ());
+				if (signature.find("_Z6NyaliaRSsii") != std::string::npos) {
+					HandleNyalia * m_info = new HandleNyalia;
+			
+					this->output_list_.push_back (m_info);
+					OASIS::Pin::Routine_Guard guard (rtn);
+					m_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2);
+				}
+
 			}
-
 		}
-		}
-        }
+	}
 
 private:
 	std::list<HandleNyalia*> output_list_;
-    };
+};
 
 class Empty_Tool : public OASIS::Pin::Tool <Empty_Tool> {
 
@@ -64,8 +64,7 @@ public:
 
 private:
 	Instrument inst_;
-
-    };
+};
 
 /* ===================================================================== */
 /* Main                                                                  */
