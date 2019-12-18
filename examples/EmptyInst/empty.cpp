@@ -1,75 +1,72 @@
-#include "pin++/Pintool.h"
-#include "pin++/Image_Instrument.h"
-#include "pin++/Image.h"
-#include "pin++/Section.h"
-#include "pin++/Routine.h"
-#include "pin++/Callback.h"
+#include "pin.H"
 #include <iostream>
 #include <string>
-#include <list>
 
-class HandleNyalia : public OASIS::Pin::Callback <HandleNyalia (OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
-	OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
-	OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)> {
-  public:
-	HandleNyalia(void)
-	{ }
+/* ===================================================================== */
 
-	void handle_analyze (std::string a, int b, int c) {
-		std::cout << "Pin++: ";
-		std::cout << a << " | ";
-		std::cout << b << " | ";
-		std::cout << c << std::endl;
-	}
-};
 
-class Instrument : public OASIS::Pin::Image_Instrument <Instrument> {
-public:
-	void handle_instrument (const OASIS::Pin::Image & img) {
-		for (auto sec : img) {
-		for (auto rtn : sec) {
-			if (!rtn.valid())
-				continue;
+/* ===================================================================== */
+/* Analysis routines                                                     */
+/* ===================================================================== */
+ 
+VOID HandleNyalia(CHAR * name, std::string a, int b, int c)
+{
+  std::cout << name << " | ";
+  std::cout << a << " | ";
+  std::cout << b << " | ";
+  std::cout << c << std::endl;
+}
 
-			using OASIS::Pin::Section;
-			using OASIS::Pin::Image;
 
-			std::string signature(rtn.name ());
-			if (signature.find("_Z6NyaliaSsii") != std::string::npos) {
-				HandleNyalia * m_info = new HandleNyalia;
-		
-				this->output_list_.push_back (m_info);
-				OASIS::Pin::Routine_Guard guard (rtn);
-				m_info->insert (IPOINT_BEFORE, rtn, 0, 1, 2);
-			}
-
-		}
-		}
-        }
-
-private:
-	std::list<HandleNyalia*> output_list_;
-    };
-
-class Empty_Tool : public OASIS::Pin::Tool <Empty_Tool> {
-
-public:
-
-    Empty_Tool (void)
+/* ===================================================================== */
+/* Instrumentation routines                                              */
+/* ===================================================================== */
+   
+VOID Image(IMG img, VOID *v)
+{
+    RTN nyalia_rtn = RTN_FindByName(img, "_Z6NyaliaSsii");
+    
+    if (RTN_Valid(nyalia_rtn))
     {
-        this->init_symbols();
+        RTN_Open(nyalia_rtn);
+        RTN_InsertCall(nyalia_rtn, IPOINT_BEFORE, (AFUNPTR)HandleNyalia,
+                       IARG_ADDRINT, "_Z6NyaliaSsii",
+                       IARG_FUNCARG_ENTRYPOINT_VALUE, 0,
+                       IARG_FUNCARG_ENTRYPOINT_VALUE, 1,
+                       IARG_FUNCARG_ENTRYPOINT_VALUE, 2,
+                       IARG_END);
+        RTN_Close(nyalia_rtn);
     }
+}
 
-private:
-	Instrument inst_;
-
-    };
+/* ===================================================================== */
+/* Print Help Message                                                    */
+/* ===================================================================== */
+   
+INT32 Usage()
+{
+    std::cerr << "This tool is used for testing PIN and Pin++" << std::endl;
+    return -1;
+}
 
 /* ===================================================================== */
 /* Main                                                                  */
 /* ===================================================================== */
 
-int main (int argc, char * argv []) {
-    OASIS::Pin::Pintool <Empty_Tool>(argc, argv).start_program();
+int main(int argc, char *argv[])
+{
+    // Initialize pin & symbol manager
+    PIN_InitSymbols();
+    if( PIN_Init(argc,argv) )
+    {
+        return Usage();
+    }
+    
+    // Register Image to be called to instrument functions.
+    IMG_AddInstrumentFunction(Image, 0);
+
+    // Never returns
+    PIN_StartProgram();
+    
     return 0;
 }
