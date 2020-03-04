@@ -1,0 +1,26 @@
+// dynamic_event_monitor.mpc
+
+project (dynamic_event_monitor) : oasis_pintool {
+  sharedname = dynamic_event_monitor
+
+  Source_Files {
+	data_type_cmd.cpp
+	const_char_ptr_cmd.cpp
+	data_type_cmd_factory.cpp
+    dynamic_event_monitor.cpp
+	long_cmd.cpp
+    unsigned_short_cmd.cpp
+    short_cmd.cpp
+    float_cmd.cpp
+  }
+  
+  Header_files {
+	data_type_cmd.h
+	const_char_ptr_cmd.h
+	data_type_cmd_factory.h
+	long_cmd.h
+    unsigned_short_cmd.h
+    short_cmd.h
+    float_cmd.h
+  }
+}
