@@ -89,6 +89,7 @@ namespace Pin {
         std::string target_methods_;
         std::string obv_;
         static KNOB <string> config_file_name_;
+	static KNOB <string> trace_file_name_;
     };
 
     class SDMM_Tool : public OASIS::Pin::Tool <SDMM_Tool> {
@@ -96,7 +97,7 @@ namespace Pin {
     public:
 
     SDMM_Tool (void)
-        :fout_("trace.json"),
+        :fout_(knobs_.trace_file_name_.Value().c_str()),
         CORBA_(target_method_list_, obv),
 	gRPC_(target_method_list_, obv),
 	DDS_(target_method_list_, obv),
@@ -135,21 +136,18 @@ namespace Pin {
         typedef Middleware::list_type list_type;
         list_type & info_items = inst_.get_list();
 
-        this->fout_ << "{ \"data\": [" << std::endl;
-
         for (auto &item : info_items) {
             if (item->has_info()) {
                 item->write_to(fout_);
-                this->fout_ << "," << std::endl;
             }
         }
 
-        this->fout_ << "]}" << std::endl;
-        this->fout_.close ();
         std::clock_t end = std::clock ();
-        std::cout << "Output Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
+        fout_ << "Output Time consumption: " << 1000.0 * (end - start) / CLOCKS_PER_SEC << " (ms)" << std::endl;
         accum_data_coll.increase(accum_meth_info.get());
-	std::cout << "Data Collection Time consumption: " << accum_data_coll.get() << " (ms)" << std::endl;
+	fout_ << "Data Collection Time consumption: " << accum_data_coll.get() << " (ms)" << std::endl;
+	this->fout_.close ();
+
     }
 
     void parse_config_file() {
@@ -226,3 +224,6 @@ namespace Pin {
 // > $PIN_ROOT/pin -t $PINPP_ROOT/lib/sdmm.dll -l Context,Servant -m push -- <program>
 KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::config_file_name_ (KNOB_MODE_WRITEONCE, "pintool", "conf", "config.sdmm", 
                                             "The name of the configuration file SDMM should use");
+
+KNOB <string> OASIS::Pin::SDMM_Tool_Knobs::trace_file_name_ (KNOB_MODE_WRITEONCE, "pintool", "out", "trace.json", 
+                                            "The name of the output file SDMM should use");

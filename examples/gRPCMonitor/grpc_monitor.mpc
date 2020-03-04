@@ -1,9 +1,0 @@
-// grpc_monitor.mpc
-
-project (grpcmonitor) : oasis_pintool {
-  sharedname    = grpcmonitor
-
-  Source_Files {
-    grpc_monitor.cpp
-  }
-}

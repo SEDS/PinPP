@@ -220,7 +220,7 @@ namespace Pin {
                 : "r" (object_addr), "r" (helper_addr)
                 : "%eax", "%ecx"
                 );
-
+                
                 /* Print to even trace the following:
                 * Current date time
                 * Severity

@@ -23,8 +23,9 @@ namespace Pin {
 
   class dds_readwrite_info : public OASIS::Pin::Callback <dds_readwrite_info (void)>, public Writer {
   public:
-    dds_readwrite_info (std::string signature, std::string call_object)
-      : sign_(signature),
+    dds_readwrite_info (std::string method, std::string in_types, std::string call_object)
+      :method_(method),
+      in_types_(in_types),
       obj_(call_object),
       count_(0)
     { }
@@ -39,10 +40,10 @@ namespace Pin {
 
     virtual void write_to(std::ostream & out) {
       if (count_ > 0) {
-        out << "{"
-        << "\"Method\": \"" << this->sign_ << "\","
-        << "\"Object\": \"" << this->obj_ << "\","
-        << "\"Call Count\": \"" << this->count_ << "\"}";
+        out << "Method: " << this->method_ << std::endl
+        << "Input Types: " << this->in_types_ << std::endl
+        << "Calling Object: " << this->obj_ << std::endl
+        << "Call Count: " << this->count_ << std::endl;
       }
     }
 
@@ -50,7 +51,8 @@ namespace Pin {
       return count_;
     }
   private:
-    std::string sign_;
+    std::string method_;
+    std::string in_types_;
     std::string obj_;
 	  UINT64 count_;
   };
@@ -61,8 +63,9 @@ namespace Pin {
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE,
   OASIS::Pin::ARG_FUNCARG_ENTRYPOINT_VALUE)>, public Writer {
   public:
-    dds_topic_info (std::string signature, std::string call_object)
-      : sign_(signature),
+    dds_topic_info (std::string method, std::string in_types, std::string call_object)
+      :method_(method),
+      in_types_(in_types),
       obj_(call_object),
       count_(0)
     { }
@@ -78,17 +81,16 @@ namespace Pin {
 
     virtual void write_to(std::ostream & out) {
       if (count_ > 0) {
-        out << "{"
-        << "\"Method\": \"" << this->sign_ << "\","
-        << "\"Object\": \"" << this->obj_ << "\","
-        << "\"Call Count\": \"" << this->count_ << "\","
-        << "\"Topics\": [";
+        out << "Method: " << this->method_ << std::endl
+        << "Input Types: " << this->in_types_ << std::endl
+        << "Calling Object: " << this->obj_ << std::endl
+        << "Call Count: " << this->count_ << std::endl;
 
-	for (std::string &topic : topics_) {
-		out << "\"" << topic << "\",";
-	}
-	
-	out << "]}" << std::endl;
+        out << "Topics: [";
+        for (std::string &topic : topics_) {
+          out << topic << ",";
+        }
+	      out << "]" << std::endl;
       }
     }
 
@@ -97,7 +99,8 @@ namespace Pin {
     }
   private:
     std::list<std::string> topics_;
-    std::string sign_;
+    std::string method_;
+    std::string in_types_;
     std::string obj_;
 	  UINT64 count_;
   };
@@ -128,12 +131,17 @@ namespace Pin {
 
       std::string signature(OASIS::Pin::Symbol::undecorate (rtn.name (), UNDECORATION_COMPLETE));
       std::string calling_object("N/A");
+      std::string method;
+      std::string in_types;
 
       //does the signature match one of the substrings we're looking for?
-      if (signature.find(datawriter_write_) != std::string::npos && signature.find("DataWriterImpl_T") != std::string::npos) {
-        calling_object = std::string("OpenDDS::DCPS::DataWriterImpl_T<Messenger::Message>");
+      if (signature.find(datawriter_write_) != std::string::npos) {
+        std::list<std::string> sign_info(parse_signature(signature));
+        calling_object = sign_info.front(); sign_info.pop_front();
+        method = sign_info.front(); sign_info.pop_front();
+        in_types = sign_info.front(); sign_info.pop_front();
 
-        dds_readwrite_info * dds_info = new dds_readwrite_info(signature, calling_object);
+        dds_readwrite_info * dds_info = new dds_readwrite_info(method, in_types, calling_object);
         this->output_list_.push_back((Writer *) dds_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);
@@ -141,9 +149,12 @@ namespace Pin {
       }
 
       if (signature.find(datareader_takenextsample_) != std::string::npos) {
-        calling_object = std::string("OpenDDS::DCPS::DataReaderImpl_T<Messenger::Message>");
+        std::list<std::string> sign_info(parse_signature(signature));
+        calling_object = sign_info.front(); sign_info.pop_front();
+        method = sign_info.front(); sign_info.pop_front();
+        in_types = sign_info.front(); sign_info.pop_front();
 
-        dds_readwrite_info * dds_info = new dds_readwrite_info(signature, calling_object);
+        dds_readwrite_info * dds_info = new dds_readwrite_info(method, in_types, calling_object);
         this->output_list_.push_back((Writer *) dds_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);
@@ -151,9 +162,12 @@ namespace Pin {
       }
 
       if (signature.find(create_topic_) != std::string::npos) {
-        calling_object = std::string("OpenDDS::DCPS::DomainParticipantImpl");
+				std::list<std::string> sign_info(parse_signature(signature));
+        calling_object = sign_info.front(); sign_info.pop_front();
+        method = sign_info.front(); sign_info.pop_front();
+        in_types = sign_info.front(); sign_info.pop_front();
 
-        dds_topic_info * topic_info = new dds_topic_info(signature, calling_object);
+        dds_topic_info * topic_info = new dds_topic_info(method, in_types, calling_object);
         this->output_list_.push_back((Writer *) topic_info);
 
         OASIS::Pin::Routine_Guard guard (rtn);
