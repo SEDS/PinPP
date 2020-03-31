@@ -1,0 +1,3 @@
+MIDDLEWARE = gRPC
+INCLUDE = greeter_client,greeter_server,libgrpc.so.7
+HELPER = greeter_client,greeter_server,libgrpc.so.7

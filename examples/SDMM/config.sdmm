@@ -1,3 +1,0 @@
-MIDDLEWARE = gRPC
-INCLUDE = Broker,Distributor,libgrpc.so.7
-HELPER = Broker,Distributor,libgrpc.so.7
