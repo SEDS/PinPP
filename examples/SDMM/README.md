@@ -7,6 +7,8 @@ The requirements are the same for Pin++. Please follow the instructions @ [Pin++
 * Make sure *PIN_ROOT* is set to the Pin home directory.
 * Make sure *PINPP_ROOT* is set to the Pin++ home directory.
 
+To use SDMM, we assume you also have one of the [supported distributed middleware](#Supported-Middleware) installed on your system.
+
 # Compile & Installation Instructions
 After cloning the Pin++ Repo and setting the *PINPP_ROOT* environment variable to
 the Pin++ home directory, you need to create the Makefiles with the following command:
