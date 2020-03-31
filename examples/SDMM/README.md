@@ -9,19 +9,18 @@ The requirements are the same for Pin++. Please follow the instructions @ [Pin++
 
 To use SDMM, we assume you also have one of the [supported distributed middleware](#Supported-Middleware) installed on your system.
 
+_SDMM was only tested on Ubuntu 14.04 with kernel 3.13.0._
+
 # Compile & Installation Instructions
-After cloning the Pin++ Repo and setting the *PINPP_ROOT* environment variable to
-the Pin++ home directory, you need to create the Makefiles with the following command:
+After installing the [system requirements](#System-Requirements), you need to create the Makefiles with the following command:
 `$MPC_ROOT/mwc.pl -type make -features pin=1,ia32=[0|1],intel64=[0|1],cpp11=1 pin++.mwc`
 
 For example, on a 64-bit system run: `$MPC_ROOT/mwc.pl -type make -features pin=1,ia32=0,intel64=1,cpp11=1 pin++.mwc`
 
-To compile SDMM, run from *PINPP_ROOT*: `make sdmm`
-
-_SDMM was only tested on Ubuntu 14.04 with kernel 3.13.0._
+To compile SDMM from *PINPP_ROOT*: `make sdmm`
 
 # Usage Instructions
-To run SDMM, invoke the pintool with a configuration file:
+To use SDMM, invoke the pintool with a configuration file:
 * `$PIN_ROOT/pin.sh -t $PINPP_ROOT/lib/libsdmm.so -conf <config file> -out <output file> -- <executable>`
 
 Running SDMM with [gRPC HelloWorld Example](https://github.com/grpc/grpc/tree/master/examples/cpp/helloworld):
